@@ -40,6 +40,7 @@ export default tseslint.config(
             "object-curly-spacing": ["warn", "always"],
             "arrow-spacing": ["warn", { before: true, after: true }],
             "no-multi-spaces": "warn",
+            "@typescript-eslint/no-unused-vars": "warn",
             ...react.configs.recommended.rules,
             ...react.configs["jsx-runtime"].rules,
             ...reactHooks.configs.recommended.rules,
