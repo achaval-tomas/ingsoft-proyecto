@@ -1,11 +1,13 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import reactLogo from "../../../assets/react.svg";
 import viteLogo from "/vite.svg";
-import "./App.css";
+import "./AppLayout.css";
 
-function App() {
-    const [count, setCount] = useState(0);
+interface AppLayoutProps {
+    count: number,
+    onClickButton: () => void,
+}
 
+function AppLayout({ count, onClickButton } : AppLayoutProps) {
     return (
         <>
             <div>
@@ -18,7 +20,7 @@ function App() {
             </div>
             <h1>Vite + React</h1>
             <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
+                <button onClick={() => onClickButton()}>
                     count is {count}
                 </button>
                 <p>
@@ -32,4 +34,4 @@ function App() {
     );
 }
 
-export default App;
+export default AppLayout;
