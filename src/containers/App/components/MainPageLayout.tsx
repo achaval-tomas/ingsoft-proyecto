@@ -37,9 +37,14 @@ function MainPageLayout({
                 </FancyButton>
             </div>
             :
-            <FancyButton onClick={() => setCreateForm(true)}>
-                <p>Crear lobby</p>
-            </FancyButton>
+            <div>
+                <FancyButton onClick={() => setCreateForm(true)}>
+                    <p>Crear lobby</p>
+                </FancyButton>
+                <FancyButton onClick={() => {}}>
+                    <p>Unirse a lobby</p>
+                </FancyButton>
+            </div>
         }
         </div>
     );
