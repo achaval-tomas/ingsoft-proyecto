@@ -1,14 +1,9 @@
-import { useState } from "react";
-import AppLayout from "./components/AppLayout";
+import MainPage from "./containers/MainPage";
 
 function App() {
-    const [count, setCount] = useState(0);
 
     return (
-        <AppLayout
-            count={count}
-            onClickButton={() => setCount(count => count + 1)}
-        />
+       <MainPage />
     );
 }
 
