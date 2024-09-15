@@ -16,7 +16,7 @@ function CreateLobbyForm({ inputs, handleChange, handleSubmit, handleGoBack }: C
     return (
         <form onSubmit={handleSubmit}>
             <div className="grid grid-rows-2 grid-cols-2">
-                <label htmlFor="name" className="col-span-1 row-span-1">Nombre del lobby:</label>
+                <label htmlFor="name" className="col-span-1 row-span-1">Nombre de la sala:</label>
                 <input
                     type="text"
                     name="name"

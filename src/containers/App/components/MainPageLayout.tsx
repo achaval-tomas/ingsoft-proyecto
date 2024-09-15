@@ -38,10 +38,10 @@ function MainPageLayout({
                     :
                     <>
                         <FancyButton onClick={() => setCreateForm(true)}>
-                            <p>Crear lobby</p>
+                            <p>Crear sala</p>
                         </FancyButton>
                         <FancyButton onClick={() => {}}>
-                            <p>Unirse a lobby</p>
+                            <p>Unirse a sala</p>
                         </FancyButton>
                     </>
                 }
