@@ -12,7 +12,7 @@ function CreateLobbyForm({ inputs, handleChange, handleSubmit }: CreateLobbyForm
     return (
         <form onSubmit={handleSubmit}>
             <div>
-                <label htmlFor="name">Lobby name:</label>
+                <label htmlFor="name">Nombre del lobby:</label>
                 <input
                     type="text"
                     name="name"
@@ -20,9 +20,9 @@ function CreateLobbyForm({ inputs, handleChange, handleSubmit }: CreateLobbyForm
                     onChange={handleChange}
                 >
                 </input>
-                { inputs.name === "" && <p>You must type a name</p>}
+                { inputs.name === "" && <p>Elegí un nombre</p>}
             </div>
-            <button type="submit">Send</button>
+            <button type="submit">Crear</button>
         </form>
     );
 }
