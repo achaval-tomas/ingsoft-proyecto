@@ -9,22 +9,29 @@ interface CreateLobbyFormInterface {
 }
 
 function CreateLobbyForm({ inputs, handleChange, handleSubmit }: CreateLobbyFormInterface) {
+    const submitDisabled = inputs.name === "";
+
     return (
         <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="name">Nombre del lobby:</label>
+            <div className="grid grid-rows-2 grid-cols-2">
+                <label htmlFor="name" className="col-span-1 row-span-1">Nombre del lobby:</label>
                 <input
                     type="text"
                     name="name"
                     value={inputs.name || ""}
                     onChange={handleChange}
+                    className="col-span-1 row-span-1"
                 >
                 </input>
-                { inputs.name === "" && <p>Elegí un nombre</p>}
+                { inputs.name === "" && <p className="text-sm col-start-2 text-red-400">Elegí un nombre</p>}
             </div>
-            { inputs.name !== "" &&
-                <button type="submit">Crear</button>
-            }
+            <button 
+                className={"fancy-button " + (submitDisabled ? "bg-gray-500" : "")}
+                type="submit" 
+                disabled={submitDisabled}
+            >
+                Crear
+            </button>
         </form>
     );
 }
