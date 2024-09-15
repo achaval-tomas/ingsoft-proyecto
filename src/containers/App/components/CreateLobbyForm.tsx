@@ -22,7 +22,9 @@ function CreateLobbyForm({ inputs, handleChange, handleSubmit }: CreateLobbyForm
                 </input>
                 { inputs.name === "" && <p>Elegí un nombre</p>}
             </div>
-            <button type="submit">Crear</button>
+            { inputs.name !== "" &&
+                <button type="submit">Crear</button>
+            }
         </form>
     );
 }
