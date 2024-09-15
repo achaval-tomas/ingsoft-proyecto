@@ -1,14 +1,16 @@
 import React from "react";
 import { LobbyForm } from "../containers/MainPage";
+import FancyButton from "../../../components/FancyButton";
 
 
 interface CreateLobbyFormInterface {
     inputs: LobbyForm,
     handleChange: (e: React.FormEvent<HTMLInputElement>) => void,
     handleSubmit: React.FormEventHandler<HTMLFormElement>,
+    handleGoBack: () => void,
 }
 
-function CreateLobbyForm({ inputs, handleChange, handleSubmit }: CreateLobbyFormInterface) {
+function CreateLobbyForm({ inputs, handleChange, handleSubmit, handleGoBack }: CreateLobbyFormInterface) {
     const submitDisabled = inputs.name === "";
 
     return (
@@ -25,13 +27,18 @@ function CreateLobbyForm({ inputs, handleChange, handleSubmit }: CreateLobbyForm
                 </input>
                 { inputs.name === "" && <p className="text-sm col-start-2 text-red-400">Elegí un nombre</p>}
             </div>
-            <button 
-                className={"fancy-button " + (submitDisabled ? "bg-gray-500" : "")}
-                type="submit" 
-                disabled={submitDisabled}
-            >
-                Crear
-            </button>
+            <div className="flex justify-around">
+                <button 
+                    className={"fancy-button " + (submitDisabled ? "bg-gray-500" : "")}
+                    type="submit" 
+                    disabled={submitDisabled}
+                >
+                    Crear
+                </button>
+                <FancyButton onClick={handleGoBack}>
+                    <p>Atrás</p>
+                </FancyButton>
+            </div>
         </form>
     );
 }

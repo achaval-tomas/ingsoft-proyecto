@@ -32,10 +32,8 @@ function MainPageLayout({
                             inputs={lobbyFormInputs}
                             handleChange={handleLobbyFormChange} 
                             handleSubmit={handleLobbyFormSubmit} 
+                            handleGoBack={handleGoBack}
                         />
-                        <FancyButton onClick={handleGoBack}>
-                            <p>Atrás</p>
-                        </FancyButton>
                     </>
                     :
                     <>
