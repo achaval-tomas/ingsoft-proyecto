@@ -3,14 +3,14 @@ import { LobbyForm } from "../containers/MainPage";
 import FancyButton from "../../../components/FancyButton";
 
 
-interface CreateLobbyFormInterface {
+interface CreateLobbyFormProps {
     inputs: LobbyForm,
     handleChange: (e: React.FormEvent<HTMLInputElement>) => void,
     handleSubmit: React.FormEventHandler<HTMLFormElement>,
     handleGoBack: () => void,
 }
 
-function CreateLobbyForm({ inputs, handleChange, handleSubmit, handleGoBack }: CreateLobbyFormInterface) {
+function CreateLobbyForm({ inputs, handleChange, handleSubmit, handleGoBack }: CreateLobbyFormProps) {
     const submitDisabled = inputs.name === "";
 
     return (
