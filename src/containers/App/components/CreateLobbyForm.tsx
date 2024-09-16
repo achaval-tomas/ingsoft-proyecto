@@ -29,7 +29,7 @@ function CreateLobbyForm({ inputs, handleChange, handleSubmit, handleGoBack }: C
             </div>
             <div className="flex justify-around">
                 <button 
-                    className={"fancy-button " + (submitDisabled ? "bg-gray-500" : "")}
+                    className={"fancy-button " + (submitDisabled ? "!bg-gray-500" : "")}
                     type="submit" 
                     disabled={submitDisabled}
                 >
