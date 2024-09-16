@@ -1,3 +1,5 @@
+import "../../../components/FancyButton.css";
+
 interface PlayerNameFormProps {
     name: string,
     handleChange: (e: React.FormEvent<HTMLInputElement>) => void,
@@ -10,6 +12,7 @@ function PlayerNameForm({ name, handleChange, handleSubmit }: PlayerNameFormProp
     return (
         <form 
             onSubmit={handleSubmit} 
+            className="border border-zinc-500 rounded p-6 flex flex-col justify-center items-center"
         >
             <div className="grid grid-rows-2 grid-cols-2">
                 <label htmlFor="player-name" className="col-span-1 row-span-1">Nombre de jugador:</label>
@@ -24,7 +27,7 @@ function PlayerNameForm({ name, handleChange, handleSubmit }: PlayerNameFormProp
                 { submitDisabled && <p className="text-sm col-start-2 text-red-400">Elegí un nombre</p>}
             </div>
                 <button 
-                    className={"fancy-button " + (submitDisabled ? "bg-gray-500" : "")}
+                    className={"fancy-button " + (submitDisabled ? "!bg-gray-500" : "")}
                     type="submit" 
                     disabled={submitDisabled}
                 >
