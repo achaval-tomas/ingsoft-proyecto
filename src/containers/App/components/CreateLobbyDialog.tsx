@@ -11,11 +11,12 @@ export interface CreateLobbyFormState {
 
 interface CreateLobbyDialogProps {
     isOpen: boolean;
+    lobbyNamePlaceholder: string;
     onCancel: () => void;
     onSubmit: (state: CreateLobbyFormState) => void;
 }
 
-function CreateLobbyDialog({ isOpen, onCancel, onSubmit }: CreateLobbyDialogProps) {
+function CreateLobbyDialog({ isOpen, lobbyNamePlaceholder, onCancel, onSubmit }: CreateLobbyDialogProps) {
     const [formState, setFormState] = useState<CreateLobbyFormState>({
         name: "",
         maxPlayers: 4,
@@ -30,7 +31,7 @@ function CreateLobbyDialog({ isOpen, onCancel, onSubmit }: CreateLobbyDialogProp
                         <DialogTitle className="font-bold text-lg">Crear sala</DialogTitle>
                         <Field
                             label="Nombre de la sala"
-                            placeholder="Sala de Mauri"
+                            placeholder={lobbyNamePlaceholder}
                             value={formState.name}
                             onChange={name => setFormState({ ...formState, name })}
                         />
