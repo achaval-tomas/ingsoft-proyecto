@@ -1,14 +1,22 @@
 import { useState } from "react";
 import AppLayout from "./components/AppLayout";
+import CreateLobbyDialog from "./components/CreateLobbyDialog";
 
 function App() {
-    const [count, setCount] = useState(0);
+    const [showCreateLobbyDialog, setShowCreateLobbyDialog] = useState(true);
 
     return (
-        <AppLayout
-            count={count}
-            onClickButton={() => setCount(count => count + 1)}
-        />
+        <>
+            <AppLayout
+                count={99}
+                onClickButton={() => setShowCreateLobbyDialog(true)}
+            />
+            <CreateLobbyDialog
+                isOpen={showCreateLobbyDialog}
+                onCancel={() => setShowCreateLobbyDialog(false)}
+                onSubmit={formState => alert(JSON.stringify(formState))}
+            />
+        </>
     );
 }
 
