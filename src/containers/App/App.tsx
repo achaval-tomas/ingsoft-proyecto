@@ -13,6 +13,7 @@ function App() {
             />
             <CreateLobbyDialog
                 isOpen={showCreateLobbyDialog}
+                lobbyNamePlaceholder="Sala de Mauri"
                 onCancel={() => setShowCreateLobbyDialog(false)}
                 onSubmit={formState => alert(JSON.stringify(formState))}
             />
