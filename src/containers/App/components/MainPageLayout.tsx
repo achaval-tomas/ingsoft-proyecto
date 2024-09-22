@@ -3,13 +3,13 @@ import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import { Button } from "@headlessui/react";
 
 interface MainPageLayoutProps {
-    onSubmitLobbyForm: (state: CreateLobbyFormState) => void,
+    onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
 }
 
-function MainPageLayout({ 
+function MainPageLayout({
     onSubmitLobbyForm,
 }: MainPageLayoutProps) {
-    const [showCreateForm, setCreateForm] = useState(false);
+    const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
     return (
         <div className="w-screen flex justify-center">
@@ -30,7 +30,7 @@ function MainPageLayout({
                 <Button
                     type="button"
                     onClick={() => {}}
-                    className="p-3 rounded bg-primary-600 hover:bg-primary-500" 
+                    className="p-3 rounded bg-primary-600 hover:bg-primary-500"
                 >
                     <p>Unirse a sala</p>
                 </Button>

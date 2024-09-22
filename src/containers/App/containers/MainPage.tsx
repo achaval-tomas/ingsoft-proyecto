@@ -2,18 +2,18 @@ import MainPageLayout from "../components/MainPageLayout";
 import { CreateLobbyFormState } from "../components/CreateLobbyDialog";
 
 export interface LobbyForm {
-    name: string,
+    name: string;
 }
 
 function MainPage() {
     const handleSubmit = (state: CreateLobbyFormState) => {
         alert(JSON.stringify(state));
-    }
+    };
 
     return (
-        <MainPageLayout 
+        <MainPageLayout
             onSubmitLobbyForm = {handleSubmit}
-        /> 
+        />
     );
 }
 
