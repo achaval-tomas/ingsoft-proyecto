@@ -1,6 +1,6 @@
 import { useState } from "react";
-import FancyButton from "../../../components/FancyButton";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
+import { Button } from "@headlessui/react";
 
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void,
@@ -20,12 +20,20 @@ function MainPageLayout({
                     onCancel = {() => setCreateForm(false)}
                     onSubmit = {onSubmitLobbyForm}
                 />
-                <FancyButton onClick={() => setCreateForm(true)}>
+                <Button
+                    type="button"
+                    onClick={() => setCreateForm(true)}
+                    className="p-3 rounded bg-primary-600 hover:bg-primary-500"
+                >
                     <p>Crear sala</p>
-                </FancyButton>
-                <FancyButton onClick={() => {}}>
+                </Button>
+                <Button
+                    type="button"
+                    onClick={() => {}}
+                    className="p-3 rounded bg-zinc-800 hover:bg-zinc-600" 
+                >
                     <p>Unirse a sala</p>
-                </FancyButton>
+                </Button>
             </div>
         </div>
     );
