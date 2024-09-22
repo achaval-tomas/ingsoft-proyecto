@@ -30,7 +30,7 @@ function MainPageLayout({
                 <Button
                     type="button"
                     onClick={() => {}}
-                    className="p-3 rounded bg-surface-800 hover:bg-surface-600" 
+                    className="p-3 rounded bg-primary-600 hover:bg-primary-500" 
                 >
                     <p>Unirse a sala</p>
                 </Button>
