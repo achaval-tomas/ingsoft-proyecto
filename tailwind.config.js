@@ -8,7 +8,8 @@ export default {
         extend: {
             colors: {
                 primary: colors.teal,
-                surface: colors.zinc,
+                surface: colors.zinc["800"],
+                border: colors.zinc["700"],
             },
         },
     },
