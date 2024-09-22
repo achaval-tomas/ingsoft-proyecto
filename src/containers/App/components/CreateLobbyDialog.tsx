@@ -26,7 +26,7 @@ function CreateLobbyDialog({ isOpen, lobbyNamePlaceholder, onCancel, onSubmit }:
     return (
         <Dialog className="relative" open={isOpen} onClose={onCancel}>
             <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                <DialogPanel className="max-w-lg rounded-lg border border-surface-700 bg-surface-800 p-12 min-w-96">
+                <DialogPanel className="max-w-lg rounded-lg border border-border bg-surface p-12 min-w-96">
                     <form className="flex flex-col rounded gap-y-3" onSubmit={e => { e.preventDefault(); onSubmit(formState); }}>
                         <DialogTitle className="font-bold text-lg">Crear sala</DialogTitle>
                         <Field
@@ -54,7 +54,7 @@ function CreateLobbyDialog({ isOpen, lobbyNamePlaceholder, onCancel, onSubmit }:
                             <Button
                                 type="button"
                                 onClick={onCancel}
-                                className="flex-1 border border-surface-700 hover:bg-surface-700"
+                                className="flex-1 border border-border hover:bg-white/5"
                             >
                                 <p>Cancelar</p>
                             </Button>
