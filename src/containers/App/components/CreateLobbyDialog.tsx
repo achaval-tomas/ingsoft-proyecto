@@ -9,14 +9,17 @@ export interface CreateLobbyFormState {
     password: string;
 }
 
-interface CreateLobbyDialogProps {
-    isOpen: boolean;
+type CreateLobbyFormProps = {
     lobbyNamePlaceholder: string;
     onCancel: () => void;
     onSubmit: (state: CreateLobbyFormState) => void;
 }
 
-function CreateLobbyDialog({ isOpen, lobbyNamePlaceholder, onCancel, onSubmit }: CreateLobbyDialogProps) {
+type CreateLobbyDialogProps = CreateLobbyFormProps & {
+    isOpen: boolean;
+}
+
+function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLobbyFormProps) {
     const [formState, setFormState] = useState<CreateLobbyFormState>({
         name: "",
         maxPlayers: 4,
@@ -24,48 +27,56 @@ function CreateLobbyDialog({ isOpen, lobbyNamePlaceholder, onCancel, onSubmit }:
     });
 
     return (
-        <Dialog className="relative" open={isOpen} onClose={onCancel}>
+        <form className="flex flex-col rounded gap-y-3" onSubmit={e => { e.preventDefault(); onSubmit(formState); }}>
+            <DialogTitle className="font-bold text-lg">Crear sala</DialogTitle>
+            <Field
+                label="Nombre de la sala"
+                placeholder={lobbyNamePlaceholder}
+                value={formState.name}
+                onChange={name => setFormState({ ...formState, name })}
+            />
+            <Field
+                label="Límite de jugadores"
+                type="number"
+                min={2}
+                max={4}
+                value={formState.maxPlayers.toString()}
+                onChange={maxPlayers => setFormState({ ...formState, maxPlayers: parseInt(maxPlayers) })}
+            />
+            <Field
+                label="Contraseña"
+                type="password"
+                placeholder="Pública"
+                value={formState.password}
+                onChange={password => setFormState({ ...formState, password })}
+            />
+            <div className="flex mt-4 gap-4">
+                <Button
+                    type="button"
+                    onClick={onCancel}
+                    className="flex-1 border border-border hover:bg-white/5"
+                >
+                    <p>Cancelar</p>
+                </Button>
+                <Button
+                    type="submit"
+                    className="flex-1 bg-primary-600 hover:bg-primary-500"
+                >
+                    Crear
+                </Button>
+            </div>
+        </form>
+    );
+}
+
+function CreateLobbyDialog(props: CreateLobbyDialogProps) {
+    return (
+        <Dialog className="relative" open={props.isOpen} onClose={props.onCancel}>
             <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
                 <DialogPanel className="max-w-lg rounded-lg border border-border bg-surface p-12 min-w-96">
-                    <form className="flex flex-col rounded gap-y-3" onSubmit={e => { e.preventDefault(); onSubmit(formState); }}>
-                        <DialogTitle className="font-bold text-lg">Crear sala</DialogTitle>
-                        <Field
-                            label="Nombre de la sala"
-                            placeholder={lobbyNamePlaceholder}
-                            value={formState.name}
-                            onChange={name => setFormState({ ...formState, name })}
-                        />
-                        <Field
-                            label="Límite de jugadores"
-                            type="number"
-                            min={2}
-                            max={4}
-                            value={formState.maxPlayers.toString()}
-                            onChange={maxPlayers => setFormState({ ...formState, maxPlayers: parseInt(maxPlayers) })}
-                        />
-                        <Field
-                            label="Contraseña"
-                            type="password"
-                            placeholder="Pública"
-                            value={formState.password}
-                            onChange={password => setFormState({ ...formState, password })}
-                        />
-                        <div className="flex mt-4 gap-4">
-                            <Button
-                                type="button"
-                                onClick={onCancel}
-                                className="flex-1 border border-border hover:bg-white/5"
-                            >
-                                <p>Cancelar</p>
-                            </Button>
-                            <Button
-                                type="submit"
-                                className="flex-1 bg-primary-600 hover:bg-primary-500"
-                            >
-                                Crear
-                            </Button>
-                        </div>
-                    </form>
+                    <CreateLobbyForm
+                        {...props}
+                    />
                 </DialogPanel>
             </div>
         </Dialog>
