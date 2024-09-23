@@ -16,7 +16,7 @@ def get_lobby_list(db: Session, limit: int = 1000):
 
 ''' WRITING METHODS '''
 def create_player(db: Session, player: schemas.PlayerCreate):
-    db_player = models.Player(player_name=player.player_name, player_id='1234')
+    db_player = models.Player(player_name=player.player_name, player_id=str(int(random.random()*100)))
     db.add(db_player)
     db.commit()
     db.refresh(db_player)
