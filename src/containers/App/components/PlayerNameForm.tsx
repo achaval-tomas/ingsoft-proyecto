@@ -1,17 +1,22 @@
+import { useState } from "react";
 import "../../../components/FancyButton.css";
 
+type PlayerNameFormState = string;
+
 interface PlayerNameFormProps {
-    name: string,
-    handleChange: (e: React.FormEvent<HTMLInputElement>) => void,
-    handleSubmit: React.FormEventHandler<HTMLFormElement>,
+    handleSubmit: (state: PlayerNameFormState) => void;
 }
 
-function PlayerNameForm({ name, handleChange, handleSubmit }: PlayerNameFormProps) {
+function PlayerNameForm({ handleSubmit }: PlayerNameFormProps) {
+    const [ name, setName ] = useState<string>("");
     const submitDisabled = name === "";
 
     return (
-        <form 
-            onSubmit={handleSubmit} 
+        <form
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit(name);
+            }}
             className="border border-zinc-500 rounded p-6 flex flex-col justify-center items-center"
         >
             <div className="grid grid-rows-2 grid-cols-2">
@@ -20,19 +25,19 @@ function PlayerNameForm({ name, handleChange, handleSubmit }: PlayerNameFormProp
                     type="text"
                     name="player-name"
                     value={name || ""}
-                    onChange={handleChange}
+                    onChange={e => setName(e.target.value)}
                     className="col-span-1 row-span-1"
                 >
                 </input>
-                { submitDisabled && <p className="text-sm col-start-2 text-red-400">Elegí un nombre</p>}
+                { submitDisabled && <p className="text-sm col-start-2 !text-red-400">Elegí un nombre</p>}
             </div>
-                <button 
-                    className={"fancy-button " + (submitDisabled ? "!bg-gray-500" : "")}
-                    type="submit" 
-                    disabled={submitDisabled}
-                >
+            <button
+                className={"fancy-button " + (submitDisabled ? "!bg-gray-500" : "")}
+                type="submit"
+                disabled={submitDisabled}
+            >
                     Crear
-                </button>
+            </button>
         </form>
     );
 }
