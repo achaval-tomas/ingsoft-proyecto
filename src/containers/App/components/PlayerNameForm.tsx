@@ -23,7 +23,7 @@ function PlayerNameForm({ handleSubmit }: PlayerNameFormProps) {
                 <label htmlFor="player-name" className="col-span-1 row-span-1">Nombre de jugador:</label>
                 <input
                     type="text"
-                    name="player-name"
+                    id="player-name"
                     value={name || ""}
                     onChange={e => setName(e.target.value)}
                     className="col-span-1 row-span-1"
