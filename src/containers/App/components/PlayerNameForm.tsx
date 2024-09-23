@@ -32,7 +32,7 @@ function PlayerNameForm({ handleSubmit }: PlayerNameFormProps) {
                 { submitDisabled && <p className="text-sm col-start-2 !text-red-400">Elegí un nombre</p>}
             </div>
             <button
-                className={"fancy-button " + (submitDisabled ? "!bg-surface-500" : "")}
+                className={"fancy-button mt-4 " + (submitDisabled ? "!bg-surface-500" : "")}
                 type="submit"
                 disabled={submitDisabled}
             >
