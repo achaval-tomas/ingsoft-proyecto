@@ -1,17 +1,14 @@
-from fastapi import FastAPI, APIRouter
-from pydantic import BaseModel
+from fastapi import Depends, FastAPI, APIRouter, HTTPException
+from sqlalchemy.orm import Session
+from src.database import models, schemas, crud
+from src.database.session import get_db
+from src.database.db import engine
 
-from src.models.lobby import Lobby
-from  src.models.player import Player
 
 router = APIRouter()
 
-class Body(BaseModel):
-    name : str
-    min_players : int
-    max_players : int
 
 @router.post("/lobby")
-async def create_lobby(body : Body):
-
-    return body
+def create_lobby(lobby: schemas.LobbyCreate, db: Session = Depends(get_db)):
+    
+    return crud.create_lobby(db=db, lobby=lobby)
