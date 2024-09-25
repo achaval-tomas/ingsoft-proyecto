@@ -43,3 +43,51 @@ test("It correctly renders all elements", () => {
         expect(tdNumPlayers).not.toBeNull();
     });
 });
+
+test("It correctly handles join button", async () => {
+    const mockItems: LobbyElement[] = [
+        {
+            id: "1",
+            name: "my first lobby",
+            numPlayers: 1,
+        },
+        {
+            id: "2",
+            name: "jorge's room",
+            numPlayers: 3,
+        },
+        {
+            id: "3",
+            name: "excuse me, only friends",
+            numPlayers: 2,
+        },
+    ];
+
+    const clickedIds: { [key: string]: number } = {
+    };
+
+    render(
+        <LobbyList
+            lobbyList={mockItems}
+            joinHandler={id => {
+                if (clickedIds[id]) {
+                    clickedIds[id] += 1;
+                } else {
+                    clickedIds[id] = 1;
+                }
+            }}
+        />,
+    );
+
+    const buttons = screen.getAllByText("Unirse");
+
+    for (let i = 0; i < buttons.length; i++) {
+        await userEvent.click(buttons[i]);
+        await userEvent.click(buttons[i]);
+        await userEvent.click(buttons[i]);
+    }
+
+    mockItems.forEach(e => {
+        expect(clickedIds[e.id]).toBe(3);
+    });
+});
