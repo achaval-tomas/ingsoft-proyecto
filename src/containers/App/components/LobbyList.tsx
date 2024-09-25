@@ -12,11 +12,11 @@ interface LobbyListProps {
 export default function LobbyList({ lobbyList, joinHandler }: LobbyListProps) {
     const items = lobbyList.map(lobby =>
         <tr
-            className="flex justify-around my-2 p-2 border items-baseline"
+            className="my-2 p-2 border"
             key={lobby.id}
         >
-            <td><b>{lobby.name}</b></td>
-            <td>{lobby.numPlayers}</td>
+            <td className="text-center">{lobby.name}</td>
+            <td className="text-center">{lobby.numPlayers}</td>
             <td>
                 <button
                     className="p-1 rounded bg-primary-600 hover:bg-primary-500"
@@ -29,6 +29,12 @@ export default function LobbyList({ lobbyList, joinHandler }: LobbyListProps) {
     );
 
     return <table className="w-screen">
+        <thead>
+            <tr>
+                <th>Nombre de la sala</th>
+                <th>Cantidad de jugadores</th>
+            </tr>
+        </thead>
         <tbody>
             {items}
         </tbody>
