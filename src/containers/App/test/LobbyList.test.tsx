@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 import { userEvent } from "@testing-library/user-event";
 import LobbyList, { LobbyElement } from "../components/LobbyList";
 
-test("It correctly renders all elements", async () => {
+test("It correctly renders all elements", () => {
 
     const mockItems: LobbyElement[] = [
         {
