@@ -13,7 +13,7 @@ export default function LobbyList({ lobbyList, joinHandler }: LobbyListProps) {
     const items = lobbyList.map(lobby =>
         <li key={lobby.id} >
             <div
-                className="flex justify-around my-2"
+                className="flex justify-around my-2 p-2 border items-baseline"
             >
                 <p><b>{lobby.name}</b></p>
                 <p>{lobby.numPlayers}</p>
