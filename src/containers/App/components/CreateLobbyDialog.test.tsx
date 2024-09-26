@@ -9,18 +9,19 @@ type FormInput = {
     password?: string;
 }
 
-async function genericSuccessTest(input: FormInput, expectedOutput: CreateLobbyFormState) {
-    const onCancel = vitest.fn();
-    const onSubmit = vitest.fn((formState: CreateLobbyFormState) => {
-        expect(formState).toStrictEqual(expectedOutput);
-    });
+async function genericTest(
+    input: FormInput,
+    onSubmit?: (formState: CreateLobbyFormState) => void,
+) {
+    const onCancelSpy = vitest.fn();
+    const onSubmitSpy = vitest.fn(onSubmit);
 
     render(
         <CreateLobbyDialog
             isOpen={true}
             lobbyNamePlaceholder="this should not have any side-effects"
-            onCancel={onCancel}
-            onSubmit={onSubmit}
+            onCancel={onCancelSpy}
+            onSubmit={onSubmitSpy}
         />,
     );
 
@@ -39,8 +40,26 @@ async function genericSuccessTest(input: FormInput, expectedOutput: CreateLobbyF
 
     await userEvent.click(screen.getByTestId("lobby-btn-create"));
 
-    expect(onCancel).not.toHaveBeenCalled();
-    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(onCancelSpy).not.toHaveBeenCalled();
+
+    if (onSubmit != null) {
+        expect(onSubmitSpy).toHaveBeenCalledOnce();
+    } else {
+        expect(onSubmitSpy).not.toHaveBeenCalled();
+    }
+}
+
+async function genericSuccessTest(input: FormInput, expectedOutput: CreateLobbyFormState) {
+    await genericTest(
+        input,
+        (formState: CreateLobbyFormState) => {
+            expect(formState).toStrictEqual(expectedOutput);
+        },
+    );
+}
+
+async function genericFailureTest(input: FormInput) {
+    await genericTest(input);
 }
 
 test("correct state is returned", async () => {
@@ -83,4 +102,24 @@ test("maxPlayers defaults to 4", async () => {
     };
 
     await genericSuccessTest(input, expectedOutput);
+});
+
+test("maxPlayers can't be less than 2", async () => {
+    const input = {
+        name: "Hello World",
+        maxPlayers: "1",
+        password: "1234",
+    };
+
+    await genericFailureTest(input);
+});
+
+test("maxPlayers can't be more than 4", async () => {
+    const input = {
+        name: "Hello World",
+        maxPlayers: "5",
+        password: "1234",
+    };
+
+    await genericFailureTest(input);
 });
