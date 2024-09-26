@@ -34,6 +34,7 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
                 placeholder={lobbyNamePlaceholder}
                 value={formState.name}
                 onChange={name => setFormState({ ...formState, name })}
+                inputTestId="lobby-name"
             />
             <Field
                 label="Límite de jugadores"
@@ -42,6 +43,7 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
                 max={4}
                 value={formState.maxPlayers.toString()}
                 onChange={maxPlayers => setFormState({ ...formState, maxPlayers: parseInt(maxPlayers) })}
+                inputTestId="lobby-max-players"
             />
             <Field
                 label="Contraseña"
@@ -49,6 +51,7 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
                 placeholder="Pública"
                 value={formState.password}
                 onChange={password => setFormState({ ...formState, password })}
+                inputTestId="lobby-password"
             />
             <div className="flex mt-4 gap-4">
                 <Button
@@ -61,6 +64,7 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
                 <Button
                     type="submit"
                     className="flex-1 bg-primary-600 hover:bg-primary-500"
+                    testId="lobby-btn-create"
                 >
                     Crear
                 </Button>
