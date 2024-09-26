@@ -9,9 +9,10 @@ interface FieldProps {
     type?: HTMLInputTypeAttribute | undefined;
     min?: number | string | undefined;
     max?: number | string | undefined;
+    inputTestId?: string | undefined;
 }
 
-function Field ({ value, onChange, label, placeholder, type, min, max }: FieldProps) {
+function Field ({ value, onChange, label, placeholder, type, min, max, inputTestId }: FieldProps) {
     return <HUiField>
         <Label>{label}</Label>
         <Input
@@ -22,6 +23,7 @@ function Field ({ value, onChange, label, placeholder, type, min, max }: FieldPr
             onChange={e => onChange(e.target.value)}
             min={min}
             max={max}
+            data-testid={inputTestId}
         />
     </HUiField>;
 }
