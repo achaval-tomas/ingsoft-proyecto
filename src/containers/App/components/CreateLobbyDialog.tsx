@@ -56,7 +56,6 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
             />
             <div className="flex mt-4 gap-4">
                 <OutlinedButton
-                    type="button"
                     className="flex-1"
                     onClick={onCancel}
                 >

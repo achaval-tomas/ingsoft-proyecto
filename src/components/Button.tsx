@@ -14,7 +14,18 @@ export interface ButtonProps {
     testId?: string | undefined;
 }
 
-function Button({ onClick, children, className, type, testId, padding, border, borderRadius, foregroundColor, backgroundColor }: ButtonProps) {
+function Button({
+    onClick,
+    children,
+    className,
+    type = "button",
+    testId,
+    padding,
+    border,
+    borderRadius,
+    foregroundColor,
+    backgroundColor,
+}: ButtonProps) {
     const computedClassName = (className ?? "") +
         optionalClassName(border) +
         optionalClassName(borderRadius, "rounded-lg") +

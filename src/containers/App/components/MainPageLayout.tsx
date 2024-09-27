@@ -20,16 +20,10 @@ function MainPageLayout({
                     onCancel = {() => setCreateForm(false)}
                     onSubmit = {onSubmitLobbyForm}
                 />
-                <FilledButton
-                    type="button"
-                    onClick={() => setCreateForm(true)}
-                >
+                <FilledButton onClick={() => setCreateForm(true)}>
                     <p>Crear sala</p>
                 </FilledButton>
-                <FilledButton
-                    type="button"
-                    onClick={() => {}}
-                >
+                <FilledButton onClick={() => {}}>
                     <p>Unirse a sala</p>
                 </FilledButton>
             </div>
