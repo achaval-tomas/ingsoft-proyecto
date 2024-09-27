@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from src.database import models, schemas
 from uuid import uuid4
+import json
 
 ''' READ METHODS '''
 def get_player(db: Session, player_id: str):
@@ -21,11 +22,14 @@ def create_player(db: Session, player: schemas.PlayerCreate):
     return db_player.player_id
 
 def create_lobby(db: Session, lobby: schemas.LobbyCreate):
+    player_list = [lobby.lobby_owner]
     db_lobby = models.Lobby(lobby_id=str(uuid4()),
                             lobby_name=lobby.lobby_name,
                             lobby_owner=lobby.lobby_owner,
                             min_players=lobby.min_players,
                             max_players=lobby.max_players,
+                            players=json.dumps(player_list),
+                            player_amount=1
                             )
     db.add(db_lobby)
     db.commit()

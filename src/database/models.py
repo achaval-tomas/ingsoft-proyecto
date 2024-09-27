@@ -15,3 +15,5 @@ class Lobby(Base):
     lobby_owner = Column(String, ForeignKey("players.player_id"))
     min_players = Column(Integer)
     max_players = Column(Integer)
+    players = Column(String)
+    player_amount = Column(Integer)

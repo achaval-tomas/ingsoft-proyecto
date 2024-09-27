@@ -25,6 +25,8 @@ class LobbyCreate(LobbyBase):
 
 class Lobby(LobbyBase):
     lobby_id: str
+    player_amount: int
+    players: list[str]
 
     class Config:
         orm_mode = True
