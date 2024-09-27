@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.database import models
 from src.database.db import engine
-from src.routers.lobby import create_lobby_router
 from src.routers.player import create_player_router
+from src.routers.lobby import create_lobby_router, join_lobby_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -28,5 +28,6 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
-app.include_router(create_lobby_router)
 app.include_router(create_player_router)
+app.include_router(create_lobby_router)
+app.include_router(join_lobby_router)
