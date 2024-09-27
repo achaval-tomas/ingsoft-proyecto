@@ -1,14 +1,10 @@
-from fastapi import Depends, FastAPI, APIRouter, HTTPException
+from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
-from src.database import models, schemas, crud
+from src.database import schemas, crud
 from src.database.session import get_db
-from src.database.db import engine
 
+create_lobby_router = APIRouter()
 
-router = APIRouter()
-
-
-@router.post("/lobby")
+@create_lobby_router.post("/lobby")
 def create_lobby(lobby: schemas.LobbyCreate, db: Session = Depends(get_db)):
-    
-    return crud.create_lobby(db=db, lobby=lobby)
+    return {'lobby_id': crud.create_lobby(db=db, lobby=lobby)}
