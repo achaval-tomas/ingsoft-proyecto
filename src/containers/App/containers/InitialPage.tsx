@@ -21,7 +21,7 @@ function InitialPage() {
         navigate(`play?user=${data.player_id}`);
     }
 
-    return <div className="flex flex-col align-center w-screen">
+    return <div className="flex flex-col align-center w-screen px-16">
         <h1 className="my-16 text-center">El Switcher</h1>
         <PlayerNameForm handleSubmit={name => void createPlayer(name)} />
     </div>;
