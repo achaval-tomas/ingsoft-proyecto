@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
-import { Button } from "@headlessui/react";
+import FilledButton from "../../../components/FilledButton";
 
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
@@ -13,27 +13,25 @@ function MainPageLayout({
 
     return (
         <div className="w-screen flex justify-center">
-            <div className="w-7/12 flex justify-around p-8 bg-zinc-700 rounded">
+            <div className="w-7/12 flex justify-around p-8 bg-zinc-700 rounded-lg">
                 <CreateLobbyDialog
                     isOpen = {showCreateForm}
                     lobbyNamePlaceholder = {"Nombre de tu sala"}
                     onCancel = {() => setCreateForm(false)}
                     onSubmit = {onSubmitLobbyForm}
                 />
-                <Button
+                <FilledButton
                     type="button"
                     onClick={() => setCreateForm(true)}
-                    className="p-3 rounded bg-primary-600 hover:bg-primary-500"
                 >
                     <p>Crear sala</p>
-                </Button>
-                <Button
+                </FilledButton>
+                <FilledButton
                     type="button"
                     onClick={() => {}}
-                    className="p-3 rounded bg-primary-600 hover:bg-primary-500"
                 >
                     <p>Unirse a sala</p>
-                </Button>
+                </FilledButton>
             </div>
         </div>
     );

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import Field from "../../../components/Field";
-import Button from "../../../components/Button";
+import FilledButton from "../../../components/FilledButton";
+import OutlinedButton from "../../../components/OutlinedButton";
 
 export interface CreateLobbyFormState {
     name: string;
@@ -54,20 +55,20 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
                 inputTestId="lobby-password"
             />
             <div className="flex mt-4 gap-4">
-                <Button
+                <OutlinedButton
                     type="button"
+                    className="flex-1"
                     onClick={onCancel}
-                    className="flex-1 border border-border hover:bg-white/5"
                 >
                     <p>Cancelar</p>
-                </Button>
-                <Button
+                </OutlinedButton>
+                <FilledButton
                     type="submit"
-                    className="flex-1 bg-primary-600 hover:bg-primary-500"
+                    className="flex-1"
                     testId="lobby-btn-create"
                 >
                     Crear
-                </Button>
+                </FilledButton>
             </div>
         </form>
     );
