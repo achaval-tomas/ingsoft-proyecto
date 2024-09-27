@@ -19,3 +19,7 @@ def delete_lobby(lobby_id: str, db: Session = Depends(get_db)):
     # If there was the possibility to create duplicates, it should be checked
     # here and handled with HTTP exceptions.
     return crud.delete_lobby(db=db,lobby_id=lobby_id)
+
+@app.post("/game/{id}")
+def initialize_game(id: str, db: Session = Depends(get_db)):
+    return crud.create_game(db=db, lobby_id=id)
