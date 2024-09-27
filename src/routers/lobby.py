@@ -21,4 +21,4 @@ join_lobby_router = APIRouter(prefix = "/lobby")
 def join_lobby(body: LobbyJoin, db: Session = Depends(get_db)):
     crud.join_lobby(db = db, player_id = body.player_id, lobby_id = body.lobby_id)
 
-    
+
