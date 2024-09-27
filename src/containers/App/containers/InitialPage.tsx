@@ -21,9 +21,10 @@ function InitialPage() {
         navigate(`play?user=${data.player_id}`);
     }
 
-    return (
+    return <div className="flex flex-col align-center w-screen">
+        <h1 className="my-16 text-center">El Switcher</h1>
         <PlayerNameForm handleSubmit={name => void createPlayer(name)} />
-    );
+    </div>;
 }
 
 export default InitialPage;
