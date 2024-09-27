@@ -30,3 +30,7 @@ class Lobby(LobbyBase):
 
     class Config:
         orm_mode = True
+
+class LobbyJoin(BaseModel):
+    player_id: str
+    lobby_id: str
