@@ -2,9 +2,17 @@ import MovementCardHand from "./components/MovementCardHand";
 
 function Game() {
     return (
-        <MovementCardHand
-            movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
-        />
+        <div className="text-xs">
+            <MovementCardHand
+                movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
+            />
+            <MovementCardHand
+                movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
+            />
+            <MovementCardHand
+                movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
+            />
+        </div>
     );
 }
 

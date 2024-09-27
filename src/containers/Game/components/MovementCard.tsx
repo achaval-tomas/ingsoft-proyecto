@@ -9,7 +9,7 @@ function MovementCard({ movement }: MovementCardProps) {
 
     return (
         <div>
-            <img src={imageSrc} className="rounded"/>
+            <img src={imageSrc} className="rounded w-[8em] h-[12em]"/>
         </div>
     );
 }
