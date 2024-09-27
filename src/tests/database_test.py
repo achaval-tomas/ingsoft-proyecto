@@ -23,3 +23,14 @@ def delete_lobby(lobby_id: str, db: Session = Depends(get_db)):
 @app.post("/game/{id}")
 def initialize_game(id: str, db: Session = Depends(get_db)):
     return crud.create_game(db=db, lobby_id=id)
+
+@app.post("/player")
+def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
+    if not player.player_name:
+        raise HTTPException(status_code=400, detail="Player name cannot be empty")
+    
+    return {"player_id": crud.create_player(db = db, player = player)}
+
+@app.get("/player/{id}")
+def get_player(id: str, db: Session = Depends(get_db)):
+    return crud.get_player(db=db, player_id=id)
