@@ -5,6 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 import stylistic from "@stylistic/eslint-plugin";
+import stylisticJsx from "@stylistic/eslint-plugin-jsx";
 
 export default tseslint.config(
     { ignores: ["dist"] },
@@ -30,6 +31,7 @@ export default tseslint.config(
             "react-hooks": reactHooks,
             "react-refresh": reactRefresh,
             "@stylistic": stylistic,
+            "@stylistic/jsx": stylisticJsx,
         },
         rules: {
             indent: ["warn", 4, { SwitchCase: 1 }],
@@ -44,6 +46,7 @@ export default tseslint.config(
             "no-multi-spaces": "warn",
             "@typescript-eslint/no-unused-vars": "warn",
             "@stylistic/member-delimiter-style": ["warn"],
+            "@stylistic/jsx/jsx-equals-spacing": ["warn", "never"],
             ...react.configs.recommended.rules,
             ...react.configs["jsx-runtime"].rules,
             ...reactHooks.configs.recommended.rules,
