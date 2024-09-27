@@ -4,8 +4,8 @@ import FancyButton from "../../../components/FancyButton";
 import "./AppLayout.css";
 
 interface AppLayoutProps {
-    count: number,
-    onClickButton: () => void,
+    count: number;
+    onClickButton: () => void;
 }
 
 function AppLayout({ count, onClickButton } : AppLayoutProps) {

@@ -2,8 +2,8 @@ import React from "react";
 import "./FancyButton.css";
 
 interface FancyButtonProps {
-    onClick: () => void,
-    children: React.ReactNode,
+    onClick: () => void;
+    children: React.ReactNode;
 }
 
 function FancyButton({ onClick, children }: FancyButtonProps) {
