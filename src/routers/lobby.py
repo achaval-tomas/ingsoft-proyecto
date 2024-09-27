@@ -12,7 +12,7 @@ def create_lobby(lobby: schemas.LobbyCreate, db: Session = Depends(get_db)):
 
 join_lobby_router = APIRouter(prefix = "/lobby")
 
-@join_lobby_router.post("/{lobby_id}/join", status_code=202)
+@join_lobby_router.post("/join", status_code=202)
 def join_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
     res = crud.join_lobby(db = db, player_id = body.player_id, lobby_id = body.lobby_id)
     if not res:
