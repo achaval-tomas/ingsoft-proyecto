@@ -22,18 +22,23 @@ test("It passes the name on submit", async () => {
 });
 
 test("It only enables submit when name isn't empty", async () => {
+    let submit = false;
+
     render(
-        <PlayerNameForm handleSubmit={name => {
-            console.log(`Name is ${name}`);
+        <PlayerNameForm handleSubmit={() => {
+            submit = true;
         }} />,
     );
 
     const button = screen.getByText("Crear");
     const input = screen.getByLabelText("Nombre de jugador:");
 
-    expect(button).toBeDisabled();
+    await userEvent.click(button);
+
+    expect(submit).toBe(false);
 
     await userEvent.type(input, "Tomás");
+    await userEvent.click(button);
 
-    expect(button).toBeEnabled();
+    expect(submit).toBe(true);
 });
