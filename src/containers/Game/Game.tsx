@@ -1,17 +1,13 @@
-import MovementCardHand from "./components/MovementCardHand";
+import { useMemo } from "react";
+import { intToColor } from "../../domain/Color";
+import Board from "./components/Board";
 
 function Game() {
+    const tiles = useMemo(() => Array.from({ length: 36 }, () => intToColor(Math.floor(Math.random() * 4))), []);
+
     return (
-        <div className="text-2xl">
-            <MovementCardHand
-                movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
-            />
-            <MovementCardHand
-                movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
-            />
-            <MovementCardHand
-                movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
-            />
+        <div className="w-screen justify-center flex">
+            <Board tiles={tiles} />
         </div>
     );
 }
