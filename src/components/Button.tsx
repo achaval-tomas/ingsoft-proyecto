@@ -1,38 +1,40 @@
 import React from "react";
-import { optionalClassName } from "../util";
+import { classNames } from "../util";
 
 export interface ButtonProps {
     onClick?: () => void | undefined;
     children: React.ReactNode;
-    className?: string | undefined;
+    className?: string | null;
     type?: "submit" | "reset" | "button" | undefined;
     padding?: string | null;
     border?: string | null;
     borderRadius?: string | null;
     foregroundColor?: string | null;
     backgroundColor?: string | null;
-    testId?: string | undefined;
+    testId?: string;
 }
 
 function Button({
     onClick,
     children,
-    className,
+    className = null,
     type = "button",
     testId,
-    padding,
-    border,
-    borderRadius,
-    foregroundColor,
-    backgroundColor,
+    padding = "px-4 py-2",
+    border = null,
+    borderRadius = "rounded-lg",
+    foregroundColor = null,
+    backgroundColor = null,
 }: ButtonProps) {
-    const computedClassName = (className ?? "") +
-        optionalClassName(border) +
-        optionalClassName(borderRadius, "rounded-lg") +
-        optionalClassName(padding, "px-4 py-2") +
-        optionalClassName(foregroundColor) +
-        optionalClassName(backgroundColor) +
-        " transition-colors";
+    const computedClassName = classNames([
+        className,
+        border,
+        borderRadius,
+        padding,
+        foregroundColor,
+        backgroundColor,
+        " transition-colors",
+    ]);
 
     return (
         <button
