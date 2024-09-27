@@ -9,7 +9,8 @@ class PlayerCreate(PlayerBase):
 
 class Player(PlayerBase):
     player_id: str
-    
+    game_id: str
+
     class Config:
         orm_mode = True
 
@@ -34,12 +35,12 @@ class Lobby(LobbyBase):
 ''' GAME DATABASE SCHEMAS '''
 class GameBase(BaseModel):
     player_order: list[str]
-    current_player: str
+    current_player: int
     board: list[str]
     blocked_color: str
 
 class Game(GameBase):
-    lobby_id: str
+    game_id: int
 
     class Config:
         orm_mode = True

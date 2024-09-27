@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, BigInteger, String
 # from sqlalchemy.orm import relationship
 
 from src.database.db import Base
@@ -7,6 +7,7 @@ class Player(Base):
     __tablename__ = "players"
     player_id = Column(String, primary_key=True)
     player_name = Column(String)
+    game_id = Column(Integer, ForeignKey("games.game_id"), nullable=True)
 
 class Lobby(Base):
     __tablename__ = "lobbies"
@@ -20,8 +21,8 @@ class Lobby(Base):
 
 class Game(Base):
     __tablename__ = "games"
-    lobby_id = Column(String, ForeignKey("lobbies.lobby_id"), primary_key=True)
+    game_id = Column(Integer, primary_key=True, autoincrement=True)
     player_order = Column(String)
-    current_turn = Column(String)
+    current_turn = Column(Integer)
     board = Column(String)
     blocked_color = Column(String)
