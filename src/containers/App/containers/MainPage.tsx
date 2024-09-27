@@ -32,7 +32,7 @@ function MainPage() {
     return (
         urlParams.get("player") ?
             <MainPageLayout
-                onSubmitLobbyForm = {s => void handleSubmit(s)}
+                onSubmitLobbyForm={s => void handleSubmit(s)}
             />
             :
             <Navigate to="/" replace />
