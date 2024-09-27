@@ -6,8 +6,8 @@ import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
-import CreateLobbyDialog from "./containers/App/components/CreateLobbyDialog.tsx";
 import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
+import Game from "./containers/Game/Game.tsx";
 
 const router = createBrowserRouter([
     {
@@ -17,12 +17,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/play",
-        element: <CreateLobbyDialog
-            isOpen = {true}
-            lobbyNamePlaceholder = {"Nombre de tu sala"}
-            onCancel = {() => {}}
-            onSubmit = {() => {}}
-        />,
+        element: <Game />,
     },
 ]);
 
