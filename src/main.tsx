@@ -8,11 +8,17 @@ import {
 import CreateLobbyDialog from "./containers/App/components/CreateLobbyDialog.tsx";
 import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
 import InitialPage from "./containers/App/containers/InitialPage.tsx";
+import MainPage from "./containers/App/containers/MainPage.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <InitialPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/lobby:player",
+        element: <MainPage />,
         errorElement: <ErrorPage />,
     },
     {
