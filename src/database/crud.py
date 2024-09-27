@@ -46,6 +46,8 @@ def create_lobby(db: Session, lobby: schemas.LobbyCreate):
 def create_game(db: Session, lobby_id: str):
     # obtain the lobby from where the game was started
     lobby: models.Lobby = get_lobby(db=db, lobby_id=lobby_id)
+    if lobby is None:
+        return False
     # deserialize players list
     deserialize(lobby.players)
     # create a list with the players in the lobby but randomly shuffled
@@ -70,10 +72,12 @@ def create_game(db: Session, lobby_id: str):
     game_id = db_game.game_id
     for id in player_order:
         player = get_player(db=db, player_id=id)
+        if player is None:
+            return False
         player.game_id = game_id
         db.commit()
     delete_lobby(db=db, lobby_id=lobby_id)
-    return db.query(models.Game).filter(models.Game.game_id == game_id).first()
+    return True
 
 ''' DELETE METHODS '''
 def delete_player(db: Session, player_id: str):
