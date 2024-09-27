@@ -32,6 +32,10 @@ class Lobby(LobbyBase):
     class Config:
         orm_mode = True
 
+class LobbyJoin(BaseModel):
+    player_id: str
+    lobby_id: str
+
 ''' GAME DATABASE SCHEMAS '''
 class GameBase(BaseModel):
     player_order: list[str]
@@ -44,20 +48,3 @@ class Game(GameBase):
 
     class Config:
         orm_mode = True
-
-''' GAME DATABASE SCHEMAS '''
-class GameBase(BaseModel):
-    player_order: list[str]
-    current_player: str
-    board: list[str]
-    blocked_color: str
-
-class Game(GameBase):
-    lobby_id: str
-
-    class Config:
-        orm_mode = True
-
-class LobbyJoin(BaseModel):
-    player_id: str
-    lobby_id: str
