@@ -29,12 +29,19 @@ def create_lobby(db: Session, lobby: schemas.LobbyCreate):
                             min_players=lobby.min_players,
                             max_players=lobby.max_players,
                             players=json.dumps(player_list),
-                            player_amount=1
+                            player_amount=1,
                             )
     db.add(db_lobby)
     db.commit()
     db.refresh(db_lobby)
     return db_lobby.lobby_id
+
+def join_lobby(db: Session, player_id: str, lobby_id: str):
+    db_lobby = get_lobby(db = db, lobby_id=lobby_id)
+    players = json.loads(db_lobby.players)
+    players.append(player_id)
+    db_lobby.players = json.dumps(players)
+    db.commit()
 
 ''' DELETE METHODS '''
 def delete_player(db: Session, player_id: str):
