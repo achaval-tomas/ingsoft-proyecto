@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./containers/App/App.tsx";
 import "./index.css";
 import {
     createBrowserRouter,
@@ -8,11 +7,12 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
 import Game from "./containers/Game/Game.tsx";
+import InitialPage from "./containers/App/containers/InitialPage.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App />,
+        element: <InitialPage />,
         errorElement: <ErrorPage />,
     },
     {
