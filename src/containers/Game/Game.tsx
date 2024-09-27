@@ -1,8 +1,10 @@
-import MovementCard from "./components/MovementCard";
+import MovementCardHand from "./components/MovementCardHand";
 
 function Game() {
     return (
-        <MovementCard movement="straight-adjacent"/>
+        <MovementCardHand
+            movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
+        />
     );
 }
 
