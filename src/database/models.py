@@ -7,6 +7,7 @@ class Player(Base):
     __tablename__ = "players"
     player_id = Column(String, primary_key=True)
     player_name = Column(String)
+    game_id = Column(Integer, ForeignKey("games.game_id"), nullable=True)
 
 class Lobby(Base):
     __tablename__ = "lobbies"
@@ -17,3 +18,11 @@ class Lobby(Base):
     max_players = Column(Integer)
     players = Column(String)
     player_amount = Column(Integer)
+
+class Game(Base):
+    __tablename__ = "games"
+    game_id = Column(Integer, primary_key=True, autoincrement=True)
+    player_order = Column(String)
+    current_turn = Column(Integer)
+    board = Column(String)
+    blocked_color = Column(String)
