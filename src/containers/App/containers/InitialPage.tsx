@@ -18,7 +18,7 @@ function InitialPage() {
 
         const data = await res.json() as { player_id: string };
 
-        navigate(`play?user=${data.player_id}`);
+        navigate(`lobby?player=${data.player_id}`);
     }
 
     return <div className="flex flex-col align-center w-screen px-16">
