@@ -5,7 +5,8 @@ Ejecutar los siguientes comandos en orden.
 ### Activar entorno virtual
  - En Linux `source .venv/bin/activate`
  - En Windows `.venv\Scripts\Activate.ps1`
-### Instalar FastAPI
+### Instalar FastAPI y sqlalchemy
 `pip install "fastapi[standard]"`
+`pip install sqlalchemy`
 ### Iniciar el servidor
-`fastapi dev main.py`
+`uvicorn src.main:app --reload`
