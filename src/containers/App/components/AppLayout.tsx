@@ -1,7 +1,7 @@
 import reactLogo from "../../../assets/react.svg";
 import viteLogo from "/vite.svg";
-import FancyButton from "../../../components/FancyButton";
 import "./AppLayout.css";
+import TextButton from "../../../components/TextButton";
 
 interface AppLayoutProps {
     count: number;
@@ -21,7 +21,7 @@ function AppLayout({ count, onClickButton } : AppLayoutProps) {
             </div>
             <h1>Vite + React</h1>
             <div className="card">
-                <FancyButton onClick={onClickButton}>count is {count}</FancyButton>
+                <TextButton onClick={onClickButton}>count is {count}</TextButton>
                 <p>
                     Edit <code>src/App.tsx</code> and save to test HMR
                 </p>
