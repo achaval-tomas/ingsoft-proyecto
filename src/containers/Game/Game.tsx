@@ -2,7 +2,7 @@ import MovementCardHand from "./components/MovementCardHand";
 
 function Game() {
     return (
-        <div className="text-xs">
+        <div className="text-2xl">
             <MovementCardHand
                 movements={["straight-adjacent", "straight-spaced", "diagonal-spaced"]}
             />
