@@ -1,6 +1,6 @@
 import MainPageLayout from "../components/MainPageLayout";
 import { CreateLobbyFormState } from "../components/CreateLobbyDialog";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 export interface LobbyForm {
     name: string;
 }
