@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from src.database import schemas, crud
 from src.database.session import get_db
@@ -17,7 +17,8 @@ class LobbyJoin(BaseModel):
 
 join_lobby_router = APIRouter(prefix = "/lobby")
 
-@join_lobby_router.post("/{lobby_id}/join")
+@join_lobby_router.post("/{lobby_id}/join", status_code=202)
 def join_lobby(body: LobbyJoin, db: Session = Depends(get_db)):
-    crud.join_lobby(db = db, player_id = body.player_id, lobby_id = body.lobby_id)
-
+    res = crud.join_lobby(db = db, player_id = body.player_id, lobby_id = body.lobby_id)
+    if not res:
+        raise HTTPException(status_code=404, detail="Lobby not found")
