@@ -2,19 +2,19 @@ from sqlalchemy.orm import Session
 from src.database.crud import get_game, get_player, get_player_cards
 import json, jsonpickle
 from src.database.models import Game
+# for testing, from src.database.crud import create_game
 
 def extract_cards(db : Session, player_id : str):
     player_cards = get_player_cards(db=db, player_id=player_id)
-    shape_cards_in_hand = json.dumps([
-        json.dumps({
+    shape_cards_in_hand = [{
             'shape': card['shape']['_value_'],
             'isBlocked': card['isBlocked']
-        })
+        }
         for card in jsonpickle.loads(player_cards.shape_cards_in_hand)
-    ])
-    movement_cards_in_hand = json.dumps([
+    ]
+    movement_cards_in_hand = [
         card['mov_type']['_value_'] for card in jsonpickle.loads(player_cards.movement_cards)
-    ])
+    ]
     return {
         'shapeCardsInDeckCount' : len(jsonpickle.loads(player_cards.shape_cards_deck)),
         'shapeCardsInHand': shape_cards_in_hand,
@@ -32,22 +32,23 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
         }
         cards = extract_cards(db, op_id)
         cards.update({
-            'movementCardsInHandCount': len(jsonpickle.loads(cards['movementCardsInHand']))
+            'movementCardsInHandCount': len(cards['movementCardsInHand'])
         })
         del cards['movementCardsInHand']
         commonPlayerState.update(cards)
         other_players_state.append(commonPlayerState)
-    return json.dumps(other_players_state)
+    return other_players_state
         
     
 
 def ws_handle_gamestate(player_id: str, db: Session):
+    # for testing: create_game(db=db, lobby_id='816fc395-91ed-4340-bb18-e5296103b2b3')
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return json.dumps({"Error": "404 Player Not Found"})
     game_data = get_game(db=db, player_id=player_id)
     if not game_data:
-        return json.dumps({"Error": "404 Lobby Not Found"})
+        return json.dumps({"Error": "404 Game Not Found"})
     
     selfPlayerState = {
         'id': player_id,
@@ -58,7 +59,7 @@ def ws_handle_gamestate(player_id: str, db: Session):
     
     boardState = {
         'blocked_color': game_data.blocked_color,
-        'board': game_data.board,
+        'board': json.loads(game_data.board),
     }
     
     otherPlayersState = extract_other_player_states(db, game_data, player_id)
