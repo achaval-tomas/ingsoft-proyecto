@@ -26,3 +26,10 @@ class Game(Base):
     current_turn = Column(Integer)
     board = Column(String)
     blocked_color = Column(String)
+
+class PlayerCards(Base):
+    __tablename__ = "player-cards"
+    player_id = Column(String, ForeignKey("players.player_id"), primary_key=True)
+    movement_cards = Column(String)
+    shape_cards_in_hand = Column(String)
+    shape_cards_deck = Column(String)
