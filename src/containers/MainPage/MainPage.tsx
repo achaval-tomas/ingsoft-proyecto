@@ -1,7 +1,7 @@
 import MainPageLayout from "./components/MainPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export interface LobbyForm {
     name: string;
@@ -32,10 +32,15 @@ async function getLobbies(): Promise<LobbyObject[]> {
 }
 
 function MainPage() {
+    const [ lobbies, setLobbies ] = useState<LobbyObject[]>([]);
     const [ urlParams ] = useSearchParams();
 
     useEffect(() => {
-        void getLobbies();
+        async function saveLobbies() {
+            setLobbies(await getLobbies());
+        }
+
+        void saveLobbies();
     }, []);
 
     async function handleSubmit(state: CreateLobbyFormState) {
