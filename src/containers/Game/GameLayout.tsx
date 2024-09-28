@@ -12,16 +12,16 @@ type GameLayoutProps = {
 function GameLayout({ tiles, movements }: GameLayoutProps) {
     return (
         <div
-            className="grid w-screen h-screen justify-center"
-            style={{ gridTemplateRows: "1fr auto", gridTemplateColumns: "1fr 1fr 1fr" }}
+            className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
+            style={{ gridTemplateRows: "1fr auto", gridTemplateColumns: "1fr" }}
         >
-            <div className="self-center col-start-2">
+            <div className="row-start-1 col-start-1 justify-self-center self-center">
                 <Board tiles={tiles} />
             </div>
-            <div className="self-center col-start-2 py-4">
+            <div className="row-start-2 col-start-1 justify-self-center self-end py-4">
                 <MovementCardHand movements={movements} />
             </div>
-            <div className="text-end self-end col-start-3 p-4">
+            <div className="row-start-2 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4">Terminar turno</FilledButton>
             </div>
         </div>
