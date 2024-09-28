@@ -5,7 +5,7 @@ type MovementCardProps = {
 }
 
 function MovementCard({ movement }: MovementCardProps) {
-    const imageSrc = `/src/assets/movements/${movement}.png`;
+    const imageSrc = `/src/assets/movements/${movement}.jpg`;
 
     return (
         <div>
