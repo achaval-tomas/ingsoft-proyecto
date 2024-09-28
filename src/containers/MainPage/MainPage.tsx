@@ -1,12 +1,42 @@
 import MainPageLayout from "./components/MainPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+
 export interface LobbyForm {
     name: string;
 }
 
+interface LobbyObject {
+    min_players: number;
+    max_players: number;
+    lobby_owner: string;
+    players: string;
+    lobby_id: string;
+    lobby_name: string;
+    player_amount: number;
+}
+
+async function getLobbies(): Promise<LobbyObject[]> {
+    const res = await fetch("http://127.0.0.1:8000/lobby", {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await res.json() as LobbyObject[];
+
+    return data;
+}
+
 function MainPage() {
     const [ urlParams ] = useSearchParams();
+
+    useEffect(() => {
+        void getLobbies();
+    }, []);
 
     async function handleSubmit(state: CreateLobbyFormState) {
 
