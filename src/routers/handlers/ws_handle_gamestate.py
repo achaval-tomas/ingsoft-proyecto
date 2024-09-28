@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
-from src.database.crud import get_game, get_player, get_player_cards
+from src.database.crud.crud_player import get_player, get_player_cards
+from src.database.crud.crud_game import get_game
 import json, jsonpickle
 from src.database.models import Game
 # for testing, from src.database.crud import create_game
