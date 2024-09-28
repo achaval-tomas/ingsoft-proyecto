@@ -20,6 +20,12 @@ def get_lobby(db: Session, lobby_id: str):
 def get_lobby_list(db: Session, limit: int = 1000):
     return db.query(models.Lobby).all()
 
+def get_game(db: Session, player_id: str):
+    player = get_player(db=db, player_id=player_id)
+    if not player:
+        return None
+    return db.query(models.Game).filter(models.Game.game_id == player.game_id).one_or_none()
+
 ''' WRITE METHODS '''
 def create_player(db: Session, player: schemas.PlayerCreate):
     db_player = models.Player(player_name=player.player_name, player_id=str(uuid4()))
