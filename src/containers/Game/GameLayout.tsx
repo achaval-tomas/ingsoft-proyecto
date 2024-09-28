@@ -2,6 +2,7 @@ import FilledButton from "../../components/FilledButton";
 import { Color } from "../../domain/Color";
 import { Movement } from "../../domain/Movement";
 import Board from "./components/Board";
+import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
 
 type GameLayoutProps = {
@@ -16,7 +17,14 @@ function GameLayout({ tiles, movements }: GameLayoutProps) {
             style={{ gridTemplateRows: "1fr auto", gridTemplateColumns: "1fr" }}
         >
             <div className="row-start-1 col-start-1 justify-self-center self-center">
-                <Board tiles={tiles} />
+                <div className="flex flex-row">
+                    <Board tiles={tiles} />
+                    <div className="relative w-0 h-[12em] self-center">
+                        <div className="absolute left-32 w-[8em] h-[12em]">
+                            <MovementCardDeck />
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className="row-start-2 col-start-1 justify-self-center self-end py-4">
                 <MovementCardHand movements={movements} />
