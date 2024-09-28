@@ -69,8 +69,9 @@ def join_lobby(db:Session, lobby_id: str, player_id: str):
     if not lobby:
         return False
     players = deserialize(lobby.players)
-    players += [player_id]
+    players.append(player_id)
     lobby.players = serialize(players)
+    lobby.player_amount += 1
     db.commit()
     return True
 
