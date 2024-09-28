@@ -65,6 +65,7 @@ def ws_handle_gamestate(player_id: str, db: Session):
     otherPlayersState = extract_other_player_states(db, game_data, player_id)
     
     return json.dumps({
+        'messageType': 'gamestate',
         'selfPlayerState': selfPlayerState,
         'otherPlayersState': otherPlayersState,
         'boardState': boardState,
