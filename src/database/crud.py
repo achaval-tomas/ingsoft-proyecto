@@ -26,6 +26,12 @@ def get_game(db: Session, player_id: str):
         return None
     return db.query(models.Game).filter(models.Game.game_id == player.game_id).one_or_none()
 
+def get_game_players(db: Session, game_id: int):
+    game = db.query(models.Game).filter(models.Game.game_id == game_id).one_or_none()
+    if game is None:
+        return []
+    return deserialize(game.player_order)
+
 ''' WRITE METHODS '''
 def create_player(db: Session, player: schemas.PlayerCreate):
     db_player = models.Player(player_name=player.player_name, player_id=str(uuid4()))
@@ -48,6 +54,16 @@ def create_lobby(db: Session, lobby: schemas.LobbyCreate):
     db.commit()
     db.refresh(db_lobby)
     return db_lobby.lobby_id
+
+def join_lobby(db:Session, lobby_id: str, player_id: str):
+    lobby = get_lobby(db=db, lobby_id=lobby_id)
+    if not lobby:
+        return False
+    players = deserialize(lobby.players)
+    players += [player_id]
+    lobby.players = serialize(players)
+    db.commit()
+    return True
 
 def create_game(db: Session, lobby_id: str):
     # obtain the lobby from where the game was started
