@@ -6,8 +6,8 @@ type BoardTileProps = {
 
 function BoardTile({ color }: BoardTileProps) {
     return (
-        <div className={colorToBackgroundClassName(color) + " rounded"}>
-            <div className="rounded p-[2em] hover:bg-white/10" />
+        <div className={colorToBackgroundClassName(color) + " rounded shadow-md shadow-black"}>
+            <div className="rounded p-[2em] border border-transparent hover:border-white" />
         </div>
     );
 }
@@ -18,7 +18,7 @@ type BoardRowProps = {
 
 function BoardRow({ tiles }: BoardRowProps) {
     return (
-        <div className="flex flex-row gap-[0.5em]">
+        <div className="flex flex-row gap-[1em]">
             {tiles.map((tileColor, i) => (
                 <BoardTile key={i} color={tileColor} />
             ))}
@@ -32,7 +32,7 @@ type BoardProps = {
 
 function Board({ tiles }: BoardProps) {
     return (
-        <div className="flex flex-col gap-[0.5em]">
+        <div className="flex flex-col gap-[1em] p-[1em] bg-zinc-700 h-fit rounded-lg shadow-md shadow-black">
             <BoardRow tiles={tiles.slice(0, 6)} />
             <BoardRow tiles={tiles.slice(6, 12)} />
             <BoardRow tiles={tiles.slice(12, 18)} />
