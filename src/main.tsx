@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
 import Game from "./containers/Game/Game.tsx";
-import InitialPage from "./containers/App/containers/InitialPage.tsx";
+import InitialPage from "./containers/InitialPage/InitialPage.tsx";
 import MainPage from "./containers/App/containers/MainPage.tsx";
 
 const router = createBrowserRouter([
