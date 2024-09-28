@@ -27,7 +27,7 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
     for op_id in other_players:
         commonPlayerState = {
             'id': op_id,
-            'roundOrder': game_data.player_order.index(op_id),
+            'roundOrder': json.loads(game_data.player_order).index(op_id),
             'name': get_player(db=db, player_id=op_id).player_name
         }
         cards = extract_cards(db, op_id)
