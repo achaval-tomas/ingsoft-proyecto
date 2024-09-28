@@ -63,6 +63,7 @@ function MainPage() {
         urlParams.get("player") ?
             <MainPageLayout
                 onSubmitLobbyForm = {s => void handleSubmit(s)}
+                lobbies={lobbies}
             />
             :
             <Navigate to="/" replace />

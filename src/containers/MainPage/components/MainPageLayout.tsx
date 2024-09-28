@@ -1,13 +1,16 @@
 import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
+import LobbyList, { LobbyElement } from "./LobbyList";
 
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
+    lobbies: LobbyElement[];
 }
 
 function MainPageLayout({
     onSubmitLobbyForm,
+    lobbies,
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -23,9 +26,10 @@ function MainPageLayout({
                 <FilledButton onClick={() => setCreateForm(true)}>
                     <p>Crear sala</p>
                 </FilledButton>
-                <FilledButton onClick={() => {}}>
-                    <p>Unirse a sala</p>
-                </FilledButton>
+                <LobbyList
+                    lobbyList={lobbies}
+                    joinHandler={() => {}}
+                />
             </div>
         </div>
     );
