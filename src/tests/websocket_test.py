@@ -1,4 +1,8 @@
 from fastapi import FastAPI, responses
+from src.database import models
+from src.database.db import engine
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -21,19 +25,7 @@ def html(player_id: str):
                     var ws = new WebSocket("ws://localhost:8000/game/{player_id}")
                     ws.onmessage = function(event) {{
                         var data = JSON.parse(event.data)
-                        var list = document.getElementById('display-data')
-                        var res = document.createElement('li')
-                        res.innerHTML = "player_order: " + data.player_order
-                        list.appendChild(res)
-                        var res2 = document.createElement('li')
-                        res2.innerHTML = "current_turn: " + data.current_turn
-                        list.appendChild(res2)
-                        var res3 = document.createElement('li')
-                        res3.innerHTML = "board: " + data.board
-                        list.appendChild(res3)
-                        var res4 = document.createElement('li')
-                        res4.innerHTML = "blocked_color: " + data.blocked_color
-                        list.appendChild(res4)
+                        console.log(data)
                     }}
                     function sendMessage(event) {{
                         var input = document.getElementById("messageText")
