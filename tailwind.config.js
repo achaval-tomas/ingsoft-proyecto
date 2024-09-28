@@ -11,6 +11,9 @@ export default {
                 surface: colors.zinc["800"],
                 border: colors.zinc["700"],
             },
+            transitionProperty: {
+                "movement-card": "top, box-shadow, z-index",
+            },
         },
     },
     plugins: [],
