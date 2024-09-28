@@ -9,6 +9,9 @@ interface PlayerNameFormProps {
 
 function PlayerNameForm({ handleSubmit }: PlayerNameFormProps) {
     const [ name, setName ] = useState<string>("");
+
+    // this state will manage the display of a warning when the user
+    // tries to create a player with no name
     const [ showWarning, setShowWarning ] = useState<boolean>(false);
 
     return (
@@ -19,6 +22,8 @@ function PlayerNameForm({ handleSubmit }: PlayerNameFormProps) {
                 if (name !== "")
                     handleSubmit(name);
                 else {
+                    // if user didn't input a name then do nothing with
+                    // the form and show warning
                     setShowWarning(true);
                 }
             }}

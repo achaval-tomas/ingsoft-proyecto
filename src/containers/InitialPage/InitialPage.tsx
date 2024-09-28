@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import PlayerNameForm from "../components/PlayerNameForm";
+import PlayerNameForm from "./components/PlayerNameForm";
 import { useState } from "react";
 
 function InitialPage() {
