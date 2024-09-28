@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 from src.database import models, schemas
 from uuid import uuid4
-import json, random
+import json, random, jsonpickle
+from src.database.cards.movement_card import MovementCard, MovementType
+from src.database.cards.shape_card import ShapeCard, ShapeType
 
 ''' DATA HANDLE '''
 def serialize (obj):
@@ -32,6 +34,12 @@ def get_game_players(db: Session, game_id: int):
         return []
     return deserialize(game.player_order)
 
+def get_player_cards(db: Session, player_id: str):
+    cards = db.query(models.PlayerCards).filter(models.PlayerCards.player_id == player_id).one_or_none()
+    if not cards:
+        return None
+    return cards
+
 ''' WRITE METHODS '''
 def create_player(db: Session, player: schemas.PlayerCreate):
     db_player = models.Player(player_name=player.player_name, player_id=str(uuid4()))
@@ -42,14 +50,15 @@ def create_player(db: Session, player: schemas.PlayerCreate):
 
 def create_lobby(db: Session, lobby: schemas.LobbyCreate):
     player_list = [lobby.lobby_owner]
-    db_lobby = models.Lobby(lobby_id=str(uuid4()),
-                            lobby_name=lobby.lobby_name,
-                            lobby_owner=lobby.lobby_owner,
-                            min_players=lobby.min_players,
-                            max_players=lobby.max_players,
-                            players=serialize(player_list),
-                            player_amount=1
-                            )
+    db_lobby = models.Lobby(
+        lobby_id=str(uuid4()),
+        lobby_name=lobby.lobby_name,
+        lobby_owner=lobby.lobby_owner,
+        min_players=lobby.min_players,
+        max_players=lobby.max_players,
+        players=serialize(player_list),
+        player_amount=1
+    )
     db.add(db_lobby)
     db.commit()
     db.refresh(db_lobby)
@@ -83,11 +92,12 @@ def create_game(db: Session, lobby_id: str):
     # shuffle modificates the original list
     random.shuffle(board)
     # create game
-    db_game = models.Game(player_order=serialize(player_order),
-                          current_turn=current_turn,
-                          board=serialize(board),
-                          blocked_color=None
-                          )
+    db_game = models.Game(
+        player_order=serialize(player_order),
+        current_turn=current_turn,
+        board=serialize(board),
+        blocked_color=None
+    )
     db.add(db_game)
     db.commit()
     db.refresh(db_game)
@@ -98,8 +108,31 @@ def create_game(db: Session, lobby_id: str):
             return False
         player.game_id = game_id
         db.commit()
+        hand_cards(db=db, player_id=id)
     delete_lobby(db=db, lobby_id=lobby_id)
     return True
+
+def hand_cards(db: Session, player_id: str):
+    mov_cards = [
+        MovementCard(mov_type=MovementType.STRAIGHT_ADJACENT),
+        MovementCard(mov_type=MovementType.L_CCW),
+        MovementCard(mov_type=MovementType.DIAGONAL_SPACED)
+    ]
+    shape_cards_hand = [
+        ShapeCard(shape=ShapeType.SQUARE),
+        ShapeCard(shape=ShapeType.T),
+        ShapeCard(shape=ShapeType.LINE_5)
+    ]
+    shape_cards_deck = [ShapeCard(shape=ShapeType.SQUARE)]*10
+    db_cards = models.PlayerCards(
+        player_id = player_id,
+        movement_cards = jsonpickle.dumps(mov_cards, unpicklable=False),
+        shape_cards_in_hand = jsonpickle.dumps(shape_cards_hand, unpicklable=False),
+        shape_cards_deck = jsonpickle.dumps(shape_cards_deck, unpicklable=False)
+    )
+    db.add(db_cards)
+    db.commit()
+    db.refresh(db_cards)
 
 ''' DELETE METHODS '''
 def delete_player(db: Session, player_id: str):
