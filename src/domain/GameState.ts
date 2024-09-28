@@ -13,7 +13,7 @@ export const ShapeCardStateSchema = z.object({
 
 export const CommonPlayerStateSchema = z.object({
     id: PlayerIdSchema,
-    rounderOrder: z.number().int().min(0).max(3),
+    roundOrder: z.number().int().min(0).max(3),
     name: z.string(),
     shapeCardsInHand: ShapeCardStateSchema.array().max(3),
     shapeCardsInDeckCount: z.number().int().nonnegative(),
