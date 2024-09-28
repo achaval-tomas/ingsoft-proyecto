@@ -58,8 +58,8 @@ def ws_handle_gamestate(player_id: str, db: Session):
     selfPlayerState.update(extract_cards(db, player_id))
     
     boardState = {
-        'blocked_color': game_data.blocked_color,
-        'board': json.loads(game_data.board),
+        'tiles': json.loads(game_data.board),
+        'blockedColor': game_data.blocked_color
     }
     
     otherPlayersState = extract_other_player_states(db, game_data, player_id)
