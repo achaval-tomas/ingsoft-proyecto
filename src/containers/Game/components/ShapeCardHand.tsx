@@ -10,7 +10,7 @@ function ShapeCardHand({ shapes }: ShapeCardHandProps) {
         "shadow-sm shadow-black group-hover:shadow-md group-hover:shadow-black transition-movement-card";
 
     return (
-        <div className="flex flex-row pb-[1.8em] gap-x-[0.5em]">
+        <div className="flex flex-row gap-x-[0.5em]">
             <div className="group">
                 <div className={sharedClassNames}>
                     <ShapeCard shape={shapes[0]} isBlocked={false} />

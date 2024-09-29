@@ -21,7 +21,29 @@ function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {
         >
             <div className="row-start-1 col-start-1 justify-self-center self-center">
                 <div className="flex flex-row">
-                    <Board tiles={tiles} />
+                    <div className="grid" style={{ gridTemplateRows: "auto 1fr auto", gridTemplateColumns: "auto 1fr auto" }}>
+                        {/* <div className="row-start-1 col-start-2 justify-self-center pb-4">
+                            <div className="rotate-180">
+                                <ShapeCardHand shapes={shapes} />
+                            </div>
+                        </div> */}
+                        <div className="row-start-2 col-start-2">
+                            <Board tiles={tiles} />
+                        </div>
+                        <div className="row-start-3 col-start-2 justify-self-center pt-[1em]">
+                            <ShapeCardHand shapes={shapes} />
+                        </div>
+                        {/* <div className="row-start-2 col-start-1 justify-self-end self-center">
+                            <div className="rotate-90">
+                                <ShapeCardHand shapes={shapes} />
+                            </div>
+                        </div>
+                        <div className="row-start-2 col-start-3 justify-self-center self-center">
+                            <div className="-rotate-90">
+                                <ShapeCardHand shapes={shapes} />
+                            </div>
+                        </div> */}
+                    </div>
                     <div className="relative w-0 h-[12em] self-center">
                         <div className="absolute left-32 w-[8em] h-[12em]">
                             <MovementCardDeck />
@@ -29,13 +51,10 @@ function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {
                     </div>
                 </div>
             </div>
-            <div className="row-start-2 col-start-1 justify-self-center pt-4">
-                <ShapeCardHand shapes={shapes} />
-            </div>
-            <div className="row-start-3 col-start-1 justify-self-center self-end py-4">
+            <div className="row-start-2 col-start-1 justify-self-center self-end py-4">
                 <MovementCardHand movements={movements} />
             </div>
-            <div className="row-start-3 col-start-1 justify-self-end self-end">
+            <div className="row-start-2 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4">Terminar turno</FilledButton>
             </div>
         </div>
