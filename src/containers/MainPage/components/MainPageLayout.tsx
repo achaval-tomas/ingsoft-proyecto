@@ -19,7 +19,7 @@ function MainPageLayout({
     return (
         <div className="w-screen flex flex-col items-center">
             <div className="w-7/12 flex justify-around p-8 my-8 bg-zinc-700 rounded-lg">
-                <div>
+                <div className="flex justify-around w-full">
                     <CreateLobbyDialog
                         isOpen = {showCreateForm}
                         lobbyNamePlaceholder = {"Nombre de tu sala"}
