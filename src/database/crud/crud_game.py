@@ -117,3 +117,9 @@ def delete_game(db: Session, game_id: str):
 def delete_player_cards(db: Session, player_id: str):
     db.query(PlayerCards).filter(PlayerCards.player_id == player_id).delete()
     db.commit()
+
+def update_game_turn(db: Session, game: Game):
+    game.current_turn = (game.current_turn + 1) % len(jsonpickle.loads(game.player_order))
+    db.commit()  
+    db.refresh(game)  
+    return game.current_turn  
