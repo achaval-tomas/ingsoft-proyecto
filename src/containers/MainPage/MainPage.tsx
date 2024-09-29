@@ -30,12 +30,12 @@ function MainPage() {
     const [ lobbies, setLobbies ] = useState<LobbyElement[]>([]);
     const [ urlParams ] = useSearchParams();
 
-    useEffect(() => {
-        async function saveLobbies() {
-            setLobbies(await getLobbies());
-        }
+    async function fetchAndSaveLobbies() {
+        setLobbies(await getLobbies());
+    }
 
-        void saveLobbies();
+    useEffect(() => {
+        void fetchAndSaveLobbies();
     }, []);
 
     async function handleSubmit(state: CreateLobbyFormState) {
@@ -68,6 +68,7 @@ function MainPage() {
             <MainPageLayout
                 onSubmitLobbyForm = {s => void handleSubmit(s)}
                 lobbies={lobbies}
+                refreshHandler={() => { void fetchAndSaveLobbies(); }}
             />
             :
             <Navigate to="/" replace />

@@ -6,11 +6,13 @@ import LobbyList, { LobbyElement } from "./LobbyList";
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
+    refreshHandler: () => void;
 }
 
 function MainPageLayout({
     onSubmitLobbyForm,
     lobbies,
+    refreshHandler,
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -26,6 +28,9 @@ function MainPageLayout({
                     />
                     <FilledButton onClick={() => setCreateForm(true)}>
                         <p>Crear sala</p>
+                    </FilledButton>
+                    <FilledButton onClick={refreshHandler}>
+                        <p>Recargar salas disponibles</p>
                     </FilledButton>
                 </div>
             </div>
