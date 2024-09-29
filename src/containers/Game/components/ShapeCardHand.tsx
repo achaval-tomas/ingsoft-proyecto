@@ -13,17 +13,17 @@ function ShapeCardHand({ shapes }: ShapeCardHandProps) {
         <div className="flex flex-row pb-[1.8em] gap-x-[0.5em]">
             <div className="group">
                 <div className={sharedClassNames}>
-                    <ShapeCard shape={shapes[0]} />
+                    <ShapeCard shape={shapes[0]} isBlocked={false} />
                 </div>
             </div>
             <div className="group">
                 <div className={sharedClassNames}>
-                    <ShapeCard shape={shapes[1]} />
+                    <ShapeCard shape={shapes[1]} isBlocked={false} />
                 </div>
             </div>
             <div className="group">
                 <div className={sharedClassNames}>
-                    <ShapeCard shape={shapes[2]} />
+                    <ShapeCard shape={shapes[2]} isBlocked={true} />
                 </div>
             </div>
         </div>

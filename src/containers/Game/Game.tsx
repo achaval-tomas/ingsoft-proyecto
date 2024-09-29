@@ -7,7 +7,7 @@ import { Shape } from "../../domain/Shape";
 function Game() {
     const tiles = useMemo(() => Array.from({ length: 36 }, () => intToColor(Math.floor(Math.random() * 4))), []);
     const movements: [Movement, Movement, Movement] = ["diagonal-adjacent", "l-ccw", "straight-adjacent"];
-    const shapes: [Shape, Shape, Shape] = ["c-3", "b-1", "backside"];
+    const shapes: [Shape, Shape, Shape] = ["c-3", "b-1", "b-5"];
 
     return (
         <GameLayout
