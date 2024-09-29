@@ -40,7 +40,7 @@ function MainPage() {
 
             alert(`Lobby id: ${lobbyId}`);
         } catch {
-            alert("Error when communicating with server, try again later.");
+            alert("Error al comunicarse con el servidor, intente de nuevo más tarde.");
         }
     }
 
