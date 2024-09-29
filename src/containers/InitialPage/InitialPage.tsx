@@ -1,27 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import PlayerNameForm from "./components/PlayerNameForm";
 import { useState } from "react";
+import { createPlayer } from "../../api/player";
 
 function InitialPage() {
     const [ serverError, setServerError ] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    async function createPlayer(playerName: string) {
+    async function createPlayerHandler(playerName: string) {
         try {
-            const res = await fetch("http://127.0.0.1:8000/player", {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    player_name: playerName,
-                }),
-            });
+            const playerId = await createPlayer(playerName);
 
-            const data = await res.json() as { player_id: string };
-
-            navigate(`lobby?player=${data.player_id}`);
+            navigate(`lobby?player=${playerId}`);
         } catch {
             setServerError(true);
         }
@@ -29,7 +19,7 @@ function InitialPage() {
 
     return <div className="flex flex-col align-center w-screen px-16">
         <h1 className="my-16 text-center">El Switcher</h1>
-        <PlayerNameForm handleSubmit={name => void createPlayer(name)} />
+        <PlayerNameForm handleSubmit={name => void createPlayerHandler(name)} />
         { serverError &&
             <p
                 className="text-center text-red-500 py-2"
