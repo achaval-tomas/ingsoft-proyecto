@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from src.database.models import *
 from src.database.cards.movement_card import MovementCard, MovementType
 from src.database.cards.shape_card import ShapeCard, ShapeType
-from src.database.crud.crud_lobby import get_lobby
+from src.database.crud.crud_lobby import get_lobby, delete_lobby
+from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import serialize, deserialize
-from src.tests.database_test import delete_lobby, get_player
 
 def create_game(db: Session, lobby_id: str):
     # obtain the lobby from where the game was started

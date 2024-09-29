@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from src.database.session import get_db
 from src.routers.handlers.ws_handle_gamestate import ws_handle_gamestate
-from src.routers.helpers.connection_maneger import manager
+from src.routers.helpers.connection_manager import manager
 
 game_ws = APIRouter()
 

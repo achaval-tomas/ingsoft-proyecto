@@ -3,7 +3,7 @@ from src.database.crud.crud_player import get_player, get_player_cards
 from src.database.crud.crud_game import get_game
 import json, jsonpickle
 from src.database.models import Game
-# for testing, from src.database.crud import create_game
+# from src.database.crud.crud_game import create_game
 
 def extract_cards(db : Session, player_id : str):
     player_cards = get_player_cards(db=db, player_id=player_id)
@@ -43,7 +43,7 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
     
 
 def ws_handle_gamestate(player_id: str, db: Session):
-    # for testing: create_game(db=db, lobby_id='816fc395-91ed-4340-bb18-e5296103b2b3')
+    # create_game(db=db, lobby_id='da115170-5dc3-4584-a364-dad932895c8c')
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return json.dumps({"Error": "404 Player Not Found"})
@@ -66,10 +66,12 @@ def ws_handle_gamestate(player_id: str, db: Session):
     otherPlayersState = extract_other_player_states(db, game_data, player_id)
     
     return json.dumps({
-        'messageType': 'gamestate',
+        'type': 'game-state',
+        'gameState': {
         'selfPlayerState': selfPlayerState,
         'otherPlayersState': otherPlayersState,
         'boardState': boardState,
         'turnStart': 0,
-        'currentRoundPlayer': game_data.current_turn,
+        'currentRoundPlayer': game_data.current_turn
+        }
     })
