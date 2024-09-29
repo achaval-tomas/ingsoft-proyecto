@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from src.database.crud.crud_lobby import get_lobby, get_lobby_by_player_id
+from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.routers.helpers.connection_manager import lobby_manager
 
@@ -8,9 +9,17 @@ def player_list(lobby_id:str, db: Session):
     players = []
     if lobby != None:
         players = deserialize(lobby.players)
+    players_info = []
+    for player_id in players:
+        player = get_player(player_id=player_id, db=db)
+        if player:
+            players_info.append({
+                'id': player.player_id,
+                'name': player.player_name
+            })
     return serialize({
         'type': 'player-list',
-        'players': players
+        'players': players_info
     })
 
 async def ws_share_player_list(player_id: str, db: Session, broadcast: bool):
