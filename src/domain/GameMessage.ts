@@ -2,9 +2,9 @@ import { z } from "zod";
 import { GameStateSchema, PlayerIdSchema } from "./GameState";
 
 // Messages received from the backend
-export const InMessageSchema = z.discriminatedUnion("type", [
+export const GameMessageInSchema = z.discriminatedUnion("type", [
     z.object({
-        type: z.literal("turn-end"), // Received when someone's turn has ended.
+        type: z.literal("turn-ended"), // Received when someone's turn has ended.
         playerId: PlayerIdSchema, // ID of the player whose turn has finished.
     }),
     z.object({
@@ -21,11 +21,7 @@ export const InMessageSchema = z.discriminatedUnion("type", [
 ]);
 
 // Messages sent to the backend
-export const OutMessageSchema = z.discriminatedUnion("type", [
-    z.object({
-        type: z.literal("start-game"),
-        lobbyId: z.string(),
-    }),
+export const GameMessageOutSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("get-game-state"), // Request the entire game state.
     }),
@@ -34,5 +30,5 @@ export const OutMessageSchema = z.discriminatedUnion("type", [
     }),
 ]);
 
-export type InMessage = z.infer<typeof InMessageSchema>;
-export type OutMessage = z.infer<typeof OutMessageSchema>;
+export type GameMessageIn = z.infer<typeof GameMessageInSchema>;
+export type GameMessageOut = z.infer<typeof GameMessageOutSchema>;
