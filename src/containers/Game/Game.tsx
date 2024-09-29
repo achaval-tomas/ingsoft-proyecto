@@ -1,19 +1,82 @@
-import { useMemo } from "react";
-import { intToColor } from "../../domain/Color";
+import { useEffect, useState } from "react";
 import GameLayout from "./GameLayout";
 import { Movement } from "../../domain/Movement";
 import { Shape } from "../../domain/Shape";
+import { GameMessageInSchema } from "../../domain/GameMessage";
+import { CommonPlayerState, GameState } from "../../domain/GameState";
 
 function Game() {
-    const tiles = useMemo(() => Array.from({ length: 36 }, () => intToColor(Math.floor(Math.random() * 4))), []);
-    const movements: [Movement, Movement, Movement] = ["diagonal-adjacent", "l-ccw", "straight-adjacent"];
-    const shapes: [Shape, Shape, Shape] = ["c-3", "b-1", "b-5"];
+    const [gameState, setGameState] = useState<GameState | null>(null);
+
+    useEffect(() => {
+        const ws = new WebSocket("ws://localhost:8080/game?user=asdqwe");
+
+        ws.addEventListener("message", e => {
+            if (typeof e.data !== "string") {
+                console.error("invalid message type");
+                return;
+            }
+
+            const message = GameMessageInSchema.parse(JSON.parse(e.data));
+
+            console.log(message);
+
+            switch (message.type) {
+                case "turn-ended": {
+                    setGameState(s => {
+                        if (s === null) {
+                            return null;
+                        }
+
+                        const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
+                        allPlayers.sort((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
+
+                        const nextPlayer = allPlayers.find(p => p.roundOrder > s.currentRoundPlayer) ?? allPlayers[0];
+
+                        const newGameState = { ...s };
+                        newGameState.currentRoundPlayer = nextPlayer.roundOrder;
+
+                        return newGameState;
+                    });
+                    break;
+                }
+                case "winner": {
+                    setGameState(s => {
+                        if (s === null) {
+                            return null;
+                        }
+
+                        const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
+                        const winner = allPlayers.find(p => p.id === message.playerId);
+
+                        alert(`¡${winner?.name} ganó!`);
+                        return s;
+                    });
+                    break;
+                }
+                case "game-state": {
+                    setGameState(message.gameState);
+                    break;
+                }
+            }
+        });
+
+        return () => ws.close();
+    }, []);
+
+    if (gameState === null) {
+        return <p>Loading...</p>;
+    }
+
+    const tiles = gameState.boardState.tiles;
+    const movements = gameState.selfPlayerState.movementCardsInHand;
+    const shapes = gameState.selfPlayerState.shapeCardsInHand;
 
     return (
         <GameLayout
             tiles={tiles}
-            movements={movements}
-            shapes={shapes}
+            movements={movements as [Movement, Movement, Movement]}
+            shapes={shapes.map(s => s.shape) as [Shape, Shape, Shape]}
         />
     );
 }
