@@ -7,19 +7,31 @@ test("It correctly renders all elements", () => {
 
     const mockItems: LobbyElement[] = [
         {
-            id: "1",
-            name: "my first lobby",
-            numPlayers: 1,
+            lobby_id: "1",
+            lobby_name: "my first lobby",
+            player_amount: 1,
+            min_players: 2,
+            max_players: 4,
+            lobby_owner: "",
+            players: "",
         },
         {
-            id: "2",
-            name: "jorge's room",
-            numPlayers: 3,
+            lobby_id: "2",
+            lobby_name: "jorge's room",
+            player_amount: 3,
+            min_players: 2,
+            max_players: 4,
+            lobby_owner: "",
+            players: "",
         },
         {
-            id: "3",
-            name: "excuse me, only friends",
-            numPlayers: 2,
+            lobby_id: "3",
+            lobby_name: "excuse me, only friends",
+            player_amount: 2,
+            min_players: 2,
+            max_players: 4,
+            lobby_owner: "",
+            players: "",
         },
     ];
 
@@ -36,10 +48,10 @@ test("It correctly renders all elements", () => {
     expect(rows).toHaveLength(mockItems.length + 1);
 
     mockItems.forEach((element, index) => {
-        const tdName = within(rows[index+1]).queryByText(element.name);
+        const tdName = within(rows[index+1]).queryByText(element.lobby_name);
         expect(tdName).not.toBeNull();
 
-        const tdNumPlayers = within(rows[index+1]).queryByText(element.numPlayers);
+        const tdNumPlayers = within(rows[index+1]).queryByText(element.player_amount);
         expect(tdNumPlayers).not.toBeNull();
     });
 });
@@ -47,19 +59,31 @@ test("It correctly renders all elements", () => {
 test("It correctly handles join button", async () => {
     const mockItems: LobbyElement[] = [
         {
-            id: "1",
-            name: "my first lobby",
-            numPlayers: 1,
+            lobby_id: "1",
+            lobby_name: "my first lobby",
+            player_amount: 1,
+            min_players: 2,
+            max_players: 4,
+            lobby_owner: "",
+            players: "",
         },
         {
-            id: "2",
-            name: "jorge's room",
-            numPlayers: 3,
+            lobby_id: "2",
+            lobby_name: "jorge's room",
+            player_amount: 3,
+            min_players: 2,
+            max_players: 4,
+            lobby_owner: "",
+            players: "",
         },
         {
-            id: "3",
-            name: "excuse me, only friends",
-            numPlayers: 2,
+            lobby_id: "3",
+            lobby_name: "excuse me, only friends",
+            player_amount: 2,
+            min_players: 2,
+            max_players: 4,
+            lobby_owner: "",
+            players: "",
         },
     ];
 
@@ -88,6 +112,6 @@ test("It correctly handles join button", async () => {
     }
 
     mockItems.forEach(e => {
-        expect(clickedIds[e.id]).toBe(3);
+        expect(clickedIds[e.lobby_id]).toBe(3);
     });
 });

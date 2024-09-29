@@ -1,7 +1,11 @@
 export interface LobbyElement {
-    id: string;
-    name: string;
-    numPlayers: number;
+    min_players: number;
+    max_players: number;
+    lobby_owner: string;
+    players: string;
+    lobby_id: string;
+    lobby_name: string;
+    player_amount: number;
 }
 
 interface LobbyListProps {
@@ -13,14 +17,14 @@ export default function LobbyList({ lobbyList, joinHandler }: LobbyListProps) {
     const items = lobbyList.map(lobby =>
         <tr
             className="my-2 p-2 border"
-            key={lobby.id}
+            key={lobby.lobby_id}
         >
-            <td className="text-center">{lobby.name}</td>
-            <td className="text-center">{lobby.numPlayers}</td>
+            <td className="text-center">{lobby.lobby_name}</td>
+            <td className="text-center">{lobby.player_amount}</td>
             <td>
                 <button
                     className="p-1 rounded bg-primary-600 hover:bg-primary-500"
-                    onClick={() => joinHandler(lobby.id)}
+                    onClick={() => joinHandler(lobby.lobby_id)}
                 >
                     Unirse
                 </button>
