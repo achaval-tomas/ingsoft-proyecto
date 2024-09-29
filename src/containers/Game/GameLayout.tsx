@@ -22,27 +22,21 @@ function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {
             <div className="row-start-1 col-start-1 justify-self-center self-center">
                 <div className="flex flex-row">
                     <div className="grid" style={{ gridTemplateRows: "auto 1fr auto", gridTemplateColumns: "auto 1fr auto" }}>
-                        {/* <div className="row-start-1 col-start-2 justify-self-center pb-4">
-                            <div className="rotate-180">
-                                <ShapeCardHand shapes={shapes} />
-                            </div>
-                        </div> */}
                         <div className="row-start-2 col-start-2">
                             <Board tiles={tiles} />
                         </div>
                         <div className="row-start-3 col-start-2 justify-self-center pt-[1em]">
-                            <ShapeCardHand shapes={shapes} />
+                            <ShapeCardHand shapes={shapes} rotation="r0" />
                         </div>
-                        {/* <div className="row-start-2 col-start-1 justify-self-end self-center">
-                            <div className="rotate-90">
-                                <ShapeCardHand shapes={shapes} />
-                            </div>
+                        <div className="row-start-2 col-start-3 self-center pl-[1em]">
+                            <ShapeCardHand shapes={shapes} rotation="r90" />
                         </div>
-                        <div className="row-start-2 col-start-3 justify-self-center self-center">
-                            <div className="-rotate-90">
-                                <ShapeCardHand shapes={shapes} />
-                            </div>
-                        </div> */}
+                        <div className="row-start-1 col-start-2 justify-self-center pb-[1em]">
+                            <ShapeCardHand shapes={shapes} rotation="r180" />
+                        </div>
+                        <div className="row-start-2 col-start-1 self-center pr-[1em]">
+                            <ShapeCardHand shapes={shapes} rotation="r270" />
+                        </div>
                     </div>
                     <div className="relative w-0 h-[12em] self-center">
                         <div className="absolute left-32 w-[8em] h-[12em]">
