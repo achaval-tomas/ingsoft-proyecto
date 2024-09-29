@@ -1,14 +1,16 @@
 from sqlalchemy.orm import Session
 from src.database.crud.crud_lobby import get_lobby, get_lobby_by_player_id
-from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.routers.helpers.connection_manager import lobby_manager
 
 def player_list(lobby_id:str, db: Session):
     lobby = get_lobby(lobby_id=lobby_id, db=db)
+    players = []
+    if lobby != None:
+        players = deserialize(lobby.players)
     return serialize({
         'type': 'player-list',
-        'players': deserialize(lobby.players)
+        'players': players
     })
 
 async def ws_share_player_list(player_id: str, db: Session, broadcast: bool):
