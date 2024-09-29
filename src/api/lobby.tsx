@@ -55,8 +55,6 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyRe
         }),
     });
 
-    console.log(res);
-
     if (res.ok)
         return { goHome: false, errorMsg: "" };
 
