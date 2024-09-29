@@ -1,7 +1,7 @@
 import random
 import jsonpickle
 from sqlalchemy.orm import Session
-from src.database import models
+from src.database.models import *
 from src.database.cards.movement_card import MovementCard, MovementType
 from src.database.cards.shape_card import ShapeCard, ShapeType
 from src.database.crud.crud_lobby import get_lobby
@@ -10,7 +10,7 @@ from src.tests.database_test import delete_lobby, get_player
 
 def create_game(db: Session, lobby_id: str):
     # obtain the lobby from where the game was started
-    lobby: models.Lobby = get_lobby(db=db, lobby_id=lobby_id)
+    lobby: Lobby = get_lobby(db=db, lobby_id=lobby_id)
     if lobby is None:
         return False
     # deserialize players list
@@ -26,7 +26,7 @@ def create_game(db: Session, lobby_id: str):
     # shuffle modificates the original list
     random.shuffle(board)
     # create game
-    db_game = models.Game(
+    db_game = Game(
         player_order=serialize(player_order),
         current_turn=current_turn,
         board=serialize(board),
@@ -58,7 +58,7 @@ def hand_cards(db: Session, player_id: str):
         ShapeCard(shape=ShapeType.LINE_5)
     ]
     shape_cards_deck = [ShapeCard(shape=ShapeType.SQUARE)]*10
-    db_cards = models.PlayerCards(
+    db_cards = PlayerCards(
         player_id = player_id,
         movement_cards = jsonpickle.dumps(mov_cards, unpicklable=False),
         shape_cards_in_hand = jsonpickle.dumps(shape_cards_hand, unpicklable=False),
@@ -72,10 +72,10 @@ def get_game(db: Session, player_id: str):
     player = get_player(db=db, player_id=player_id)
     if not player:
         return None
-    return db.query(models.Game).filter(models.Game.game_id == player.game_id).one_or_none()
+    return db.query(Game).filter(Game.game_id == player.game_id).one_or_none()
 
 def get_game_players(db: Session, game_id: int):
-    game = db.query(models.Game).filter(models.Game.game_id == game_id).one_or_none()
+    game = db.query(Game).filter(Game.game_id == game_id).one_or_none()
     if game is None:
         return []
     return deserialize(game.player_order)

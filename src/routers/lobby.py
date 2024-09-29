@@ -27,4 +27,4 @@ list_lobbies_router = APIRouter()
 
 @list_lobbies_router.get("/lobby")
 async def get_all_lobbies(db: Session = Depends(get_db)):
-    return [lobby_decoder(l) for l in crud_lobby.get_lobby_list(db=db)]
+    return [lobby_decoder(l) for l in crud_lobby.get_available_lobbies(db=db)]
