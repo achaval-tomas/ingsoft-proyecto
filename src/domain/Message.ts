@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { GameStateSchema, PlayerIdSchema } from "./GameState";
 
+// Messages received from the backend
 export const InMessageSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("turn-end"), // Received when someone's turn has ended.
@@ -19,6 +20,7 @@ export const InMessageSchema = z.discriminatedUnion("type", [
     }),
 ]);
 
+// Messages sent to the backend
 export const OutMessageSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("start-game"),
