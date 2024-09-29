@@ -68,10 +68,10 @@ def ws_handle_gamestate(player_id: str, db: Session):
     return json.dumps({
         'type': 'game-state',
         'gameState': {
-        'selfPlayerState': selfPlayerState,
-        'otherPlayersState': otherPlayersState,
-        'boardState': boardState,
-        'turnStart': 0,
-        'currentRoundPlayer': game_data.current_turn
+            'selfPlayerState': selfPlayerState,
+            'otherPlayersState': otherPlayersState,
+            'boardState': boardState,
+            'turnStart': 0,
+            'currentRoundPlayer': game_data.current_turn
         }
     })
