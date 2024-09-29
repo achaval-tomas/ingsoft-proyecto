@@ -4,7 +4,7 @@ from src.database import models
 from src.database.db import engine
 from src.routers.player import create_player_router
 from src.routers.lobby import lobby_router
-from src.routers.game import game_ws
+from src.routers.game import game_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -31,4 +31,4 @@ async def root():
 
 app.include_router(create_player_router)
 app.include_router(lobby_router)
-app.include_router(game_ws)
+app.include_router(game_router)

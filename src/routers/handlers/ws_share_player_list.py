@@ -33,7 +33,6 @@ async def ws_share_player_list(player_id: str, db: Session, broadcast: bool):
     else:
         await lobby_manager.send_personal_message(
             player_id=player_id,
-            db=db,
             message=player_list(lobby_id=lobby.lobby_id, db=db)
         )
     return ""

@@ -44,6 +44,10 @@ class GameBase(BaseModel):
     board: list[str]
     blocked_color: str
 
+class GameCreate(BaseModel):
+    lobby_id: str
+    player_id: str
+
 class Game(GameBase):
     game_id: int
 

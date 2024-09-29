@@ -9,11 +9,13 @@ from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import serialize, deserialize
 from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
 
-def create_game(db: Session, lobby_id: str):
+def create_game(db: Session, lobby_id: str, player_id: str):
     # obtain the lobby from where the game was started
     lobby: Lobby = get_lobby(db=db, lobby_id=lobby_id)
     if lobby is None:
-        return False
+        return 2
+    if lobby.lobby_owner != player_id:
+        return 1
     # deserialize players list
     deserialize(lobby.players)
     # create a list with the players in the lobby but randomly shuffled
