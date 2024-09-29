@@ -7,6 +7,7 @@ class Player(Base):
     __tablename__ = "players"
     player_id = Column(String, primary_key=True)
     player_name = Column(String)
+    lobby_id = Column(String, ForeignKey("lobbies.lobby_id"), nullable=True)
     game_id = Column(Integer, ForeignKey("games.game_id"), nullable=True)
 
 class Lobby(Base):

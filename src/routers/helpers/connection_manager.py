@@ -1,6 +1,8 @@
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
 from src.database.crud.crud_game import get_game_players
+from src.database.crud.crud_lobby import get_lobby
+from src.database.crud.tools.jsonify import deserialize
 
 class ConnectionManager:
     def __init__(self):
@@ -16,14 +18,29 @@ class ConnectionManager:
         del self.active_connections[player_id]
 
     # send message through a specific websocket
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+    async def send_personal_message(self, message: str, player_id: str):
+        if player_id not in self.active_connections.keys():
+            return
+        await self.active_connections[player_id].send_text(message)
 
+class GameConnectionManager(ConnectionManager):
     # broadcast a message to everyone (currently connected) in game #game_id
     async def broadcast_in_game(self, message: str, db: Session, game_id: int):
         game_players = get_game_players(db=db, game_id=game_id)
         connected_players = [player for player in game_players if player in self.active_connections.keys()]
         for player in connected_players:
             await self.active_connections[player].send_text(message)
+            
+class LobbyConnectionManager(ConnectionManager):
+    # broadcast a message to everyone (currently connected) in game #game_id
+    async def broadcast_in_lobby(self, message: str, db: Session, lobby_id: int):
+        lobby = get_lobby(db=db, lobby_id=lobby_id)
+        if not lobby:
+            return
+        lobby_players = deserialize(lobby.players)
+        connected_players = [player for player in lobby_players if player in self.active_connections.keys()]
+        for player in connected_players:
+            await self.active_connections[player].send_text(message)
 
-manager = ConnectionManager()
+game_manager = GameConnectionManager()
+lobby_manager = LobbyConnectionManager()

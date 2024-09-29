@@ -10,6 +10,7 @@ class PlayerCreate(PlayerBase):
 class Player(PlayerBase):
     player_id: str
     game_id: str
+    lobby_id: str
 
     class Config:
         orm_mode = True

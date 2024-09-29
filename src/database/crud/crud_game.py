@@ -7,6 +7,7 @@ from src.database.cards.shape_card import ShapeCard, ShapeType
 from src.database.crud.crud_lobby import get_lobby, delete_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import serialize, deserialize
+from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
 
 def create_game(db: Session, lobby_id: str):
     # obtain the lobby from where the game was started
@@ -40,6 +41,7 @@ def create_game(db: Session, lobby_id: str):
         player = get_player(db=db, player_id=id)
         if player is None:
             return False
+        player.lobby_id = None
         player.game_id = game_id
         db.commit()
         hand_cards(db=db, player_id=id)
@@ -79,3 +81,12 @@ def get_game_players(db: Session, game_id: int):
     if game is None:
         return []
     return deserialize(game.player_order)
+
+async def leave_game(db: Session, player_id: str):
+    game = get_game(db=db, player_id=player_id)
+    players = deserialize(game.player_order)
+    players.remove(player_id)
+    game.player_order = serialize(players)
+    if len(players) == 1:
+        await ws_handle_announce_winner()
+    db.commit()
