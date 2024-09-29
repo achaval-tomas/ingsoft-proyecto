@@ -10,7 +10,7 @@ import ShapeCardHand from "./components/ShapeCardHand";
 type GameLayoutProps = {
     tiles: Color[];
     movements: [Movement, Movement, Movement];
-    shapes: [Shape, Shape, Shape]
+    shapes: [Shape, Shape, Shape];
 };
 
 function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {

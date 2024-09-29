@@ -6,7 +6,7 @@ type ShapeCardHandProps = {
 }
 
 function ShapeCardHand({ shapes }: ShapeCardHandProps) {
-    const sharedClassNames = "aspect-square relative top-[0em] group-hover:top-[-0.5em] transition-[top]"
+    const sharedClassNames = "aspect-square relative top-[0em] group-hover:top-[-0.5em] transition-[top]";
     return (
         <div className="flex flex-row px-[3.8em] pb-[1.8em] space-x-2">
             <div className="group">
