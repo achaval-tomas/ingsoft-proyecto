@@ -13,8 +13,8 @@ export const ShapeCardStateSchema = z.object({
 
 export const CommonPlayerStateSchema = z.object({
     id: PlayerIdSchema,
-    roundOrder: z.number().int().min(0).max(3),
     name: z.string(),
+    roundOrder: z.number().int().min(0).max(3),
     shapeCardsInHand: ShapeCardStateSchema.array().max(3),
     shapeCardsInDeckCount: z.number().int().nonnegative(),
 });
@@ -50,7 +50,7 @@ export const GameStateSchema = z.object({
     selfPlayerState: SelfPlayerStateSchema,
     otherPlayersState: OtherPlayerStateSchema.array().max(3),
     boardState: BoardStateSchema,
-    turnStart: z.string().datetime(),
+    // turnStart: z.string().datetime(),
     currentRoundPlayer: z.number().int().max(3),
 });
 
