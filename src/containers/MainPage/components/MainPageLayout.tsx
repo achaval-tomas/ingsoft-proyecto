@@ -7,12 +7,14 @@ interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
+    joinHandler: (lobbyId: string) => void;
 }
 
 function MainPageLayout({
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
+    joinHandler,
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -36,7 +38,7 @@ function MainPageLayout({
             </div>
             <LobbyList
                 lobbyList={lobbies}
-                joinHandler={() => {}}
+                joinHandler={joinHandler}
             />
         </div>
     );
