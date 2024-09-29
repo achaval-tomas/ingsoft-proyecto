@@ -1,6 +1,6 @@
 import MainPageLayout from "./components/MainPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
 import { createLobby, getJoinableLobbies, joinLobby } from "../../api/lobby";
@@ -20,6 +20,7 @@ async function getLobbies(): Promise<LobbyElement[]> {
 function MainPage() {
     const [ lobbies, setLobbies ] = useState<LobbyElement[]>([]);
     const [ urlParams ] = useSearchParams();
+    const navigate = useNavigate();
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -49,6 +50,9 @@ function MainPage() {
 
         if (res.errorMsg !== "")
             alert(res.errorMsg);
+
+        if (res.goHome)
+            navigate("/");
     }
 
     return (
