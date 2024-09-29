@@ -22,16 +22,21 @@ def create_lobby(db: Session, lobby: schemas.LobbyCreate):
     return db_lobby.lobby_id
 
 def join_lobby(db:Session, lobby_id: str, player_id: str):
-    assert get_player(db, player_id)
+    if not get_player(db, player_id):
+        return 1
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
-        return False
+        return 2
+    elif lobby.player_amount == lobby.max_players:
+        return 3
     players = deserialize(lobby.players)
+    if player_id in players:
+        return 4
     players.append(player_id)
     lobby.players = serialize(players)
     lobby.player_amount += 1
     db.commit()
-    return True
+    return 0
 
 def get_lobby(db: Session, lobby_id: str):
     return db.query(Lobby).filter(Lobby.lobby_id == lobby_id).one_or_none()

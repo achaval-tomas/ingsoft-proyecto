@@ -20,8 +20,14 @@ join_lobby_router = APIRouter(prefix = "/lobby")
 @join_lobby_router.post("/join", status_code=202)
 def join_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
     res = crud_lobby.join_lobby(db = db, player_id = body.player_id, lobby_id = body.lobby_id)
-    if not res:
+    if res == 1:
+        raise HTTPException(status_code=404, detail="Player not found")
+    elif res == 2:
         raise HTTPException(status_code=404, detail="Lobby not found")
+    elif res == 3:
+        raise HTTPException(status_code=400, detail="Lobby is full")
+    elif res == 4:
+        raise HTTPException(status_code=400, detail="Already joined")
 
 list_lobbies_router = APIRouter()
 
