@@ -1,4 +1,8 @@
-export type Color = "red" | "green" | "blue" | "yellow";
+import { z } from "zod";
+
+export const ColorSchema = z.enum(["red", "green", "blue", "yellow"]);
+
+export type Color = z.infer<typeof ColorSchema>;
 
 export function colorToBackgroundClassName(color: Color): string {
     switch (color) {
