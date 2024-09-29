@@ -3,7 +3,7 @@ import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
-import { createLobby, getJoinableLobbies } from "../../api/lobby";
+import { createLobby, getJoinableLobbies, joinLobby } from "../../api/lobby";
 
 export interface LobbyForm {
     name: string;
@@ -44,12 +44,20 @@ function MainPage() {
         }
     }
 
+    async function joinHandler(lobbyId: string) {
+        const res = await joinLobby(urlParams.get("player") ?? "", lobbyId);
+
+        if (res.errorMsg !== "")
+            alert(res.errorMsg);
+    }
+
     return (
         urlParams.get("player") ?
             <MainPageLayout
                 onSubmitLobbyForm = {s => void handleSubmit(s)}
                 lobbies={lobbies}
                 refreshHandler={() => { void fetchAndSaveLobbies(); }}
+                joinHandler={ lobbyId => void joinHandler(lobbyId) }
             />
             :
             <Navigate to="/" replace />
