@@ -9,17 +9,21 @@ export interface LobbyForm {
 }
 
 async function getLobbies(): Promise<LobbyElement[]> {
-    const res = await fetch("http://127.0.0.1:8000/lobby", {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-    });
+    try {
+        const res = await fetch("http://127.0.0.1:8000/lobby", {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+        });
 
-    const data = await res.json() as LobbyElement[];
+        const data = await res.json() as LobbyElement[];
 
-    return data;
+        return data;
+    } catch {
+        return [];
+    }
 }
 
 function MainPage() {
