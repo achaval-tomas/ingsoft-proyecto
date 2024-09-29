@@ -47,6 +47,12 @@ export default tseslint.config(
             "@typescript-eslint/no-unused-vars": "warn",
             "@stylistic/member-delimiter-style": ["warn"],
             "@stylistic/jsx/jsx-equals-spacing": ["warn", "never"],
+            "@stylistic/jsx/jsx-tag-spacing": [
+                "warn",
+                {
+                    beforeSelfClosing: "proportional-always",
+                },
+            ],
             ...react.configs.recommended.rules,
             ...react.configs["jsx-runtime"].rules,
             ...reactHooks.configs.recommended.rules,
