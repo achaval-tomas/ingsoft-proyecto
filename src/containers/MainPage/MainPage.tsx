@@ -20,7 +20,7 @@ async function getLobbies(): Promise<LobbyElement[]> {
 
         const data = await res.json() as LobbyElement[];
 
-        return data;
+        return data.filter(l => l.max_players > l.player_amount);
     } catch {
         return [];
     }
