@@ -76,12 +76,13 @@ def get_available_lobbies(db: Session, limit: int = 1000):
     return db.query(Lobby).filter(Lobby.player_amount < Lobby.max_players).all()
 
 def delete_lobby(db: Session, lobby_id: str):
-    lobby = db.query(Lobby).filter(Lobby.lobby_id == lobby_id).one_or_none()
+    query = db.query(Lobby).filter(Lobby.lobby_id == lobby_id)
+    lobby = query.one_or_none()
     if not lobby:
         return
     for player_id in deserialize(lobby.players):
         db_player = get_player(db=db, player_id=player_id)
         db_player.lobby_id = None
         db.commit()
-    lobby.delete()
+    query.delete()
     db.commit()
