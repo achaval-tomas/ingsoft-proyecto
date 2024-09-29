@@ -1,16 +1,19 @@
 import FilledButton from "../../components/FilledButton";
 import { Color } from "../../domain/Color";
 import { Movement } from "../../domain/Movement";
+import { Shape } from "../../domain/Shape";
 import Board from "./components/Board";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
+import ShapeCardHand from "./components/ShapeCardHand";
 
 type GameLayoutProps = {
     tiles: Color[];
     movements: [Movement, Movement, Movement];
+    shapes: [Shape, Shape, Shape]
 };
 
-function GameLayout({ tiles, movements }: GameLayoutProps) {
+function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -26,10 +29,13 @@ function GameLayout({ tiles, movements }: GameLayoutProps) {
                     </div>
                 </div>
             </div>
-            <div className="row-start-2 col-start-1 justify-self-center self-end py-4">
+            <div className="row-start-2 col-start-1 justify-self-center pt-4">
+                <ShapeCardHand shapes={shapes} />
+            </div>
+            <div className="row-start-3 col-start-1 justify-self-center self-end py-4">
                 <MovementCardHand movements={movements} />
             </div>
-            <div className="row-start-2 col-start-1 justify-self-end self-end">
+            <div className="row-start-3 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4">Terminar turno</FilledButton>
             </div>
         </div>
