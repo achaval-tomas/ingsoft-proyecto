@@ -7,7 +7,7 @@ type ShapeCardProps = {
 function ShapeCard({ shape }: ShapeCardProps) {
     const imageSrc = `/src/assets/shapes/${shape}.svg`;
 
-    return <img src={imageSrc} className="rounded w-[6em] h-[6em]" />;
+    return <img src={imageSrc} className="w-[6em] h-[6em]" />;
 }
 
 export default ShapeCard;
