@@ -67,6 +67,10 @@ function Game() {
                     setGameState(message.gameState);
                     break;
                 }
+                case "error": {
+                    // TODO
+                    break;
+                }
             }
         });
 
