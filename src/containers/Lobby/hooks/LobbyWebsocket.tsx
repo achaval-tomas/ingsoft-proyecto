@@ -30,19 +30,16 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
 
         socket.onmessage = (e: MessageEvent) => {
             const messageString = e.data as string;
-            console.log(messageString);
             try {
                 const message = LobbyMessageInSchema.parse(JSON.parse(messageString));
                 switch (message.type) {
                     case "player-list":
-                        console.log(message.players);
                         setPlayers(message.players);
                         break;
                     case "game-started":
                         navigate(`/play?user=${playerId}`);
                         break;
                     case "lobby-state":
-                        console.log(message);
                         if (message.players.find(p => p.id === playerId) === undefined) {
                             navigate(`/home?player=${playerId}`);
                         }
