@@ -18,6 +18,10 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         type: z.literal("game-state"),
         gameState: GameStateSchema,
     }),
+    z.object({
+        type: z.literal("error"), // Received when the server has detected an error.
+        message: z.string().optional(), // Display message for the error.
+    }),
 ]);
 
 // Messages sent to the backend
