@@ -43,11 +43,9 @@ def create_game(db: Session, lobby_id: str, player_id: str):
         player = get_player(db=db, player_id=id)
         if player is None:
             return False
-        player.lobby_id = None
         player.game_id = game_id
         db.commit()
         hand_cards(db=db, player_id=id)
-    delete_lobby(db=db, lobby_id=lobby_id)
     return True
 
 def hand_cards(db: Session, player_id: str):
