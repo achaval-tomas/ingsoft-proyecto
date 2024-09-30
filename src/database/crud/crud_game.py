@@ -23,7 +23,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     # the first turn will go to the first player in the shuffled list
     current_turn = 0
     # create the board (fundamental data for the creation of the game should be on the crud right?)
-    colors = ["green", "blue", "yellow", "orange"]
+    colors = ["green", "blue", "yellow", "red"]
     board = colors * 9
     # shuffle modificates the original list
     random.shuffle(board)

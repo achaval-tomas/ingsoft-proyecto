@@ -36,7 +36,7 @@ async def leave_game(body: schemas.PlayerId, db: Session = Depends(get_db)):
 @game_router.websocket("/game/{player_id}")
 async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(get_db)):
     await cm.game_manager.connect(ws, player_id)
-    cm.game_manager.send_personal_message(
+    await cm.game_manager.send_personal_message(
         player_id=player_id,
         message=ws_handle_gamestate(player_id=player_id, db=db)
     )
