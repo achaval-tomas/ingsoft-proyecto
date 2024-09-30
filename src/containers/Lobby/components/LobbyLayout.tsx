@@ -6,9 +6,10 @@ type Player = {
 export interface LobbyLayoutProps {
     playerId: string;
     players: Player[];
+    lobbyName: string;
 }
 
-function LobbyLayout({ players, playerId }: LobbyLayoutProps) {
+function LobbyLayout({ players, playerId, lobbyName }: LobbyLayoutProps) {
     const playerList = players.map(p => (
         <li
             key={p.id}
@@ -18,7 +19,8 @@ function LobbyLayout({ players, playerId }: LobbyLayoutProps) {
         </li>
     ));
 
-    return <div>
+    return <div className="flex flex-col items-center w-screen">
+        <h2>Jugadores en { "\"" + lobbyName + "\""}:</h2>
         <ul>
             { playerList }
         </ul>
