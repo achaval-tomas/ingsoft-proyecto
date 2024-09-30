@@ -88,6 +88,7 @@ def leave_game(db: Session, player_id: str):
     players = deserialize(game.player_order)
     players.remove(player_id)
     game.player_order = serialize(players)
+    game.current_turn = game.current_turn % len(players)
     player = get_player(db=db, player_id=player_id)
     if not player:
         return 2, None
