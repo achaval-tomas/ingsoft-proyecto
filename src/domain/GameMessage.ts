@@ -12,6 +12,10 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         playerId: PlayerIdSchema, // ID of the winner.
     }),
     z.object({
+        type: z.literal("player-left"), // Received when someone has left.
+        playerId: PlayerIdSchema, // ID of the player who has left.
+    }),
+    z.object({
         // Received after the start of the game, after it is requested,
         // and, if there is a game in progress, after the backend has
         // rejected one of our messages.
