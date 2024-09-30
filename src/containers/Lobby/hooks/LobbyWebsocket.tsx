@@ -43,7 +43,7 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         break;
                     case "lobby-state":
                         console.log(message);
-                        if (!(playerId in message.players)) {
+                        if (message.players.find(p => p.id === playerId) === undefined) {
                             navigate(`/home?player=${playerId}`);
                         }
                         setLobbyId(message.id);
