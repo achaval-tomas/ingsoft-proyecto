@@ -42,11 +42,11 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     for id in player_order:
         player = get_player(db=db, player_id=id)
         if player is None:
-            return False
+            return 3
         player.game_id = game_id
         db.commit()
         hand_cards(db=db, player_id=id)
-    return True
+    return 0
 
 def hand_cards(db: Session, player_id: str):
     mov_cards = [
