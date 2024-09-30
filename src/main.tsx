@@ -9,6 +9,7 @@ import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
 import Game from "./containers/Game/Game.tsx";
 import InitialPage from "./containers/InitialPage/InitialPage.tsx";
 import MainPage from "./containers/MainPage/MainPage.tsx";
+import Lobby from "./containers/Lobby/Lobby.tsx";
 
 const router = createBrowserRouter([
     {
@@ -19,6 +20,11 @@ const router = createBrowserRouter([
     {
         path: "/lobby",
         element: <MainPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/lobby/:lobby",
+        element: <Lobby />,
         errorElement: <ErrorPage />,
     },
     {
