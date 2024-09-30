@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import GameLayout from "./GameLayout";
-import { Movement } from "../../domain/Movement";
-import { Shape } from "../../domain/Shape";
-import { GameMessageInSchema } from "../../domain/GameMessage";
+import { GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
 import { CommonPlayerState, GameState } from "../../domain/GameState";
 import { useSearchParams } from "react-router-dom";
 
@@ -10,6 +8,7 @@ const serverUrl = "ws://localhost:8080";
 
 function Game() {
     const [searchParams] = useSearchParams();
+    const wsRef = useRef<WebSocket | null>(null);
 
     const [gameState, setGameState] = useState<GameState | null>(null);
 
@@ -17,6 +16,7 @@ function Game() {
         setGameState(null);
 
         const ws = new WebSocket(`${serverUrl}/game?user=${searchParams.get("user")}`);
+        wsRef.current = ws;
 
         ws.addEventListener("message", e => {
             if (typeof e.data !== "string") {
@@ -71,6 +71,13 @@ function Game() {
         return () => ws.close();
     }, [searchParams]);
 
+    const handleEndTurn = () => {
+        const message: GameMessageOut = {
+            type: "end-turn",
+        };
+        wsRef.current?.send(JSON.stringify(message));
+    };
+
     if (gameState === null) {
         return <p>Loading...</p>;
     }
@@ -80,6 +87,7 @@ function Game() {
             tiles={gameState.boardState.tiles}
             selfPlayerState={gameState.selfPlayerState}
             otherPlayersState={gameState.otherPlayersState}
+            onClickEndTurn={handleEndTurn}
         />
     );
 }

@@ -11,6 +11,7 @@ type GameLayoutProps = {
     tiles: Color[];
     selfPlayerState: SelfPlayerState;
     otherPlayersState: OtherPlayerState[];
+    onClickEndTurn: () => void;
 };
 
 function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation} ) {
@@ -21,7 +22,7 @@ function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation} ) {
     );
 }
 
-function GameLayout({ tiles, selfPlayerState, otherPlayersState }: GameLayoutProps) {
+function GameLayout({ tiles, selfPlayerState, otherPlayersState, onClickEndTurn }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -65,7 +66,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState }: GameLayoutPro
                 <MovementCardHand movements={selfPlayerState.movementCardsInHand} />
             </div>
             <div className="row-start-2 col-start-1 justify-self-end self-end">
-                <FilledButton className="text-xl" padding="px-8 py-4">Terminar turno</FilledButton>
+                <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
             </div>
         </div>
     );
