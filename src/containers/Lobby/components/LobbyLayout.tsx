@@ -1,3 +1,5 @@
+import FilledButton from "../../../components/FilledButton";
+
 type Player = {
     name: string;
     id: string;
@@ -7,9 +9,10 @@ export interface LobbyLayoutProps {
     playerId: string;
     players: Player[];
     lobbyName: string;
+    isOwner: boolean;
 }
 
-function LobbyLayout({ players, playerId, lobbyName }: LobbyLayoutProps) {
+function LobbyLayout({ players, playerId, lobbyName, isOwner }: LobbyLayoutProps) {
     const playerList = players.map(p => (
         <li
             key={p.id}
@@ -24,6 +27,16 @@ function LobbyLayout({ players, playerId, lobbyName }: LobbyLayoutProps) {
         <ul>
             { playerList }
         </ul>
+        <div className="flex justify-center">
+            <FilledButton>
+                Salir
+            </FilledButton>
+            { isOwner &&
+                <FilledButton>
+                    Iniciar juego
+                </FilledButton>
+            }
+        </div>
     </div>;
 }
 
