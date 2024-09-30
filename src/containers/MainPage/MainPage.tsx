@@ -51,7 +51,7 @@ function MainPage() {
         const playerId = urlParams.get("player") ?? "";
         const res = await joinLobby(playerId, lobbyId);
 
-        if (res === "Ok") {
+        if (res === "Ok" || res === "El jugador ya está en esta sala") {
             navigate(`/lobby?player=${playerId}`);
             return;
         }
