@@ -61,8 +61,9 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
         await ws_share_player_list(player_id=player_id, lobby_id=player.lobby_id, db=db, broadcast=False)
         while True:
             response = ""
-            request = await ws.receive_text()
-            match request:
+            received = await ws.receive_text()
+            request = deserialize(received)
+            match request['type']:
                 case 'get-lobby-state':
                     response = await ws_handle_lobbystate(player_id, db)
 
