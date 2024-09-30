@@ -27,7 +27,7 @@ async def start_game(body: schemas.GameCreate, db: Session = Depends(get_db)):
     
 @game_router.post("/game/leave", status_code=200)
 async def leave_game(body: schemas.PlayerId, db: Session = Depends(get_db)):
-    res = await ws_handle_leave_game(player_id=body.player_id, db=db)
+    res = await ws_handle_leave_game(player_id=body.playerId, db=db)
     if res == 1:
         raise HTTPException(status_code=404, detail="Game not found")
     elif res == 2:

@@ -5,7 +5,7 @@ class PlayerBase(BaseModel):
     player_name: str
 
 class PlayerId(BaseModel):
-    player_id: str
+    playerId: str # to receive from frontend
 
 class PlayerCreate(PlayerBase):
     pass
