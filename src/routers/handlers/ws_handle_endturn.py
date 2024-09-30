@@ -1,28 +1,31 @@
-from fastapi import Depends, HTTPException
-from src.database.models import Player, Game
 from src.database.crud.crud_player import get_player
-from src.database.crud.crud_game import get_game, update_game_turn
+from src.database.crud.crud_game import end_game_turn
 from sqlalchemy.orm import Session
-import  json, jsonpickle
+from src.database.crud.tools.jsonify import serialize
+import src.routers.helpers.connection_manager as cm
 
 
-def end_turn(player_id: str, db: Session):
-  
+async def ws_handle_endturn(player_id: str, db: Session):
     player = get_player(db=db, player_id=player_id)
     if not player:
-        raise HTTPException(status_code = 404, detail = "Player not found.")
+        return serialize({
+            'type': 'Error',
+            'message': 'El jugador que solicitó abandonar no existe'
+        })
     
-    game = get_game(db = db , player_id = player_id)
+    res = end_game_turn(db=db, player_id=player_id)
     
-    if not game:
-        raise HTTPException(status_code=404, detail="Game not found.")
-
-    players_order = jsonpickle.loads(game.player_order)      
-    current_turn = game.current_turn
-    next_turn =  update_game_turn(db = db, game = game )
-    game.current_turn = next_turn
-    
-    return json.dumps({
-        "type": "turn-end",
-        "playerId": players_order[current_turn]  
-    })
+    if res == 0:
+        await cm.game_manager.broadcast_in_game(
+            game_id=player.game_id,
+            db=db,
+            message=serialize({
+                "type": "turn-ended",
+                "playerId": player_id 
+            })
+        )
+    elif res == 1:
+        return serialize({
+            'type': 'Error',
+            'message': 'El jugador no está en una partida'
+        })
