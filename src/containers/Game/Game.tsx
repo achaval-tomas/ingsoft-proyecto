@@ -76,7 +76,7 @@ function Game() {
         });
 
         return () => ws.close();
-    }, [playerId]);
+    }, [playerId, navigate]);
 
     const handleEndTurn = () => {
         const message: GameMessageOut = {
