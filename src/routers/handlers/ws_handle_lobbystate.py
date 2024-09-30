@@ -31,13 +31,9 @@ def lobbystate_message(lobby_id: str, db: Session):
 async def ws_handle_lobbystate(player_id: str, db: Session):
     lobby = get_lobby_by_player_id(db=db, player_id=player_id)
     if not lobby:
-        await lobby_manager.send_personal_message(
-            message=serialize({
-                'type': 'Error',
-                'message': 'El lobby con el que se desea conectar no existe'
-            }),
-            player_id=player_id
-        )
-        return
+        return serialize({
+            'type': 'Error',
+            'message': 'El lobby con el que se desea conectar no existe'
+        })
 
     return lobbystate_message(lobby_id=lobby.lobby_id, db=db)
