@@ -59,7 +59,7 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
         };
 
         socket.onopen = () => {
-            socket.send("get-lobby-state");
+            socket.send(JSON.stringify({ type: "get-lobby-state" }));
         };
 
         return () => {
