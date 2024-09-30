@@ -23,7 +23,8 @@ def lobbystate_message(lobby_id: str, db: Session):
         'type': 'lobby-state',
         'players': players_info,
         'owner': owner,
-        'id': lobby_id
+        'id': lobby_id,
+        'name': lobby.lobby_name,
     })
 
 
