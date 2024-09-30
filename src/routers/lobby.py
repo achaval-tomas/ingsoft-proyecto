@@ -1,10 +1,9 @@
-import asyncio
 from fastapi import Depends, APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from src.database import models, schemas
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize, serialize
+from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
 from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_share_player_list import ws_share_player_list

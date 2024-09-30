@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.database.models import *
 from src.database.cards.movement_card import MovementCard, MovementType
 from src.database.cards.shape_card import ShapeCard, ShapeType
-from src.database.crud.crud_lobby import get_lobby, delete_lobby
+from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import serialize, deserialize
 from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner

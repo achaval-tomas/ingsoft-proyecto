@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.database.crud import crud_game, crud_lobby
+from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import serialize
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
