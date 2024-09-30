@@ -1,4 +1,5 @@
 import FilledButton from "../../components/FilledButton";
+import TextButton from "../../components/TextButton";
 import { Color } from "../../domain/Color";
 import { OtherPlayerState, SelfPlayerState } from "../../domain/GameState";
 import { Rotation } from "../../domain/Rotation";
@@ -13,6 +14,7 @@ type GameLayoutProps = {
     otherPlayersState: OtherPlayerState[];
     activeSide: "b" | "r" | "t" | "l";
     onClickEndTurn: () => void;
+    onClickLeaveGame: () => void;
 };
 
 function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation} ) {
@@ -23,7 +25,7 @@ function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation} ) {
     );
 }
 
-function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onClickEndTurn }: GameLayoutProps) {
+function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onClickEndTurn, onClickLeaveGame }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -68,6 +70,9 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onC
             </div>
             <div className="row-start-2 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
+            </div>
+            <div className="row-start-1 col-start-1 justify-self-end self-start">
+                <TextButton className="text-xl" padding="px-8 py-4" onClick={onClickLeaveGame}>Abandonar partida</TextButton>
             </div>
         </div>
     );

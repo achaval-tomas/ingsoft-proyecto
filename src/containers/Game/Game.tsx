@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import GameLayout from "./GameLayout";
 import { GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
 import { CommonPlayerState, GameState } from "../../domain/GameState";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const serverUrl = "ws://localhost:8080";
+const serverHttpUrl = "http://localhost:8080";
 
 function Game() {
     const [searchParams] = useSearchParams();
+    const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
+    const navigate = useNavigate();
+
     const wsRef = useRef<WebSocket | null>(null);
 
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -15,7 +19,7 @@ function Game() {
     useEffect(() => {
         setGameState(null);
 
-        const ws = new WebSocket(`${serverUrl}/game?user=${searchParams.get("user")}`);
+        const ws = new WebSocket(`${serverUrl}/game?player=${playerId}`);
         wsRef.current = ws;
 
         ws.addEventListener("message", e => {
@@ -78,6 +82,18 @@ function Game() {
         wsRef.current?.send(JSON.stringify(message));
     };
 
+    const handleLeaveGame = () => {
+        void fetch(`${serverHttpUrl}/game/leave`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ playerId }),
+        });
+        navigate(`/lobby?player=${playerId}`);
+    };
+
     if (gameState === null) {
         return <p>Loading...</p>;
     }
@@ -94,6 +110,7 @@ function Game() {
             otherPlayersState={gameState.otherPlayersState}
             activeSide={activeSide}
             onClickEndTurn={handleEndTurn}
+            onClickLeaveGame={handleLeaveGame}
         />
     );
 }
