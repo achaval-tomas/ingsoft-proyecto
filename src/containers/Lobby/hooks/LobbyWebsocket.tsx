@@ -43,6 +43,9 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         break;
                     case "lobby-state":
                         console.log(message);
+                        if (!(playerId in message.players)) {
+                            navigate(`/home?player=${playerId}`);
+                        }
                         setLobbyId(message.id);
                         setPlayers(message.players);
                         setOwnerId(message.owner);
