@@ -52,7 +52,7 @@ function Lobby() {
             }
 
             if (res === "Ok") {
-                navigate(`/play?user=${playerId}`);
+                navigate(`/play?player=${playerId}`);
             }
         } catch {
             navigate("/");
