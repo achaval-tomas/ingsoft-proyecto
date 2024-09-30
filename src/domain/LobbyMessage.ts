@@ -27,6 +27,9 @@ export const LobbyMessageInSchema = z.discriminatedUnion("type", [
         id: z.string(),
         name: z.string(),
     }),
+    z.object({
+        type: z.literal("destroy-lobby"),
+    }),
 ]);
 
 export type LobbyMessageIn = z.infer<typeof LobbyMessageInSchema>;
