@@ -3,9 +3,7 @@ import GameLayout from "./GameLayout";
 import { GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
 import { CommonPlayerState, GameState } from "../../domain/GameState";
 import { useNavigate, useSearchParams } from "react-router-dom";
-
-const serverUrl = "ws://localhost:8080";
-const serverHttpUrl = "http://localhost:8080";
+import { httpServerUrl, wsServerUrl } from "../../services/config";
 
 function Game() {
     const [searchParams] = useSearchParams();
@@ -19,7 +17,7 @@ function Game() {
     useEffect(() => {
         setGameState(null);
 
-        const ws = new WebSocket(`${serverUrl}/game?player=${playerId}`);
+        const ws = new WebSocket(`${wsServerUrl}/game?player=${playerId}`);
         wsRef.current = ws;
 
         ws.addEventListener("message", e => {
@@ -83,7 +81,7 @@ function Game() {
     };
 
     const handleLeaveGame = () => {
-        void fetch(`${serverHttpUrl}/game/leave`, {
+        void fetch(`${httpServerUrl}/game/leave`, {
             method: "POST",
             headers: {
                 "Accept": "application/json",
