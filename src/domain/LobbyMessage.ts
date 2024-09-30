@@ -15,6 +15,9 @@ export const LobbyMessageInSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("game-started"), // Received when the owner has started the game.
     }),
+    z.object({
+        type: z.literal("ping"),
+    }),
 ]);
 
 export type LobbyMessageIn = z.infer<typeof LobbyMessageInSchema>;
