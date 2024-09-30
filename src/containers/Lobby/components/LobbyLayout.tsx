@@ -10,9 +10,10 @@ export interface LobbyLayoutProps {
     players: Player[];
     lobbyName: string;
     isOwner: boolean;
+    quitHandler: () => void;
 }
 
-function LobbyLayout({ players, playerId, lobbyName, isOwner }: LobbyLayoutProps) {
+function LobbyLayout({ players, playerId, lobbyName, isOwner, quitHandler }: LobbyLayoutProps) {
     const playerList = players.map(p => (
         <li
             key={p.id}
@@ -28,7 +29,7 @@ function LobbyLayout({ players, playerId, lobbyName, isOwner }: LobbyLayoutProps
             { playerList }
         </ul>
         <div className="flex justify-center">
-            <FilledButton>
+            <FilledButton onClick={quitHandler}>
                 Salir
             </FilledButton>
             { isOwner &&
