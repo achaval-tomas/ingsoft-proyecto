@@ -59,7 +59,7 @@ def hand_cards(db: Session, player_id: str):
         ShapeCard(shape=ShapeType.B_2),
         ShapeCard(shape=ShapeType.C_3)
     ]
-    shape_cards_deck = [ShapeCard(shape=ShapeType.SQUARE)]*10
+    shape_cards_deck = [ShapeCard(shape=ShapeType.C_7)]*10
     db_cards = PlayerCards(
         player_id = player_id,
         movement_cards = jsonpickle.dumps(mov_cards, unpicklable=False),
