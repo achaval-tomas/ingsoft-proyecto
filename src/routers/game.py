@@ -2,6 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy.orm import Session
 from src.database import schemas
 from src.database.session import get_db
+from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
 from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
 from src.routers.handlers.ws_handle_gamestate import ws_handle_gamestate
 from src.routers.handlers.ws_handle_leave_game import ws_handle_leave_game
@@ -43,9 +44,7 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
                 case 'get-game-state':
                     response = ws_handle_gamestate(player_id=player_id, db=db)
                 case 'end-turn':
-                    pass
-                    # there should be a handler that returns a game_id and body
-                    # to broadcast through the manager
+                    response = ws_handle_endturn(player_id=player_id, db=db)
             if response != "":
                 await cm.game_manager.send_personal_message(websocket=ws, message=response)
     except WebSocketDisconnect:
