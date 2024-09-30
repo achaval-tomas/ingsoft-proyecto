@@ -11,7 +11,7 @@ function InitialPage() {
         try {
             const playerId = await createPlayer(playerName);
 
-            navigate(`lobby?player=${playerId}`);
+            navigate(`home?player=${playerId}`);
         } catch {
             setServerError(true);
         }

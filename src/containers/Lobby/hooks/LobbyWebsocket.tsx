@@ -48,11 +48,11 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         setLobbyName(message.name);
                         break;
                     case "destroy-lobby":
-                        navigate(`/lobby?player=${playerId}`);
+                        navigate(`/home?player=${playerId}`);
                         break;
                 }
             } catch {
-                navigate(`/lobby?player=${playerId}`);
+                navigate(`/home?player=${playerId}`);
             }
 
         };

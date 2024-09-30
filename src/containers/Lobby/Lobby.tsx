@@ -31,7 +31,7 @@ function Lobby() {
             }
 
             if (res === "Sala no encontrada" || res === "Ok") {
-                navigate(`/lobby?player=${playerId}`);
+                navigate(`/home?player=${playerId}`);
             }
         } catch {
             navigate("/");
