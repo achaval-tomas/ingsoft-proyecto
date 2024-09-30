@@ -8,6 +8,7 @@ from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
 from src.routers.helpers.connection_manager import lobby_manager
+from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
 
 
 def lobby_decoder(lobby: models.Lobby):
@@ -60,14 +61,15 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
     try:
         await ws_share_player_list(player_id=player_id, db=db, broadcast=False)
         while True:
-            # Send pings every 10 seconds to keep connection alive (or detect disconnection)
-            await asyncio.sleep(10)
-            await lobby_manager.send_personal_message(
-                message=serialize({
-                    'type': 'ping'
-                }), 
-                player_id=player_id
-            )
+            response = ""
+            request = await ws.receive_text()
+            match request:
+                case 'get-lobby-state':
+                    response = await ws_handle_lobbystate(player_id, db)
+
+            if response != "":
+                await lobby_manager.send_personal_message(response, player_id)
+
     except WebSocketDisconnect:
         lobby_manager.disconnect(player_id=player_id)
         return
