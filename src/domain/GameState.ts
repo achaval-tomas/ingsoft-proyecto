@@ -11,6 +11,8 @@ export const ShapeCardStateSchema = z.object({
     isBlocked: z.boolean(),
 });
 
+export type ShapeCardState = z.infer<typeof ShapeCardStateSchema>;
+
 export const CommonPlayerStateSchema = z.object({
     id: PlayerIdSchema,
     name: z.string(),

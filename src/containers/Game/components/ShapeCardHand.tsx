@@ -1,9 +1,9 @@
+import { ShapeCardState } from "../../../domain/GameState";
 import { Rotation } from "../../../domain/Rotation";
-import { Shape } from "../../../domain/Shape";
 import ShapeCard from "./ShapeCard";
 
 type ShapeCardHandProps = {
-    shapes: [Shape, Shape, Shape];
+    shapeCards: ShapeCardState[];
     rotation: Rotation;
 }
 
@@ -16,7 +16,7 @@ function flexDirectionFromRotation(rotation: Rotation): string {
     }
 }
 
-function ShapeCardHand({ shapes, rotation }: ShapeCardHandProps) {
+function ShapeCardHand({ shapeCards, rotation }: ShapeCardHandProps) {
     const sharedClassNames = "relative overflow-hidden rounded-lg top-[0em] " +
         "shadow-sm shadow-black transition-movement-card z-0";
 
@@ -24,21 +24,13 @@ function ShapeCardHand({ shapes, rotation }: ShapeCardHandProps) {
 
     return (
         <div className={`flex ${flexDirectionFromRotation(rotation)} gap-[1em]`}>
-            <div className="group">
-                <div className={sharedClassNames + " " + nonBlockedClassNames}>
-                    <ShapeCard shape={shapes[0]} isBlocked={false} />
+            {shapeCards.map(({ shape, isBlocked }, i) => (
+                <div key={i} className="group">
+                    <div className={sharedClassNames + (isBlocked ? "" : ` ${nonBlockedClassNames}`)}>
+                        <ShapeCard shape={shape} isBlocked={isBlocked} />
+                    </div>
                 </div>
-            </div>
-            <div className="group">
-                <div className={sharedClassNames + " " + nonBlockedClassNames}>
-                    <ShapeCard shape={shapes[1]} isBlocked={false} />
-                </div>
-            </div>
-            <div className="group">
-                <div className={sharedClassNames}>
-                    <ShapeCard shape={shapes[2]} isBlocked={true} />
-                </div>
-            </div>
+            ))}
         </div>
     );
 }

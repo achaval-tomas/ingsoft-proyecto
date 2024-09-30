@@ -77,13 +77,13 @@ function Game() {
 
     const tiles = gameState.boardState.tiles;
     const movements = gameState.selfPlayerState.movementCardsInHand;
-    const shapes = gameState.selfPlayerState.shapeCardsInHand;
+    const selfShapeCards = gameState.selfPlayerState.shapeCardsInHand;
 
     return (
         <GameLayout
             tiles={tiles}
             movements={movements as [Movement, Movement, Movement]}
-            shapes={shapes.map(s => s.shape) as [Shape, Shape, Shape]}
+            selfShapeCardsInHand={selfShapeCards}
         />
     );
 }

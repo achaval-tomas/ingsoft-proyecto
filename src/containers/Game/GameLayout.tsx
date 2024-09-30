@@ -1,7 +1,7 @@
 import FilledButton from "../../components/FilledButton";
 import { Color } from "../../domain/Color";
+import { ShapeCardState } from "../../domain/GameState";
 import { Movement } from "../../domain/Movement";
-import { Shape } from "../../domain/Shape";
 import Board from "./components/Board";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
@@ -10,10 +10,10 @@ import ShapeCardHand from "./components/ShapeCardHand";
 type GameLayoutProps = {
     tiles: Color[];
     movements: Movement[];
-    shapes: [Shape, Shape, Shape];
+    selfShapeCardsInHand: ShapeCardState[];
 };
 
-function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {
+function GameLayout({ tiles, selfShapeCardsInHand, movements }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -26,16 +26,16 @@ function GameLayout({ tiles, shapes, movements }: GameLayoutProps) {
                             <Board tiles={tiles} />
                         </div>
                         <div className="row-start-3 col-start-2 justify-self-center pt-[1em]">
-                            <ShapeCardHand shapes={shapes} rotation="r0" />
+                            <ShapeCardHand shapeCards={selfShapeCardsInHand} rotation="r0" />
                         </div>
                         <div className="row-start-2 col-start-3 self-center pl-[1em]">
-                            <ShapeCardHand shapes={shapes} rotation="r90" />
+                            <ShapeCardHand shapeCards={selfShapeCardsInHand} rotation="r90" />
                         </div>
                         <div className="row-start-1 col-start-2 justify-self-center pb-[1em]">
-                            <ShapeCardHand shapes={shapes} rotation="r180" />
+                            <ShapeCardHand shapeCards={selfShapeCardsInHand} rotation="r180" />
                         </div>
                         <div className="row-start-2 col-start-1 self-center pr-[1em]">
-                            <ShapeCardHand shapes={shapes} rotation="r270" />
+                            <ShapeCardHand shapeCards={selfShapeCardsInHand} rotation="r270" />
                         </div>
                     </div>
                     <div className="relative w-0 h-[12em] self-center">
