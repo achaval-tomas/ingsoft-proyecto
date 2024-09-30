@@ -11,9 +11,10 @@ export interface LobbyLayoutProps {
     lobbyName: string;
     isOwner: boolean;
     quitHandler: () => void;
+    startHandler: () => void;
 }
 
-function LobbyLayout({ players, playerId, lobbyName, isOwner, quitHandler }: LobbyLayoutProps) {
+function LobbyLayout({ players, playerId, lobbyName, isOwner, quitHandler, startHandler }: LobbyLayoutProps) {
     const playerList = players.map(p => (
         <li
             key={p.id}
@@ -33,7 +34,7 @@ function LobbyLayout({ players, playerId, lobbyName, isOwner, quitHandler }: Lob
                 Salir
             </FilledButton>
             { isOwner &&
-                <FilledButton>
+                <FilledButton onClick={startHandler}>
                     Iniciar juego
                 </FilledButton>
             }
