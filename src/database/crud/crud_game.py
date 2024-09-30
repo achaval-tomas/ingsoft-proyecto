@@ -104,6 +104,7 @@ def delete_game(db: Session, game_id: str):
         db_player = get_player(db=db, player_id=player_id)
         if not db_player:
             continue
+        db.query(PlayerCards).filter(PlayerCards.player_id == player_id).delete()
         db_player.game_id = None
         db.commit()
     query.delete()
