@@ -6,6 +6,7 @@ from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
+from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
 from src.routers.helpers.connection_manager import lobby_manager
 from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
@@ -45,12 +46,11 @@ async def get_all_lobbies(db: Session = Depends(get_db)):
 
 @lobby_router.post("/lobby/leave", status_code=200)
 async def leave_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
-    res = crud_lobby.leave_lobby(db = db, player_id = body.player_id)
+    res = await ws_handle_leave_lobby(db = db, player_id = body.player_id, lobby_id=body.lobby_id)
     if res == 1:
         raise HTTPException(status_code=404, detail="Player not found")
     elif res == 2:
         raise HTTPException(status_code=404, detail="Lobby not found")
-    await ws_share_player_list(player_id=body.player_id, db=db, broadcast=True)
 
 
 @lobby_router.websocket("/lobby/{player_id}")
