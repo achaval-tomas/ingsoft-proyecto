@@ -35,7 +35,7 @@ async def join_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Lobby is full")
     elif res == 4:
         raise HTTPException(status_code=400, detail="Already joined")
-    await ws_share_player_list(player_id=body.player_id, db=db, broadcast=True)
+    await ws_share_player_list(player_id=body.player_id, lobby_id=body.lobby_id, db=db, broadcast=True)
 
 
 @lobby_router.get("/lobby")
@@ -58,7 +58,7 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
     assert player != None
     await lobby_manager.connect(ws, player_id)
     try:
-        await ws_share_player_list(player_id=player_id, db=db, broadcast=False)
+        await ws_share_player_list(player_id=player_id, lobby_id=player.lobby_id, db=db, broadcast=False)
         while True:
             response = ""
             request = await ws.receive_text()
