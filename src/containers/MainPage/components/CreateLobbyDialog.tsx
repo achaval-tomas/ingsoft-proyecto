@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { DialogTitle } from "@headlessui/react";
 import Field from "../../../components/Field";
 import FilledButton from "../../../components/FilledButton";
 import OutlinedButton from "../../../components/OutlinedButton";
+import Dialog from "../../../components/Dialog";
 
 export interface CreateLobbyFormState {
     name: string;
@@ -75,14 +76,10 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
 
 function CreateLobbyDialog(props: CreateLobbyDialogProps) {
     return (
-        <Dialog className="relative" open={props.isOpen} onClose={props.onCancel}>
-            <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                <DialogPanel className="max-w-lg rounded-lg border border-border bg-surface p-12 min-w-96">
-                    <CreateLobbyForm
-                        {...props}
-                    />
-                </DialogPanel>
-            </div>
+        <Dialog isOpen={props.isOpen} onClose={props.onCancel}>
+            <CreateLobbyForm
+                {...props}
+            />
         </Dialog>
     );
 }
