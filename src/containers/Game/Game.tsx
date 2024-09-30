@@ -4,12 +4,19 @@ import { Movement } from "../../domain/Movement";
 import { Shape } from "../../domain/Shape";
 import { GameMessageInSchema } from "../../domain/GameMessage";
 import { CommonPlayerState, GameState } from "../../domain/GameState";
+import { useSearchParams } from "react-router-dom";
+
+const serverUrl = "ws://localhost:8080";
 
 function Game() {
+    const [searchParams] = useSearchParams();
+
     const [gameState, setGameState] = useState<GameState | null>(null);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8080/game?user=asdqwe");
+        setGameState(null);
+
+        const ws = new WebSocket(`${serverUrl}/game?user=${searchParams.get("user")}`);
 
         ws.addEventListener("message", e => {
             if (typeof e.data !== "string") {
@@ -62,7 +69,7 @@ function Game() {
         });
 
         return () => ws.close();
-    }, []);
+    }, [searchParams]);
 
     if (gameState === null) {
         return <p>Loading...</p>;
