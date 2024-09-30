@@ -47,6 +47,10 @@ function Lobby() {
                 navigate("/");
             }
 
+            if (res === "No se completó el mínimo de jugadores" || res === "Solo el dueño de la sala puede iniciarlo") {
+                alert(res);
+            }
+
             if (res === "Sala no encontrada") {
                 navigate(`/home?player=${playerId}`);
             }
@@ -64,7 +68,7 @@ function Lobby() {
             playerId={playerId}
             players={players}
             lobbyName={lobbyName}
-            isOwner={ownerId === playerId}
+            canStart={ownerId === playerId && players.length > 1}
             quitHandler={() => void quitHandler()}
             startHandler={() => void startHandler()}
         />
