@@ -5,6 +5,8 @@ import { CommonPlayerState, GameState } from "../../domain/GameState";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { httpServerUrl, wsServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import Dialog from "../../components/Dialog";
+import OutlinedButton from "../../components/OutlinedButton";
 
 function Game() {
     const [searchParams] = useSearchParams();
@@ -15,6 +17,7 @@ function Game() {
 
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
+    const [winner, setWinner] = useState(false);
 
     useEffect(() => {
         setGameState(null);
@@ -60,8 +63,7 @@ function Game() {
                         const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
                         const winner = allPlayers.find(p => p.id === message.playerId);
 
-                        alert(`¡${winner?.name} ganó!`);
-                        navigate(`/lobby?player=${playerId}`);
+                        setWinner(true);
                         return s;
                     });
                     break;
@@ -127,6 +129,19 @@ function Game() {
                 onDismiss={() => setShowLeaveGameDialog(false)}
                 onConfirm={handleLeaveGame}
             />
+            <Dialog
+                isOpen={winner}
+                onClose={() => navigate(`/lobby?player=${playerId}`)}
+            >
+                <div className="flex flex-col justify-center text-center gap-4">
+                    <p>¡Ganaste!</p>
+                    <OutlinedButton
+                        onClick={() => navigate(`/lobby?player=${playerId}`)}>
+                    Ok
+                    </OutlinedButton>
+                </div>
+            </Dialog>
+
         </>
     );
 }
