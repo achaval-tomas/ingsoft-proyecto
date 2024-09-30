@@ -82,6 +82,8 @@ def delete_lobby(db: Session, lobby_id: str):
         return
     for player_id in deserialize(lobby.players):
         db_player = get_player(db=db, player_id=player_id)
+        if not db_player:
+            continue
         db_player.lobby_id = None
         db.commit()
     query.delete()
