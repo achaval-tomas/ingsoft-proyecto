@@ -55,9 +55,9 @@ def hand_cards(db: Session, player_id: str):
         MovementCard(mov_type=MovementType.DIAGONAL_SPACED)
     ]
     shape_cards_hand = [
-        ShapeCard(shape=ShapeType.SQUARE),
-        ShapeCard(shape=ShapeType.T),
-        ShapeCard(shape=ShapeType.LINE_5)
+        ShapeCard(shape=ShapeType.C_16),
+        ShapeCard(shape=ShapeType.B_2),
+        ShapeCard(shape=ShapeType.C_3)
     ]
     shape_cards_deck = [ShapeCard(shape=ShapeType.SQUARE)]*10
     db_cards = PlayerCards(
