@@ -88,13 +88,13 @@ def leave_game(db: Session, player_id: str):
     players = deserialize(game.player_order)
     players.remove(player_id)
     game.player_order = serialize(players)
-    if len(players) == 1:
-        return 3, players[0]
     player = get_player(db=db, player_id=player_id)
     if not player:
         return 2, None
     player.game_id = None
     delete_player_cards(db=db, player_id=player_id)
+    if len(players) == 1:
+        return 3, players[0]
     db.commit()
     return 0, None
     
