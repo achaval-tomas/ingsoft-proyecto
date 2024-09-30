@@ -33,20 +33,28 @@ function MainPage() {
     async function handleSubmit(state: CreateLobbyFormState) {
 
         try {
-            const lobbyId = await createLobby(
-                urlParams.get("player") ?? "",
+            const playerId = urlParams.get("player") ?? "";
+
+            await createLobby(
+                playerId,
                 state.name,
                 state.maxPlayers,
             );
 
-            alert(`Lobby id: ${lobbyId}`);
+            navigate(`/lobby?player=${playerId}`);
         } catch {
             alert("Error al comunicarse con el servidor, intente de nuevo más tarde.");
         }
     }
 
     async function joinHandler(lobbyId: string) {
-        const res = await joinLobby(urlParams.get("player") ?? "", lobbyId);
+        const playerId = urlParams.get("player") ?? "";
+        const res = await joinLobby(playerId, lobbyId);
+
+        if (res === "Ok") {
+            navigate(`/lobby?player=${playerId}`);
+            return;
+        }
 
         if (res !== null)
             alert(res);
