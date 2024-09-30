@@ -16,7 +16,15 @@ export const LobbyMessageInSchema = z.discriminatedUnion("type", [
         type: z.literal("game-started"), // Received when the owner has started the game.
     }),
     z.object({
-        type: z.literal("ping"),
+        type: z.literal("lobby-state"),
+        players: z
+            .object({
+                id: PlayerIdSchema,
+                name: z.string(),
+            })
+            .array(),
+        owner: PlayerIdSchema,
+        id: z.string(),
     }),
 ]);
 
