@@ -75,15 +75,11 @@ function Game() {
         return <p>Loading...</p>;
     }
 
-    const tiles = gameState.boardState.tiles;
-    const movements = gameState.selfPlayerState.movementCardsInHand;
-    const selfShapeCards = gameState.selfPlayerState.shapeCardsInHand;
-
     return (
         <GameLayout
-            tiles={tiles}
-            movements={movements as [Movement, Movement, Movement]}
-            selfShapeCardsInHand={selfShapeCards}
+            tiles={gameState.boardState.tiles}
+            selfPlayerState={gameState.selfPlayerState}
+            otherPlayersState={gameState.otherPlayersState}
         />
     );
 }
