@@ -37,7 +37,7 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         setPlayers(message.players);
                         break;
                     case "game-started":
-                        navigate(`/play?user=${playerId}`);
+                        navigate(`/play?player=${playerId}`);
                         break;
                     case "lobby-state":
                         if (message.players.find(p => p.id === playerId) === undefined) {
