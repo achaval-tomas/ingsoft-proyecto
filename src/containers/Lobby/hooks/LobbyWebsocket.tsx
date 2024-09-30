@@ -7,8 +7,18 @@ type PlayerObject = {
     id: PlayerId;
 }
 
-function useLobbyWebsocket(playerId: string): PlayerObject[] {
+type LobbyWebsocketFields = {
+    players: PlayerObject[];
+    lobbyId: string;
+    lobbyName: string;
+    ownerId: PlayerId;
+}
+
+function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
     const [ players, setPlayers ] = useState<PlayerObject[]>([]);
+    const [ lobbyId, setLobbyId ] = useState<string>("");
+    const [ lobbyName, setLobbyName ] = useState<string>("");
+    const [ ownerId, setOwnerId ] = useState<PlayerId>("");
 
     useEffect(() => {
         if (playerId === "")
@@ -18,6 +28,7 @@ function useLobbyWebsocket(playerId: string): PlayerObject[] {
 
         socket.onmessage = (e: MessageEvent) => {
             const messageString = e.data as string;
+            console.log(messageString);
             const message = LobbyMessageInSchema.parse(JSON.parse(messageString));
 
             switch (message.type) {
@@ -27,10 +38,18 @@ function useLobbyWebsocket(playerId: string): PlayerObject[] {
                     break;
                 case "game-started":
                     break;
-                case "ping":
-                    console.log("ping");
+                case "lobby-state":
+                    console.log(message);
+                    setLobbyId(message.id);
+                    setPlayers(message.players);
+                    setOwnerId(message.owner);
+                    setLobbyName(message.name);
                     break;
             }
+        };
+
+        socket.onopen = () => {
+            socket.send("get-lobby-state");
         };
 
         return () => {
@@ -39,7 +58,7 @@ function useLobbyWebsocket(playerId: string): PlayerObject[] {
 
     }, [playerId]);
 
-    return players;
+    return { players, lobbyId, lobbyName, ownerId };
 }
 
 export default useLobbyWebsocket;
