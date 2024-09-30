@@ -3,6 +3,7 @@ type CreateGameResult =
     | "Jugador no encontrado"
     | "Ok"
     | "Solo el dueño de la sala puede iniciarlo"
+    | "No se completó el mínimo de jugadores"
 
 async function createGame(
     playerId: string,
@@ -33,8 +34,12 @@ async function createGame(
         return "Sala no encontrada";
     }
 
-    if (res.status === 400) {
+    if (res.status === 400 && json.detail === "You must be the game owner to start it") {
         return "Solo el dueño de la sala puede iniciarlo";
+    }
+
+    if (res.status === 400 && json.detail === "Not enough players to start") {
+        return "No se completó el mínimo de jugadores";
     }
 
     return null;
