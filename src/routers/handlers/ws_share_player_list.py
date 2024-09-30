@@ -27,7 +27,7 @@ async def ws_share_player_list(player_id: str, lobby_id: str, db: Session, broad
     if not lobby:
         await lobby_manager.send_personal_message(
             message=serialize({
-                'type': 'Error',
+                'type': 'error',
                 'message': 'El lobby con el que se desea conectar no existe'
             }),
             player_id=player_id

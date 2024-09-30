@@ -32,7 +32,7 @@ async def ws_handle_lobbystate(player_id: str, db: Session):
     lobby = get_lobby_by_player_id(db=db, player_id=player_id)
     if not lobby:
         return serialize({
-            'type': 'Error',
+            'type': 'error',
             'message': 'El lobby con el que se desea conectar no existe'
         })
 

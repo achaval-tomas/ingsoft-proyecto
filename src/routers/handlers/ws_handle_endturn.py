@@ -9,7 +9,7 @@ async def ws_handle_endturn(player_id: str, db: Session):
     player = get_player(db=db, player_id=player_id)
     if not player:
         return serialize({
-            'type': 'Error',
+            'type': 'error',
             'message': 'El jugador que solicitó abandonar no existe'
         })
     
@@ -26,7 +26,7 @@ async def ws_handle_endturn(player_id: str, db: Session):
         )
     elif res == 1:
         return serialize({
-            'type': 'Error',
+            'type': 'error',
             'message': 'El jugador no está en una partida'
         })
     return ""

@@ -48,13 +48,13 @@ def ws_handle_gamestate(player_id: str, db: Session):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return serialize({
-            'type': 'Error',
+            'type': 'error',
             "message": "Player Not Found"
         })
     game_data = get_game(db=db, player_id=player_id)
     if not game_data:
         return serialize({
-            'type': 'Error',
+            'type': 'error',
             "message": "Game Not Found"
         })
     
