@@ -48,17 +48,17 @@ function MainPage() {
     async function joinHandler(lobbyId: string) {
         const res = await joinLobby(urlParams.get("player") ?? "", lobbyId);
 
-        if (res.errorMsg !== "")
-            alert(res.errorMsg);
+        if (res !== null)
+            alert(res);
 
-        if (res.goHome)
+        if (res === "Jugador no existente")
             navigate("/");
     }
 
     return (
         urlParams.get("player") ?
             <MainPageLayout
-                onSubmitLobbyForm = {s => void handleSubmit(s)}
+                onSubmitLobbyForm={s => void handleSubmit(s)}
                 lobbies={lobbies}
                 refreshHandler={() => { void fetchAndSaveLobbies(); }}
                 joinHandler={ lobbyId => void joinHandler(lobbyId) }

@@ -37,12 +37,14 @@ async function createLobby(
     return data.lobby_id;
 }
 
-type joinLobbyResponse = {
-    goHome: boolean;
-    errorMsg: string;
-}
+type joinLobbyResponse =
+    | "Esta sala está llena"
+    | "El jugador ya está en esta sala"
+    | "Sala no existente"
+    | "Jugador no existente"
+    | "Ok"
 
-async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyResponse> {
+async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyResponse | null> {
     const res = await fetch("http://127.0.0.1:8000/lobby/join", {
         method: "POST",
         headers: {
@@ -56,27 +58,27 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyRe
     });
 
     if (res.ok)
-        return { goHome: false, errorMsg: "" };
+        return "Ok";
 
     const json = await res.json() as { detail: string };
 
     if (res.status === 400 && json.detail === "Lobby is full") {
-        return { goHome: false, errorMsg: "Esta sala está llena." };
+        return "Esta sala está llena";
     }
 
     if (res.status === 400 && json.detail === "Already joined") {
-        return { goHome: false, errorMsg: "El jugador ya está en esta sala." };
+        return "El jugador ya está en esta sala";
     }
 
     if (res.status === 404 && json.detail === "Player not found") {
-        return { goHome: true, errorMsg: "El jugador no existe." };
+        return "Jugador no existente";
     }
 
     if (res.status === 404 && json.detail === "Lobby not found") {
-        return { goHome: false, errorMsg: "Esta sala no existe." };
+        return "Sala no existente";
     }
 
-    return { goHome: false, errorMsg: "Error en el servidor." };
+    return null;
 }
 
 export type LeaveBodyReturnCode =
