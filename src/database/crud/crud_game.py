@@ -12,13 +12,13 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     # obtain the lobby from where the game was started
     lobby: Lobby = get_lobby(db=db, lobby_id=lobby_id)
     if lobby is None:
-        return 2
-    if lobby.lobby_owner != player_id:
         return 1
-    # deserialize players list
-    deserialize(lobby.players)
+    if lobby.lobby_owner != player_id:
+        return 2
     # create a list with the players in the lobby but randomly shuffled
     player_order = deserialize(lobby.players)
+    if len(player_order) < lobby.min_players:
+        return 3
     random.shuffle(player_order)
     # the first turn will go to the first player in the shuffled list
     current_turn = 0
@@ -41,7 +41,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     for id in player_order:
         player = get_player(db=db, player_id=id)
         if player is None:
-            return 3
+            return 4
         player.game_id = game_id
         db.commit()
         hand_cards(db=db, player_id=id)

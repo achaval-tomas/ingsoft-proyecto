@@ -17,11 +17,13 @@ game_router = APIRouter()
 async def start_game(body: schemas.GameCreate, db: Session = Depends(get_db)):
     rc = crud_game.create_game(db=db, lobby_id=body.lobby_id, player_id=body.player_id)
     if rc == 1:
-        raise HTTPException(status_code=400, detail="You must be the game owner to start it")
-    elif rc == 2:
         raise HTTPException(status_code=404, detail="Lobby not found")
+    elif rc == 2:
+        raise HTTPException(status_code=400, detail="You must be the game owner to start it")
     elif rc == 3:
-        raise HTTPException(status_code=404, detail="Player not found")
+        raise HTTPException(status_code=400, detail="Not enough players to start")
+    elif rc == 4:
+        raise HTTPException(status_code=404, detail="A player is missing")
     await ws_handle_game_start(db=db, lobby_id=body.lobby_id)
     crud_lobby.delete_lobby(lobby_id=body.lobby_id, db=db)
     
