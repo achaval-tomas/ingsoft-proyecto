@@ -3,6 +3,7 @@ import LobbyLayout from "./components/LobbyLayout";
 import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
 import { leaveLobby } from "../../api/lobby";
+import { createGame } from "../../api/game";
 
 function Lobby() {
     const [ urlParams ] = useSearchParams();
@@ -38,6 +39,26 @@ function Lobby() {
         }
     }
 
+    async function startHandler() {
+        try {
+            const res = await createGame(playerId, lobbyId);
+
+            if (res === "Jugador no encontrado" || res === null) {
+                navigate("/");
+            }
+
+            if (res === "Sala no encontrada") {
+                navigate(`/home?player=${playerId}`);
+            }
+
+            if (res === "Ok") {
+                navigate(`/play?user=${playerId}`);
+            }
+        } catch {
+            navigate("/");
+        }
+    }
+
     return (
         <LobbyLayout
             playerId={playerId}
@@ -45,6 +66,7 @@ function Lobby() {
             lobbyName={lobbyName}
             isOwner={ownerId === playerId}
             quitHandler={() => void quitHandler()}
+            startHandler={() => void startHandler()}
         />
     );
 }
