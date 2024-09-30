@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import Depends, APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from src.database import models, schemas
@@ -55,9 +56,13 @@ async def leave_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
 async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(get_db)):
     player = get_player(db=db, player_id=player_id)
     assert player != None
+    await lobby_manager.connect(ws, player_id)
     try:
-        await lobby_manager.connect(ws, player_id)
         await ws_share_player_list(player_id=player_id, db=db, broadcast=False)
+        while True:
+            # Send pings every 10 seconds to keep connection alive (or detect disconnection)
+            await asyncio.sleep(10)
+            await lobby_manager.send_personal_message(message="ping", player_id=player_id)
     except WebSocketDisconnect:
         lobby_manager.disconnect(player_id=player_id)
         return
