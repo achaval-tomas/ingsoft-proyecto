@@ -1,6 +1,6 @@
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket
 from sqlalchemy.orm import Session
-from src.database.crud.crud_game import get_game_players
+from src.database.crud import crud_game
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.tools.jsonify import deserialize
 
@@ -28,7 +28,7 @@ class ConnectionManager:
 class GameConnectionManager(ConnectionManager):
     # broadcast a message to everyone (currently connected) in game #game_id
     async def broadcast_in_game(self, message: str, db: Session, game_id: int):
-        game_players = get_game_players(db=db, game_id=game_id)
+        game_players = crud_game.get_game_players(db=db, game_id=game_id)
         connected_players = [player for player in game_players if player in self.active_connections.keys()]
         for player in connected_players:
             await self.send_personal_message(message=message, player_id=player)
