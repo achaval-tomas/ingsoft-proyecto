@@ -79,4 +79,38 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyRe
     return { goHome: false, errorMsg: "Error en el servidor." };
 }
 
-export { getJoinableLobbies, createLobby, joinLobby };
+export type LeaveBodyReturnCode =
+    | "Sala no encontrada"
+    | "Jugador no encontrado"
+    | "Ok"
+
+async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveBodyReturnCode | null> {
+    const res = await fetch("http://127.0.0.1:8000/lobby/leave", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            player_id: playerId,
+            lobby_id: lobbyId,
+        }),
+    });
+
+    if (res.ok)
+        return "Ok";
+
+    const json = await res.json() as { detail: string };
+
+    if (res.status === 404 && json.detail === "Player not found") {
+        return "Jugador no encontrado";
+    }
+
+    if (res.status === 404 && json.detail === "Lobby not found") {
+        return "Sala no encontrada";
+    }
+
+    return null;
+}
+
+export { getJoinableLobbies, createLobby, joinLobby, leaveLobby };
