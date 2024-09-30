@@ -17,7 +17,7 @@ function Game() {
     useEffect(() => {
         setGameState(null);
 
-        const ws = new WebSocket(`${wsServerUrl}/game?player=${playerId}`);
+        const ws = new WebSocket(`${wsServerUrl}/game/${playerId}`);
         wsRef.current = ws;
 
         ws.addEventListener("message", e => {
