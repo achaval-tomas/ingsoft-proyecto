@@ -4,6 +4,7 @@ import { GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
 import { CommonPlayerState, GameState } from "../../domain/GameState";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { httpServerUrl, wsServerUrl } from "../../services/config";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 function Game() {
     const [searchParams] = useSearchParams();
@@ -13,6 +14,7 @@ function Game() {
     const wsRef = useRef<WebSocket | null>(null);
 
     const [gameState, setGameState] = useState<GameState | null>(null);
+    const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
     useEffect(() => {
         setGameState(null);
@@ -107,14 +109,25 @@ function Game() {
     );
 
     return (
-        <GameLayout
-            tiles={gameState.boardState.tiles}
-            selfPlayerState={gameState.selfPlayerState}
-            otherPlayersState={gameState.otherPlayersState}
-            activeSide={activeSide}
-            onClickEndTurn={handleEndTurn}
-            onClickLeaveGame={handleLeaveGame}
-        />
+        <>
+            <GameLayout
+                tiles={gameState.boardState.tiles}
+                selfPlayerState={gameState.selfPlayerState}
+                otherPlayersState={gameState.otherPlayersState}
+                activeSide={activeSide}
+                onClickEndTurn={handleEndTurn}
+                onClickLeaveGame={() => setShowLeaveGameDialog(true)}
+            />
+            <ConfirmDialog
+                isOpen={showLeaveGameDialog}
+                title="Abandonar"
+                body="Abandonar partida?"
+                dismissText="Cancelar"
+                confirmText="Abandonar"
+                onDismiss={() => setShowLeaveGameDialog(false)}
+                onConfirm={handleLeaveGame}
+            />
+        </>
     );
 }
 
