@@ -11,6 +11,8 @@ class ConnectionManager:
     # accept websocket connection, added to active_connections
     async def connect(self, websocket: WebSocket, player_id: str):
         await websocket.accept()
+        if player_id in self.active_connections.keys():
+            self.disconnect(player_id=player_id)
         self.active_connections[player_id] = websocket
 
     # remove from list of connections
@@ -21,11 +23,7 @@ class ConnectionManager:
     async def send_personal_message(self, message: str, player_id: str):
         if player_id not in self.active_connections.keys():
             return
-        try:
-            await self.active_connections[player_id].send_text(message)
-        except WebSocketDisconnect:
-            self.disconnect(player_id=player_id)
-            return
+        await self.active_connections[player_id].send_text(message)
 
 class GameConnectionManager(ConnectionManager):
     # broadcast a message to everyone (currently connected) in game #game_id
