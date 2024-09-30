@@ -6,6 +6,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { httpServerUrl, wsServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
 
+function computeNextPlayer(s: GameState): number {
+    const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
+    allPlayers.sort((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
+
+    const nextPlayer = allPlayers.find(p => p.roundOrder > s.currentRoundPlayer) ?? allPlayers[0];
+
+    return nextPlayer.roundOrder;
+}
+
 function Game() {
     const [searchParams] = useSearchParams();
     const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
@@ -39,13 +48,8 @@ function Game() {
                             return null;
                         }
 
-                        const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
-                        allPlayers.sort((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
-
-                        const nextPlayer = allPlayers.find(p => p.roundOrder > s.currentRoundPlayer) ?? allPlayers[0];
-
                         const newGameState = { ...s };
-                        newGameState.currentRoundPlayer = nextPlayer.roundOrder;
+                        newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
 
                         return newGameState;
                     });
@@ -74,6 +78,30 @@ function Game() {
                     // TODO
                     break;
                 }
+                case "player-left": {
+                    setGameState(s => {
+                        if (message.playerId === playerId) {
+                            navigate(`/lobby?player=${playerId}`);
+                            return s;
+                        }
+
+                        if (s === null) {
+                            return null;
+                        }
+
+                        const newGameState = { ...s, otherPlayersState: s.otherPlayersState.filter(p => p.id !== message.playerId) };
+
+                        const player = s.otherPlayersState.find(p => p.id === message.playerId);
+                        if (player != null && player.roundOrder === s.currentRoundPlayer) {
+                            newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
+                        }
+
+                        return newGameState;
+                    });
+                    break;
+                }
+                default:
+                    message satisfies never;
             }
         });
 
