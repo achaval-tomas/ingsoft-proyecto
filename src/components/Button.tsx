@@ -2,10 +2,10 @@ import React from "react";
 import { classNames } from "../util";
 
 export interface ButtonProps {
-    onClick?: () => void | undefined;
+    onClick?: () => void;
     children: React.ReactNode;
     className?: string | null;
-    type?: "submit" | "reset" | "button" | undefined;
+    type?: "submit" | "reset" | "button";
     padding?: string | null;
     border?: string | null;
     borderRadius?: string | null;
