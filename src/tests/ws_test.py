@@ -65,3 +65,64 @@ def test_game_ws_end_turn():
                     "playerId": joiner_id
                 }
 
+def test_game_ws_gamestate():
+    data_owner = {
+            "player_name": "cage owner"
+    }
+    owner = client.post("/player", json=data_owner)
+    owner_json = owner.json()
+    owner_id = owner_json['player_id']
+
+    data_lobby = {
+            "lobby_name": "cage's room",
+            "lobby_owner": owner_id,
+            "min_players": 1,
+            "max_players": 4
+    }
+    lobby = client.post("/lobby", json=data_lobby)
+    lobby_json = lobby.json()
+    lobby_id = lobby_json['lobby_id']
+
+    data_create = {
+            "player_id": owner_id,
+            "lobby_id": lobby_id
+    }
+    response_game = client.post("/game", json=data_create)
+
+    with client.websocket_connect("/game/" + owner_id) as websocket_owner:
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'game-state'
+
+        websocket_owner.send_json({'type': 'get-game-state'})
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'game-state'
+
+def test_game_ws_gamestate_br():
+    data_owner = {
+            "player_name": "cage owner"
+    }
+    owner = client.post("/player", json=data_owner)
+    owner_json = owner.json()
+    owner_id = owner_json['player_id']
+
+    data_lobby = {
+            "lobby_name": "cage's room",
+            "lobby_owner": owner_id,
+            "min_players": 2,
+            "max_players": 4
+    }
+    lobby = client.post("/lobby", json=data_lobby)
+    lobby_json = lobby.json()
+    lobby_id = lobby_json['lobby_id']
+
+    data_create = {
+            "player_id": owner_id,
+            "lobby_id": lobby_id
+    }
+    response_game = client.post("/game", json=data_create)
+
+    with client.websocket_connect("/game/" + owner_id) as websocket_owner:
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'error'
+
+
