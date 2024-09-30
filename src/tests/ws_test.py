@@ -126,3 +126,43 @@ def test_game_ws_gamestate_br():
         assert data_received['type'] == 'error'
 
 
+def test_lobby_ws_lobbystate():
+    data_owner = {
+            "player_name": "cage owner"
+    }
+    owner = client.post("/player", json=data_owner)
+    owner_json = owner.json()
+    owner_id = owner_json['player_id']
+
+    data_lobby = {
+            "lobby_name": "cage's room",
+            "lobby_owner": owner_id,
+            "min_players": 2,
+            "max_players": 4
+    }
+    lobby = client.post("/lobby", json=data_lobby)
+    lobby_json = lobby.json()
+    lobby_id = lobby_json['lobby_id']
+
+    players_info = [{
+        'id': owner_id,
+        'name': "cage owner"
+    }]
+
+    with client.websocket_connect("/lobby/" + owner_id) as websocket_owner:
+        
+        websocket_owner.send_json({'type': 'get-lobby-state'})
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'player-list'
+
+        data_received = websocket_owner.receive_json()
+        assert data_received == {
+            'type': 'lobby-state',
+            'players': players_info,
+            'owner': owner_id,
+            'id': lobby_id,
+            'name': "cage's room",
+        }
+
+
+    
