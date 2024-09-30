@@ -29,3 +29,4 @@ async def ws_handle_endturn(player_id: str, db: Session):
             'type': 'Error',
             'message': 'El jugador no está en una partida'
         })
+    return ""
