@@ -71,6 +71,7 @@ function Lobby() {
             canStart={ownerId === playerId && players.length > 1}
             quitHandler={() => void quitHandler()}
             startHandler={() => void startHandler()}
+            isOwner={ownerId === playerId}
         />
     );
 }
