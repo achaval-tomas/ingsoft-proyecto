@@ -7,6 +7,8 @@ from src.main import app
 
 client = TestClient(app)
 
+''' PLAYER TESTS '''
+
 def test_create_player():
     
     player_data = PlayerCreate(player_name = "Test Player")
@@ -26,8 +28,9 @@ def test_create_player_br():
     data = response.json()
     # verify that the id was not created
     assert not "player_id" in data
-    
 
+''' GAME TESTS '''
+    
 def test_create_game():
    
     player_test = PlayerCreate(player_name="TestGame")
@@ -69,10 +72,145 @@ def test_create_game():
     # Verificar que la respuesta tenga un código de estado 200
     assert response.status_code == 200, f"Error en la creación del juego, se recibió {response.status_code} en lugar de 200"
 
+''' LOBBY TESTS '''
 
+def test_get_all_lobbies():
+    
+        data_owner_1 = {
+                "player_name": "owner 1"
+        }
+        owner_1 = client.post("/player", json=data_owner_1)
+        owner_json_1 = owner_1.json()
+        owner_id_1 = owner_json_1['player_id']
 
+        data_owner_2 = {
+                "player_name": "owner 2"
+        }
+        owner_2 = client.post("/player", json=data_owner_2)
+        owner_json_2 = owner_2.json()
+        owner_id_2 = owner_json_2['player_id']
 
+        data_owner_3 = {
+                "player_name": "owner 3"
+        }
+        owner_3 = client.post("/player", json=data_owner_3)
+        owner_json_3 = owner_3.json()
+        owner_id_3 = owner_json_3['player_id']
 
+        data_lobby_1 = {
+                "lobby_name": "room 1",
+                "lobby_owner": owner_id_1,
+                "min_players": 2,
+                "max_players": 4
+        }
+        lobby_1 = client.post("/lobby", json=data_lobby_1)
+        lobby_json_1 = lobby_1.json()
+        lobby_id_1 = lobby_json_1['lobby_id']
 
+        data_lobby_2 = {
+                "lobby_name": "room 2",
+                "lobby_owner": owner_id_2,
+                "min_players": 2,
+                "max_players": 4
+        }
+        lobby_2 = client.post("/lobby", json=data_lobby_2)
+        lobby_json_2 = lobby_2.json()
+        lobby_id_2 = lobby_json_2['lobby_id']
 
+        data_lobby_3 = {
+                "lobby_name": "room 3",
+                "lobby_owner": owner_id_3,
+                "min_players": 2,
+                "max_players": 4
+        }
+        lobby_3 = client.post("/lobby", json=data_lobby_3)
+        lobby_json_3 = lobby_3.json()
+        lobby_id_3 = lobby_json_3['lobby_id'] 
 
+        response = client.get("/lobby")
+        assert response.status_code == 200     
+
+def test_join_lobby():
+
+    data_owner = {
+            "player_name": "cage owner"
+    }
+    owner = client.post("/player", json=data_owner)
+    owner_json = owner.json()
+    owner_id = owner_json['player_id']
+
+    data_joiner = {
+            "player_name": "cage joiner"
+    }
+    joiner = client.post("/player", json=data_joiner)
+    joiner_json = joiner.json()
+    joiner_id = joiner_json['player_id']
+
+    data_lobby = {
+            "lobby_name": "cage's room",
+            "lobby_owner": owner_id,
+            "min_players": 2,
+            "max_players": 4
+    }
+    lobby = client.post("/lobby", json=data_lobby)
+    lobby_json = lobby.json()
+    lobby_id = lobby_json['lobby_id']
+    
+    data = {
+            "player_id": joiner_id,
+            "lobby_id": lobby_id
+    }
+    response = client.post("/lobby/join", json=data)
+
+    assert response.status_code == 202
+
+def test_create_lobby():
+    data_owner = {
+            "player_name": "cage owner"
+    }
+    owner = client.post("/player", json=data_owner)
+    owner_json = owner.json()
+    owner_id = owner_json['player_id']
+
+    data = {
+            "lobby_name": "cage's room",
+            "lobby_owner": owner_id,
+            "min_players": 2,
+            "max_players": 4
+    }
+    response = client.post("/lobby", json=data)
+    assert response.status_code == 200
+
+def test_leave_lobby():
+    data_owner = {
+            "player_name": "cage owner"
+    }
+    owner = client.post("/player", json=data_owner)
+    owner_json = owner.json()
+    owner_id = owner_json['player_id']
+
+    data_joiner = {
+            "player_name": "cage joiner"
+    }
+    joiner = client.post("/player", json=data_joiner)
+    joiner_json = joiner.json()
+    joiner_id = joiner_json['player_id']
+
+    data_lobby = {
+            "lobby_name": "cage's room",
+            "lobby_owner": owner_id,
+            "min_players": 2,
+            "max_players": 4
+    }
+    lobby = client.post("/lobby", json=data_lobby)
+    lobby_json = lobby.json()
+    lobby_id = lobby_json['lobby_id']
+    
+    data = {
+            "player_id": joiner_id,
+            "lobby_id": lobby_id
+    }
+    response_join = client.post("/lobby/join", json=data)
+    response_leave = client.post("/lobby/leave", json=data)
+    
+    assert response_leave.status_code == 200
