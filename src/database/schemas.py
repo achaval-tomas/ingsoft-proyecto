@@ -4,6 +4,9 @@ from pydantic import BaseModel
 class PlayerBase(BaseModel):
     player_name: str
 
+class PlayerId(BaseModel):
+    player_id: str
+
 class PlayerCreate(PlayerBase):
     pass
 

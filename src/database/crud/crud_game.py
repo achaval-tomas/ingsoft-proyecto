@@ -85,7 +85,7 @@ def get_game_players(db: Session, game_id: int):
 async def leave_game(db: Session, player_id: str):
     game = get_game(db=db, player_id=player_id)
     if not game:
-        return
+        return 1
     players = deserialize(game.player_order)
     players.remove(player_id)
     game.player_order = serialize(players)
@@ -93,6 +93,7 @@ async def leave_game(db: Session, player_id: str):
         await ws_handle_announce_winner()
     db.commit()
     delete_game(db=db, game_id=game.game_id)
+    return 0
     
 def delete_game(db: Session, game_id: str):
     query = db.query(Game).filter(Game.game_id == game_id)
