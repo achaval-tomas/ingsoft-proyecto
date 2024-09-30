@@ -20,7 +20,7 @@ async def start_game(body: schemas.GameCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Lobby not found")
     elif rc == 3:
         raise HTTPException(status_code=404, detail="Player not found")
-    await ws_handle_game_start(lobby_id=body.lobby_id)
+    await ws_handle_game_start(db=db, lobby_id=body.lobby_id)
     crud_lobby.delete_lobby(lobby_id=body.lobby_id, db=db)
     
 @game_router.post("/game/leave", status_code=200)
