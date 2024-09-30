@@ -73,7 +73,7 @@ function Game() {
         });
 
         return () => ws.close();
-    }, [searchParams]);
+    }, [playerId]);
 
     const handleEndTurn = () => {
         const message: GameMessageOut = {
