@@ -2,7 +2,7 @@ import { Movement } from "../../../domain/Movement";
 import MovementCard from "./MovementCard";
 
 type MovementCardHandProps = {
-    movements: [Movement, Movement, Movement];
+    movements: Movement[];
 }
 
 function MovementCardHand({ movements }: MovementCardHandProps) {
@@ -12,21 +12,21 @@ function MovementCardHand({ movements }: MovementCardHandProps) {
 
     return (
         <div className="flex flex-row px-[1.4em] pb-[1.8em]">
-            <div className="group">
+            {movements.length >= 1 && <div className="group">
                 <div className={sharedClassNames + " top-[1em] group-hover:top-[-1em] z-[10] -rotate-[15deg]"}>
-                    <MovementCard movement={movements[0]}/>
+                    <MovementCard movement={movements[0]} />
                 </div>
-            </div>
-            <div className="group">
+            </div>}
+            {movements.length >= 2 && <div className="group">
                 <div className={sharedClassNames + " top-[0em] group-hover:top-[-2em] z-[11]"}>
-                    <MovementCard movement={movements[1]}/>
+                    <MovementCard movement={movements[1]} />
                 </div>
-            </div>
-            <div className="group">
+            </div>}
+            {movements.length >= 3 && <div className="group">
                 <div className={sharedClassNames + " top-[1em] group-hover:top-[-1em] z-[12] rotate-[15deg]"}>
-                    <MovementCard movement={movements[2]}/>
+                    <MovementCard movement={movements[2]} />
                 </div>
-            </div>
+            </div>}
         </div>
     );
 }
