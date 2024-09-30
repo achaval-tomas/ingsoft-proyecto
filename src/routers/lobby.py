@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.database import models, schemas
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize
+from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
 from src.routers.helpers.connection_manager import lobby_manager
@@ -62,7 +62,12 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
         while True:
             # Send pings every 10 seconds to keep connection alive (or detect disconnection)
             await asyncio.sleep(10)
-            await lobby_manager.send_personal_message(message="ping", player_id=player_id)
+            await lobby_manager.send_personal_message(
+                message=serialize({
+                    'type': 'ping'
+                }), 
+                player_id=player_id
+            )
     except WebSocketDisconnect:
         lobby_manager.disconnect(player_id=player_id)
         return
