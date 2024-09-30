@@ -81,7 +81,7 @@ def get_game_players(db: Session, game_id: int):
         return []
     return deserialize(game.player_order)
 
-async def leave_game(db: Session, player_id: str):
+def leave_game(db: Session, player_id: str):
     game = get_game(db=db, player_id=player_id)
     if not game:
         return 1, None
