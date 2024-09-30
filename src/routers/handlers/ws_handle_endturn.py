@@ -29,4 +29,9 @@ async def ws_handle_endturn(player_id: str, db: Session):
             'type': 'error',
             'message': 'El jugador no está en una partida'
         })
+    elif res == 2:
+        return serialize({
+            'type': 'error',
+            'message': 'Debes esperar a que sea tu turno!'
+        })
     return ""

@@ -122,7 +122,8 @@ def end_game_turn(db: Session, player_id: str):
     if not game:
         return 1
     player_order = deserialize(game.player_order)
-    # Check player_id == current_turn
+    if player_id != player_order[game.current_turn]:
+        return 2
     game.current_turn = (game.current_turn + 1) % len(player_order) 
     db.commit()  
     return 0 
