@@ -59,6 +59,7 @@ function Game() {
                         const winner = allPlayers.find(p => p.id === message.playerId);
 
                         alert(`¡${winner?.name} ganó!`);
+                        navigate(`/lobby?player=${playerId}`);
                         return s;
                     });
                     break;
