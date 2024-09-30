@@ -25,6 +25,7 @@ export const LobbyMessageInSchema = z.discriminatedUnion("type", [
             .array(),
         owner: PlayerIdSchema,
         id: z.string(),
+        name: z.string(),
     }),
 ]);
 
