@@ -47,6 +47,9 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         setOwnerId(message.owner);
                         setLobbyName(message.name);
                         break;
+                    case "destroy-lobby":
+                        navigate(`/lobby?player=${playerId}`);
+                        break;
                 }
             } catch {
                 navigate(`/lobby?player=${playerId}`);
