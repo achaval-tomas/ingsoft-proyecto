@@ -82,14 +82,30 @@ function Game() {
         return <p>Loading...</p>;
     }
 
+    const activeSide = playerIndexToActiveSide(
+        [gameState.selfPlayerState, ...gameState.otherPlayersState]
+            .findIndex(p => p.roundOrder === gameState.currentRoundPlayer),
+    );
+
     return (
         <GameLayout
             tiles={gameState.boardState.tiles}
             selfPlayerState={gameState.selfPlayerState}
             otherPlayersState={gameState.otherPlayersState}
+            activeSide={activeSide}
             onClickEndTurn={handleEndTurn}
         />
     );
+}
+
+function playerIndexToActiveSide(index: number): "b" | "r" | "t" | "l" {
+    switch (index) {
+        case 0: return "b";
+        case 1: return "r";
+        case 2: return "t";
+        case 3: return "l";
+        default: return "b";
+    }
 }
 
 export default Game;

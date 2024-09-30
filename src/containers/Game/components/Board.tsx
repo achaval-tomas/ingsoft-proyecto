@@ -28,11 +28,21 @@ function BoardRow({ tiles }: BoardRowProps) {
 
 type BoardProps = {
     tiles: Color[]; // length must be 36
+    activeSide: "b" | "r" | "t" | "l";
 }
 
-function Board({ tiles }: BoardProps) {
+function borderColorFromActiveSide(activeSide: "b" | "r" | "t" | "l"): string {
+    switch (activeSide) {
+        case "b": return "border-b-primary-400";
+        case "r": return "border-r-primary-400";
+        case "t": return "border-t-primary-400";
+        case "l": return "border-l-primary-400";
+    }
+}
+
+function Board({ tiles, activeSide }: BoardProps) {
     return (
-        <div className="flex flex-col gap-[1em] p-[1em] bg-zinc-700 h-fit rounded-lg shadow-md shadow-black">
+        <div className={`flex flex-col gap-[1em] p-[1em] bg-zinc-700 h-fit rounded-lg shadow-md shadow-black border border-transparent ${borderColorFromActiveSide(activeSide)}`}>
             <BoardRow tiles={tiles.slice(0, 6)} />
             <BoardRow tiles={tiles.slice(6, 12)} />
             <BoardRow tiles={tiles.slice(12, 18)} />

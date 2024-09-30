@@ -11,6 +11,7 @@ type GameLayoutProps = {
     tiles: Color[];
     selfPlayerState: SelfPlayerState;
     otherPlayersState: OtherPlayerState[];
+    activeSide: "b" | "r" | "t" | "l";
     onClickEndTurn: () => void;
 };
 
@@ -22,7 +23,7 @@ function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation} ) {
     );
 }
 
-function GameLayout({ tiles, selfPlayerState, otherPlayersState, onClickEndTurn }: GameLayoutProps) {
+function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onClickEndTurn }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -32,7 +33,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, onClickEndTurn 
                 <div className="flex flex-row">
                     <div className="grid" style={{ gridTemplateRows: "auto 1fr auto", gridTemplateColumns: "auto 1fr auto" }}>
                         <div className="row-start-2 col-start-2">
-                            <Board tiles={tiles} activeSide="t" />
+                            <Board tiles={tiles} activeSide={activeSide} />
                         </div>
                         <div className="row-start-3 col-start-2 justify-self-center pt-[1em]">
                             {( selfPlayerState.shapeCardsInHand.length >= 1) ?
