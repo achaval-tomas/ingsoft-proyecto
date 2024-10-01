@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { httpServerUrl, wsServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import Dialog from "../../components/Dialog";
-import OutlinedButton from "../../components/OutlinedButton";
+import FilledButton from "../../components/FilledButton";
 
 function computeNextPlayer(s: GameState): number {
     const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
@@ -26,7 +26,7 @@ function Game() {
 
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
-    const [winner, setWinner] = useState(false);
+    const [winner, setWinner] = useState<CommonPlayerState | null>(null);
 
     useEffect(() => {
         setGameState(null);
@@ -67,7 +67,7 @@ function Game() {
                         const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
                         const winner = allPlayers.find(p => p.id === message.playerId);
 
-                        setWinner(true);
+                        setWinner(winner ?? null);
                         return s;
                     });
                     break;
@@ -157,19 +157,17 @@ function Game() {
                 onDismiss={() => setShowLeaveGameDialog(false)}
                 onConfirm={handleLeaveGame}
             />
-            <Dialog
-                isOpen={winner}
+            {(winner != null) && <Dialog
+                isOpen={true}
                 onClose={() => navigate(`/lobby?player=${playerId}`)}
             >
-                <div className="flex flex-col justify-center text-center gap-4">
-                    <p>¡Ganaste!</p>
-                    <OutlinedButton
-                        onClick={() => navigate(`/lobby?player=${playerId}`)}>
-                    Ok
-                    </OutlinedButton>
+                <div className="flex flex-col justify-center text-center gap-8">
+                    <p className="text-xl">¡{winner.name} ganó!</p>
+                    <FilledButton onClick={() => navigate(`/lobby?player=${playerId}`)}>
+                        OK
+                    </FilledButton>
                 </div>
-            </Dialog>
-
+            </Dialog>}
         </>
     );
 }
