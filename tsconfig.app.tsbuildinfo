@@ -1,1 +1,0 @@
-{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/components/FancyButton.tsx","./src/containers/App/App.tsx","./src/containers/App/components/AppLayout.tsx","./src/containers/App/components/CreateLobbyForm.tsx","./src/containers/App/components/MainPageLayout.tsx","./src/containers/App/containers/MainPage.tsx"],"version":"5.6.2"}
