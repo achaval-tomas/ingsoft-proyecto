@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from src.database.crud.crud_lobby import get_lobby_by_player_id, get_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
-from src.routers.helpers.connection_manager import lobby_manager
 
 def lobbystate_message(lobby_id: str, db: Session): 
     lobby = get_lobby(lobby_id=lobby_id, db=db)

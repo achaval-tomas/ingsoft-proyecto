@@ -18,10 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
 app.include_router(create_player_router)
 app.include_router(lobby_router)
 app.include_router(game_router)
