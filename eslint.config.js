@@ -34,6 +34,9 @@ export default tseslint.config(
             "@stylistic/jsx": stylisticJsx,
         },
         rules: {
+            ...react.configs.recommended.rules,
+            ...react.configs["jsx-runtime"].rules,
+            ...reactHooks.configs.recommended.rules,
             indent: ["warn", 4, { SwitchCase: 1 }],
             quotes: ["warn", "double"],
             semi: ["error", "always"],
@@ -53,9 +56,7 @@ export default tseslint.config(
                     beforeSelfClosing: "proportional-always",
                 },
             ],
-            ...react.configs.recommended.rules,
-            ...react.configs["jsx-runtime"].rules,
-            ...reactHooks.configs.recommended.rules,
+            "react/jsx-curly-spacing": ["warn", "never"],
             "react-refresh/only-export-components": [
                 "warn",
                 { allowConstantExport: true },
