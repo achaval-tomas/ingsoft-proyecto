@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
-import { CommonPlayerState, getPlayerById } from "../../domain/GameState";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { httpServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -11,6 +10,7 @@ import AppState from "../../domain/AppState";
 import { Dispatch } from "redux";
 import Action from "../../reducers/Action";
 import useGameWebSocket from "./hooks/useGameWebSocket";
+import useWinnerSelector from "./hooks/useWinnerSelector";
 
 function Game() {
     const [searchParams] = useSearchParams();
@@ -20,14 +20,7 @@ function Game() {
     const dispatch = useDispatch<Dispatch<Action>>();
     const gameState = useSelector((state: AppState) => state.gameState);
 
-    const winner: CommonPlayerState | undefined = useSelector((state: AppState) => {
-        const gs = state.gameState;
-        if (gs == null || gs.winner == null) {
-            return undefined;
-        }
-
-        return getPlayerById(gs, gs.winner);
-    });
+    const winner = useWinnerSelector();
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
