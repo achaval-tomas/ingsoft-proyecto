@@ -8,7 +8,7 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         playerId: PlayerIdSchema, // ID of the player whose turn has finished.
     }),
     z.object({
-        type: z.literal("winner"), // Received when someone has won.
+        type: z.literal("player-won"), // Received when someone has won.
         playerId: PlayerIdSchema, // ID of the winner.
     }),
     z.object({

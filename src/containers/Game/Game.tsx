@@ -58,7 +58,7 @@ function Game() {
                     });
                     break;
                 }
-                case "winner": {
+                case "player-won": {
                     setGameState(s => {
                         if (s === null) {
                             return null;
