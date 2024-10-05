@@ -1,6 +1,6 @@
 import { screen, render } from "@testing-library/react";
 import { z } from "zod";
-import { beforeAll, beforeEach, expect, test, vi } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 import { Client, Server } from "mock-socket";
 import Lobby from "./Lobby";
 import userEvent from "@testing-library/user-event";
