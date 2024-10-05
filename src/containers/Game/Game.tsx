@@ -9,13 +9,15 @@ import Dialog from "../../components/Dialog";
 import FilledButton from "../../components/FilledButton";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../../domain/AppState";
+import { Dispatch } from "redux";
+import Action from "../../reducers/Action";
 
 function Game() {
     const [searchParams] = useSearchParams();
     const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
     const navigate = useNavigate();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<Dispatch<Action>>();
     const gameState = useSelector((state: AppState) => state.gameState);
 
     const winner = useSelector((state: AppState) => {
@@ -32,7 +34,7 @@ function Game() {
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
     useEffect(() => {
-        dispatch({ type: "game-state", gameState: null }); // TODO: refactor
+        dispatch({ type: "clear-game-state" });
 
         const ws = new WebSocket(`${wsServerUrl}/game/${playerId}`);
         wsRef.current = ws;

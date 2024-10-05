@@ -1,6 +1,6 @@
 import AppState from "../domain/AppState";
-import { GameMessageIn } from "../domain/GameMessage";
 import { GameState, getAllPlayers } from "../domain/GameState";
+import Action from "./Action";
 
 function computeNextPlayer(s: GameState): number {
     const allPlayers = getAllPlayers(s).toSorted((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
@@ -9,9 +9,13 @@ function computeNextPlayer(s: GameState): number {
     return nextPlayer.roundOrder;
 }
 
-function gameStateReducer(gameState: GameState | null, action: GameMessageIn): GameState | null {
+function gameStateReducer(gameState: GameState | null, action: Action): GameState | null {
     if (action.type === "game-state") {
         return action.gameState;
+    }
+
+    if (action.type === "clear-game-state") {
+        return null;
     }
 
     if (gameState == null) {
@@ -54,7 +58,7 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
     }
 }
 
-function rootReducer(state: AppState | undefined, action: GameMessageIn): AppState {
+function rootReducer(state: AppState | undefined, action: Action): AppState {
     if (state == null) { // we provide an initial value for state, so it should never be null.
         throw new Error(`store state is ${state}`);
     }
