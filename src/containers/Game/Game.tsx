@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
-import { GameMessageIn, GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
-import { getPlayerById } from "../../domain/GameState";
+import { CommonPlayerState, getPlayerById } from "../../domain/GameState";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { httpServerUrl, wsServerUrl } from "../../services/config";
+import { httpServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import Dialog from "../../components/Dialog";
 import FilledButton from "../../components/FilledButton";
@@ -11,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AppState from "../../domain/AppState";
 import { Dispatch } from "redux";
 import Action from "../../reducers/Action";
+import useGameWebSocket from "./hooks/useGameWebSocket";
 
 function Game() {
     const [searchParams] = useSearchParams();
@@ -20,7 +20,7 @@ function Game() {
     const dispatch = useDispatch<Dispatch<Action>>();
     const gameState = useSelector((state: AppState) => state.gameState);
 
-    const winner = useSelector((state: AppState) => {
+    const winner: CommonPlayerState | undefined = useSelector((state: AppState) => {
         const gs = state.gameState;
         if (gs == null || gs.winner == null) {
             return undefined;
@@ -29,42 +29,14 @@ function Game() {
         return getPlayerById(gs, gs.winner);
     });
 
-    const wsRef = useRef<WebSocket | null>(null);
-
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    useEffect(() => {
-        dispatch({ type: "clear-game-state" });
-
-        const ws = new WebSocket(`${wsServerUrl}/game/${playerId}`);
-        wsRef.current = ws;
-
-        ws.addEventListener("message", e => {
-            if (typeof e.data !== "string") {
-                console.error("invalid message type");
-                return;
-            }
-
-            let message: GameMessageIn;
-            try {
-                message = GameMessageInSchema.parse(JSON.parse(e.data));
-            } catch {
-                console.error("invalid message object");
-                console.error(e.data);
-                return;
-            }
-
-            dispatch(message);
-        });
-
-        return () => ws.close();
-    }, [playerId, dispatch]);
+    const sendMessage = useGameWebSocket(playerId, dispatch);
+    // clear game state when exiting
+    useEffect(() => (() => { dispatch({ type: "clear-game-state" }); }), [dispatch]);
 
     const handleEndTurn = () => {
-        const message: GameMessageOut = {
-            type: "end-turn",
-        };
-        wsRef.current?.send(JSON.stringify(message));
+        sendMessage({ type: "end-turn" });
     };
 
     const handleLeaveGame = () => {
