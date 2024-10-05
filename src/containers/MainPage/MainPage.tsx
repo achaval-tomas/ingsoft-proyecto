@@ -35,11 +35,17 @@ function MainPage() {
         try {
             const playerId = urlParams.get("player") ?? "";
 
-            await createLobby(
+            const lobbyId = await createLobby(
                 playerId,
                 state.name,
                 state.maxPlayers,
             );
+
+            if (lobbyId === null) {
+                alert("Jugador no existente");
+                navigate("/");
+                return;
+            }
 
             navigate(`/lobby?player=${playerId}`);
         } catch {
@@ -69,7 +75,7 @@ function MainPage() {
                 onSubmitLobbyForm={s => void handleSubmit(s)}
                 lobbies={lobbies}
                 refreshHandler={() => { void fetchAndSaveLobbies(); }}
-                joinHandler={ lobbyId => void joinHandler(lobbyId) }
+                joinHandler={lobbyId => void joinHandler(lobbyId)}
             />
             :
             <Navigate to="/" replace />
