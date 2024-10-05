@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ShapeType(Enum):
     B_0 = 'b-0'
     B_1 = 'b-1'
@@ -29,7 +30,6 @@ class ShapeType(Enum):
 
 
 class ShapeCard:
-    def __init__(self, shape : ShapeType):
+    def __init__(self, shape: ShapeType):
         self.shape = shape
         self.isBlocked = False
-        

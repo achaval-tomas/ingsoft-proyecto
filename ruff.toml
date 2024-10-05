@@ -1,0 +1,19 @@
+[format]
+quote-style = "single"
+indent-style = "space"
+
+[lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+extend-select = ["COM812"]
+fixable = ["ALL"]
