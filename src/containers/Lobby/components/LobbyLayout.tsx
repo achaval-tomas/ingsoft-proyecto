@@ -17,13 +17,8 @@ export interface LobbyLayoutProps {
 
 function LobbyLayout({ players, playerId, lobbyName, canStart, quitHandler, startHandler, isOwner }: LobbyLayoutProps) {
     const playerList = players.map(p => (
-        <div
-            key={p.id}
-            className="flex"
-        >
-            <p
-                className="text-lg"
-            >
+        <div key={p.id} className="flex">
+            <p className="text-lg">
                 &bull;&nbsp;{p.name}
                 { p.id === playerId &&
                     <span className="text-sm italic">
@@ -35,24 +30,16 @@ function LobbyLayout({ players, playerId, lobbyName, canStart, quitHandler, star
     ));
 
     return <div className="flex justify-center w-screen">
-        <div
-            className="w-7/12 bg-surface rounded-lg border border-border flex flex-col items-center gap-7 p-8 shadow-xl shadow-surface"
-        >
-            <h2
-                className="text-2xl font-bold"
-            >
+        <div className="w-7/12 bg-surface rounded-lg border border-border flex flex-col items-center gap-7 p-8 shadow-xl shadow-surface">
+            <h2 className="text-2xl font-bold">
                 {lobbyName}
             </h2>
             <div>
-                <p>
-                    Jugadores:
-                </p>
+                <p>Jugadores:</p>
                 { playerList }
-            </div >
+            </div>
             { !isOwner &&
-                <p
-                    className="text-sm text-gray-500"
-                >
+                <p className="text-sm text-gray-500">
                     Esperando a que el host inicie la partida
                 </p>
             }

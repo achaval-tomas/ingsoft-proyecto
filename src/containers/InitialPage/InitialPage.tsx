@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createPlayer } from "../../api/player";
 
 function InitialPage() {
-    const [ serverError, setServerError ] = useState<boolean>(false);
+    const [serverError, setServerError] = useState<boolean>(false);
     const navigate = useNavigate();
 
     async function createPlayerHandler(playerName: string) {
@@ -21,9 +21,7 @@ function InitialPage() {
         <h1 className="my-16 text-center">El Switcher</h1>
         <PlayerNameForm handleSubmit={name => void createPlayerHandler(name)} />
         { serverError &&
-            <p
-                className="text-center text-red-500 py-2"
-            >
+            <p className="text-center text-red-500 py-2">
                 Hay un error en el servidor, por favor intentá más tarde
             </p>
         }

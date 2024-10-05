@@ -6,10 +6,10 @@ import { leaveLobby } from "../../api/lobby";
 import { createGame } from "../../api/game";
 
 function Lobby() {
-    const [ urlParams ] = useSearchParams();
+    const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const [ playerId, setPlayerId ] = useState<string>("");
+    const [playerId, setPlayerId] = useState<string>("");
     const { players, lobbyName, lobbyId, ownerId } = useLobbyWebsocket(playerId);
 
     useEffect(() => {

@@ -21,8 +21,9 @@ async function createGame(
         }),
     });
 
-    if (res.ok)
+    if (res.ok) {
         return "Ok";
+    }
 
     const json = await res.json() as { detail: string };
 

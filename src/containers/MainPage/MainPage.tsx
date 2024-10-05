@@ -18,8 +18,8 @@ async function getLobbies(): Promise<LobbyElement[]> {
 }
 
 function MainPage() {
-    const [ lobbies, setLobbies ] = useState<LobbyElement[]>([]);
-    const [ urlParams ] = useSearchParams();
+    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
+    const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
     async function fetchAndSaveLobbies() {
@@ -56,11 +56,13 @@ function MainPage() {
             return;
         }
 
-        if (res !== null)
+        if (res !== null) {
             alert(res);
+        }
 
-        if (res === "Jugador no existente")
+        if (res === "Jugador no existente") {
             navigate("/");
+        }
     }
 
     return (
@@ -68,8 +70,10 @@ function MainPage() {
             <MainPageLayout
                 onSubmitLobbyForm={s => void handleSubmit(s)}
                 lobbies={lobbies}
-                refreshHandler={() => { void fetchAndSaveLobbies(); }}
-                joinHandler={ lobbyId => void joinHandler(lobbyId) }
+                refreshHandler={() => {
+                    void fetchAndSaveLobbies();
+                }}
+                joinHandler={lobbyId => void joinHandler(lobbyId)}
             />
             :
             <Navigate to="/" replace />

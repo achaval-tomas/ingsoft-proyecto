@@ -57,8 +57,9 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyRe
         }),
     });
 
-    if (res.ok)
+    if (res.ok) {
         return "Ok";
+    }
 
     const json = await res.json() as { detail: string };
 
@@ -99,8 +100,9 @@ async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveBodyR
         }),
     });
 
-    if (res.ok)
+    if (res.ok) {
         return "Ok";
+    }
 
     const json = await res.json() as { detail: string };
 

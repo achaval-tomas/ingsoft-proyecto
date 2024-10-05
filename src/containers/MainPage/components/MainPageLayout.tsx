@@ -23,10 +23,10 @@ function MainPageLayout({
             <div className="w-7/12 flex justify-around p-8 my-8 bg-zinc-700 rounded-lg">
                 <div className="flex justify-around w-full">
                     <CreateLobbyDialog
-                        isOpen = {showCreateForm}
-                        lobbyNamePlaceholder = {"Nombre de tu sala"}
-                        onCancel = {() => setCreateForm(false)}
-                        onSubmit = {onSubmitLobbyForm}
+                        isOpen={showCreateForm}
+                        lobbyNamePlaceholder={"Nombre de tu sala"}
+                        onCancel={() => setCreateForm(false)}
+                        onSubmit={onSubmitLobbyForm}
                     />
                     <FilledButton onClick={() => setCreateForm(true)}>
                         <p>Crear sala</p>

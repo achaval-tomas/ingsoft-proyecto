@@ -48,10 +48,10 @@ test("It correctly renders all elements", () => {
     expect(rows).toHaveLength(mockItems.length + 1);
 
     mockItems.forEach((element, index) => {
-        const tdName = within(rows[index+1]).queryByText(element.lobby_name);
+        const tdName = within(rows[index + 1]).queryByText(element.lobby_name);
         expect(tdName).not.toBeNull();
 
-        const tdNumPlayers = within(rows[index+1]).queryByText(element.player_amount);
+        const tdNumPlayers = within(rows[index + 1]).queryByText(element.player_amount);
         expect(tdNumPlayers).not.toBeNull();
     });
 });

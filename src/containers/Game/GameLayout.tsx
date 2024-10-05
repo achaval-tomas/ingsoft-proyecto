@@ -17,7 +17,7 @@ type GameLayoutProps = {
     onClickLeaveGame: () => void;
 };
 
-function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation} ) {
+function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation } ) {
     return (
         <div className="invisible">
             <ShapeCardHand shapeCards={[{ shape: "b-0", isBlocked: false }]} rotation={rotation} />

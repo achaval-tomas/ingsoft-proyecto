@@ -16,15 +16,16 @@ type LobbyWebsocketFields = {
 }
 
 function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
-    const [ players, setPlayers ] = useState<PlayerObject[]>([]);
-    const [ lobbyId, setLobbyId ] = useState<string>("");
-    const [ lobbyName, setLobbyName ] = useState<string>("");
-    const [ ownerId, setOwnerId ] = useState<PlayerId>("");
+    const [players, setPlayers] = useState<PlayerObject[]>([]);
+    const [lobbyId, setLobbyId] = useState<string>("");
+    const [lobbyName, setLobbyName] = useState<string>("");
+    const [ownerId, setOwnerId] = useState<PlayerId>("");
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (playerId === "")
+        if (playerId === "") {
             return;
+        }
 
         const socket = new WebSocket(`ws://127.0.0.1:8000/lobby/${playerId}`);
 
