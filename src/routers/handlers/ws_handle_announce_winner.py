@@ -14,7 +14,7 @@ async def ws_handle_announce_winner(winner_id: str, db: Session):
         game_id=player.game_id,
         message=serialize(
             {
-                'type': 'winner',
+                'type': 'player-won',
                 'playerId': winner_id,
                 'playerName': player.player_name,
             },
