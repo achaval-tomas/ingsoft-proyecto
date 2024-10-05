@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { httpServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import Dialog from "../../components/Dialog";
 import FilledButton from "../../components/FilledButton";
@@ -11,6 +10,7 @@ import { Dispatch } from "redux";
 import Action from "../../reducers/Action";
 import useGameWebSocket from "./hooks/useGameWebSocket";
 import useWinnerSelector from "./hooks/useWinnerSelector";
+import gameService from "../../services/gameService";
 
 function Game() {
     const [searchParams] = useSearchParams();
@@ -33,14 +33,7 @@ function Game() {
     };
 
     const handleLeaveGame = () => {
-        void fetch(`${httpServerUrl}/game/leave`, {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ playerId }),
-        });
+        void gameService.leaveGame(playerId);
         navigate(`/lobby?player=${playerId}`);
     };
 
