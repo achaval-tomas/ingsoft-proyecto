@@ -73,7 +73,7 @@ beforeEach(() => {
     };
 });
 
-test("It gets lobby state and renders lobby info", async () => {
+test("It gets lobby state and renders lobby players", async () => {
     render(
         <Lobby />,
     );
