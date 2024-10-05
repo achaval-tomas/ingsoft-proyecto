@@ -1,6 +1,6 @@
 import { screen, render } from "@testing-library/react";
 import { z } from "zod";
-import { beforeEach, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { Client, Server } from "mock-socket";
 import Lobby from "./Lobby";
 import userEvent from "@testing-library/user-event";
@@ -18,11 +18,11 @@ const PLAYER_LIST = [
     { id: "3", name: "Don Amancio" },
 ];
 
-const sendLobbyState = (socket: Client) => {
+const sendLobbyState = (socket: Client, ownerId: string) => {
     socket.send(JSON.stringify({
         type: "lobby-state",
         players: PLAYER_LIST,
-        owner: PLAYER_ID,
+        owner: ownerId,
         id: LOBBY_ID,
         name: LOBBY_NAME,
     }));
@@ -34,81 +34,136 @@ const ClientMessageSchema = z.discriminatedUnion("type", [
     }),
 ]);
 
-beforeEach(() => {
-    vi.mock("react-router-dom", async () => {
-        const mod = await vi.importActual("react-router-dom");
+describe("Lobby tests being owner", () => {
+    beforeEach(() => {
+        vi.mock("react-router-dom", async () => {
+            const mod = await vi.importActual("react-router-dom");
 
-        return {
-            ...mod,
-            useNavigate: () => { },
-            useSearchParams: () => [
-                { get: () => PLAYER_ID },
-            ],
-        };
-    });
-
-    const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
-
-    wsServer.on("connection", socket => {
-        socket.on("message", message => {
-            try {
-                const m = ClientMessageSchema.parse(JSON.parse(message as string));
-                switch (m.type) {
-                    case "get-lobby-state":
-                        sendLobbyState(socket);
-                        break;
-                }
-            } catch {
-                console.log("invalid client websocket message");
-            }
+            return {
+                ...mod,
+                useNavigate: () => { },
+                useSearchParams: () => [
+                    { get: () => PLAYER_ID },
+                ],
+            };
         });
-    });
 
-    vi.mock("../../api/lobby.tsx", async (original) => {
-        return {
-            ...await original(),
-            leaveLobby: () => "mocked",
+        const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
+
+        wsServer.on("connection", socket => {
+            socket.on("message", message => {
+                try {
+                    const m = ClientMessageSchema.parse(JSON.parse(message as string));
+                    switch (m.type) {
+                        case "get-lobby-state":
+                            sendLobbyState(socket, PLAYER_ID);
+                            break;
+                    }
+                } catch {
+                    console.log("invalid client websocket message");
+                }
+            });
+        });
+
+        vi.mock("../../api/lobby.tsx", async (original) => {
+            return {
+                ...await original(),
+                leaveLobby: () => "mocked",
+            };
+        });
+
+        return () => {
+            vi.restoreAllMocks();
+            wsServer.close();
         };
     });
 
-    return () => {
-        vi.restoreAllMocks();
-        wsServer.close();
-    };
+    test("It gets lobby state and renders lobby players", async () => {
+        render(
+            <Lobby />,
+        );
+
+        for (let i = 0; i < PLAYER_LIST.length; i++) {
+            const playerName = PLAYER_LIST[i].name;
+
+            expect(await screen.findByText(playerName, { exact: false })).not.toBeNull();
+        }
+    });
+
+    test("It calls leaveLobby function when clicking button to leave lobby", async () => {
+        vi.spyOn(apiFunctions, "leaveLobby");
+
+        render(
+            <Lobby />,
+        );
+
+        expect(leaveLobby).toHaveBeenCalledTimes(0);
+
+        const button = screen.getByText("Salir");
+
+        await userEvent.click(button);
+
+        expect(leaveLobby).toHaveBeenCalledTimes(1);
+    });
+
+    test("It renders button to start game if player is owner", async () => {
+        render(
+            <Lobby />,
+        );
+
+        expect(await screen.findByText("Iniciar juego")).toBeVisible();
+    });
 });
 
-test("It gets lobby state and renders lobby players", async () => {
-    render(
-        <Lobby />,
-    );
+describe("Lobby tests not being owner", () => {
+    beforeEach(() => {
+        vi.mock("react-router-dom", async () => {
+            const mod = await vi.importActual("react-router-dom");
 
-    for (let i = 0; i < PLAYER_LIST.length; i++) {
-        const playerName = PLAYER_LIST[i].name;
+            return {
+                ...mod,
+                useNavigate: () => { },
+                useSearchParams: () => [
+                    { get: () => PLAYER_ID },
+                ],
+            };
+        });
 
-        expect(await screen.findByText(playerName, { exact: false })).not.toBeNull();
-    }
-});
+        const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
 
-test("It calls leaveLobby function when clicking button to leave lobby", async () => {
-    vi.spyOn(apiFunctions, "leaveLobby");
+        wsServer.on("connection", socket => {
+            socket.on("message", message => {
+                try {
+                    const m = ClientMessageSchema.parse(JSON.parse(message as string));
+                    switch (m.type) {
+                        case "get-lobby-state":
+                            sendLobbyState(socket, "1");
+                            break;
+                    }
+                } catch {
+                    console.log("invalid client websocket message");
+                }
+            });
+        });
 
-    render(
-        <Lobby />,
-    );
+        vi.mock("../../api/lobby.tsx", async (original) => {
+            return {
+                ...await original(),
+                leaveLobby: () => "mocked",
+            };
+        });
 
-    expect(leaveLobby).toHaveBeenCalledTimes(0);
+        return () => {
+            vi.restoreAllMocks();
+            wsServer.close();
+        };
+    });
 
-    const button = screen.getByText("Salir");
+    test("It doesn't render button to start game if player is not owner", () => {
+        render(
+            <Lobby />,
+        );
 
-    await userEvent.click(button);
-
-    expect(leaveLobby).toHaveBeenCalledTimes(1);
-});
-
-test("It renders button to start game if player is owner", async () => {
-    render(
-        <Lobby />,
-    );
-
-    expect(await screen.findByText("Iniciar juego")).toBeVisible();
+        expect(screen.queryByText("Iniciar juego")).toBeNull();
+    });
 });
