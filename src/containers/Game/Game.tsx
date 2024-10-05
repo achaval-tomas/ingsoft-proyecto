@@ -13,20 +13,20 @@ import useWinnerSelector from "./hooks/useWinnerSelector";
 import gameService from "../../services/gameService";
 
 function Game() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch<Dispatch<Action>>();
+
     const [searchParams] = useSearchParams();
     const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
-    const navigate = useNavigate();
 
-    const dispatch = useDispatch<Dispatch<Action>>();
     const gameState = useSelector((state: AppState) => state.gameState);
-
     const winner = useWinnerSelector();
-
-    const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
     const sendMessage = useGameWebSocket(playerId, dispatch);
     // clear game state when exiting
     useEffect(() => (() => { dispatch({ type: "clear-game-state" }); }), [dispatch]);
+
+    const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
