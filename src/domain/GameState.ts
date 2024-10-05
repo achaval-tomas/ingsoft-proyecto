@@ -58,3 +58,11 @@ export const GameStateSchema = z.object({
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
+
+export function getAllPlayers(gameState: GameState): CommonPlayerState[] {
+    return [gameState.selfPlayerState, ...gameState.otherPlayersState];
+}
+
+export function getPlayerById(gameState: GameState, playerId: PlayerId): CommonPlayerState | undefined {
+    return getAllPlayers(gameState).find(p => p.id === playerId);
+}

@@ -1,35 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GameLayout from "./GameLayout";
-import { GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
-import { CommonPlayerState, GameState } from "../../domain/GameState";
+import { GameMessageIn, GameMessageInSchema, GameMessageOut } from "../../domain/GameMessage";
+import { getPlayerById } from "../../domain/GameState";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { httpServerUrl, wsServerUrl } from "../../services/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import Dialog from "../../components/Dialog";
 import FilledButton from "../../components/FilledButton";
-
-function computeNextPlayer(s: GameState): number {
-    const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
-    allPlayers.sort((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
-
-    const nextPlayer = allPlayers.find(p => p.roundOrder > s.currentRoundPlayer) ?? allPlayers[0];
-
-    return nextPlayer.roundOrder;
-}
+import { useDispatch, useSelector } from "react-redux";
+import AppState from "../../domain/AppState";
 
 function Game() {
     const [searchParams] = useSearchParams();
     const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
     const navigate = useNavigate();
 
+    const dispatch = useDispatch();
+    const gameState = useSelector((state: AppState) => state.gameState);
+
+    const winner = useSelector((state: AppState) => {
+        const gs = state.gameState;
+        if (gs == null || gs.winner == null) {
+            return undefined;
+        }
+
+        return getPlayerById(gs, gs.winner);
+    });
+
     const wsRef = useRef<WebSocket | null>(null);
 
-    const [gameState, setGameState] = useState<GameState | null>(null);
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
-    const [winner, setWinner] = useState<CommonPlayerState | null>(null);
 
     useEffect(() => {
-        setGameState(null);
+        dispatch({ type: "game-state", gameState: null }); // TODO: refactor
 
         const ws = new WebSocket(`${wsServerUrl}/game/${playerId}`);
         wsRef.current = ws;
@@ -40,75 +43,20 @@ function Game() {
                 return;
             }
 
-            const message = GameMessageInSchema.parse(JSON.parse(e.data));
-
-            console.log(message);
-
-            switch (message.type) {
-                case "turn-ended": {
-                    setGameState(s => {
-                        if (s === null) {
-                            return null;
-                        }
-
-                        const newGameState = { ...s };
-                        newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
-
-                        return newGameState;
-                    });
-                    break;
-                }
-                case "player-won": {
-                    setGameState(s => {
-                        if (s === null) {
-                            return null;
-                        }
-
-                        const allPlayers: CommonPlayerState[] = [s.selfPlayerState, ...s.otherPlayersState];
-                        const winner = allPlayers.find(p => p.id === message.playerId);
-
-                        setWinner(winner ?? null);
-                        return s;
-                    });
-                    break;
-                }
-                case "game-state": {
-                    setGameState(message.gameState);
-                    break;
-                }
-                case "error": {
-                    // TODO
-                    break;
-                }
-                case "player-left": {
-                    setGameState(s => {
-                        if (message.playerId === playerId) {
-                            navigate(`/lobby?player=${playerId}`);
-                            return s;
-                        }
-
-                        if (s === null) {
-                            return null;
-                        }
-
-                        const newGameState = { ...s, otherPlayersState: s.otherPlayersState.filter(p => p.id !== message.playerId) };
-
-                        const player = s.otherPlayersState.find(p => p.id === message.playerId);
-                        if (player != null && player.roundOrder === s.currentRoundPlayer) {
-                            newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
-                        }
-
-                        return newGameState;
-                    });
-                    break;
-                }
-                default:
-                    message satisfies never;
+            let message: GameMessageIn;
+            try {
+                message = GameMessageInSchema.parse(JSON.parse(e.data));
+            } catch {
+                console.error("invalid message object");
+                console.error(e.data);
+                return;
             }
+
+            dispatch(message);
         });
 
         return () => ws.close();
-    }, [playerId, navigate]);
+    }, [playerId, dispatch]);
 
     const handleEndTurn = () => {
         const message: GameMessageOut = {
