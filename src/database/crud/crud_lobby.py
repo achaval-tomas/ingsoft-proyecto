@@ -1,9 +1,12 @@
-from sqlalchemy.orm import Session
-from src.database import schemas
-from src.database.models import Lobby
 from uuid import uuid4
-from src.database.crud.tools.jsonify import serialize, deserialize
+
+from sqlalchemy.orm import Session
+
+from src.database import schemas
 from src.database.crud.crud_player import get_player
+from src.database.crud.tools.jsonify import deserialize, serialize
+from src.database.models import Lobby
+
 
 def create_lobby(db: Session, lobby: schemas.LobbyCreate):
     db_player = get_player(db=db, player_id=lobby.lobby_owner)
@@ -17,7 +20,7 @@ def create_lobby(db: Session, lobby: schemas.LobbyCreate):
         min_players=lobby.min_players,
         max_players=lobby.max_players,
         players=serialize(player_list),
-        player_amount=1
+        player_amount=1,
     )
     db_player.lobby_id = db_lobby.lobby_id
     db.add(db_lobby)
@@ -25,7 +28,8 @@ def create_lobby(db: Session, lobby: schemas.LobbyCreate):
     db.refresh(db_lobby)
     return db_lobby.lobby_id
 
-def join_lobby(db:Session, lobby_id: str, player_id: str):
+
+def join_lobby(db: Session, lobby_id: str, player_id: str):
     player = get_player(db, player_id)
     if not player:
         return 1
@@ -46,6 +50,7 @@ def join_lobby(db:Session, lobby_id: str, player_id: str):
     db.commit()
     return 0
 
+
 def leave_lobby(db: Session, player_id: str):
     player = get_player(db, player_id)
     if not player:
@@ -63,8 +68,10 @@ def leave_lobby(db: Session, player_id: str):
     db.commit()
     return 0
 
+
 def get_lobby(db: Session, lobby_id: str):
     return db.query(Lobby).filter(Lobby.lobby_id == lobby_id).one_or_none()
+
 
 def get_lobby_by_player_id(db: Session, player_id: str):
     player = get_player(player_id=player_id, db=db)
@@ -72,8 +79,10 @@ def get_lobby_by_player_id(db: Session, player_id: str):
         return None
     return get_lobby(db=db, lobby_id=player.lobby_id)
 
+
 def get_available_lobbies(db: Session, limit: int = 1000):
     return db.query(Lobby).filter(Lobby.player_amount < Lobby.max_players).all()
+
 
 def delete_lobby(db: Session, lobby_id: str):
     query = db.query(Lobby).filter(Lobby.lobby_id == lobby_id)
