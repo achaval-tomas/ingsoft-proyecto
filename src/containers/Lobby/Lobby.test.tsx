@@ -3,6 +3,9 @@ import { z } from "zod";
 import { beforeAll, beforeEach, expect, test, vi } from "vitest";
 import { Client, Server } from "mock-socket";
 import Lobby from "./Lobby";
+import userEvent from "@testing-library/user-event";
+import * as apiFunctions from "../../api/lobby";
+import { leaveLobby } from "../../api/lobby";
 
 const PLAYER_ID = "1234";
 const PLAYER_NAME = "Pedro";
@@ -67,8 +70,15 @@ beforeEach(() => {
         });
     });
 
+    vi.mock("../../api/lobby.tsx", async (original) => {
+        return {
+            ...await original(),
+            leaveLobby: () => "mocked",
+        };
+    });
 
     return () => {
+        vi.restoreAllMocks();
         wsServer.close();
     };
 });
@@ -83,4 +93,20 @@ test("It gets lobby state and renders lobby players", async () => {
 
         expect(await screen.findByText(playerName, { exact: false })).not.toBeNull();
     }
+});
+
+test("It calls leaveLobby function when clicking button to leave lobby", async () => {
+    vi.spyOn(apiFunctions, "leaveLobby");
+
+    render(
+        <Lobby />,
+    );
+
+    expect(leaveLobby).toHaveBeenCalledTimes(0);
+
+    const button = screen.getByText("Salir");
+
+    await userEvent.click(button);
+
+    expect(leaveLobby).toHaveBeenCalledTimes(1);
 });
