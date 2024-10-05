@@ -22,7 +22,7 @@ const sendLobbyState = (socket: Client) => {
     socket.send(JSON.stringify({
         type: "lobby-state",
         players: PLAYER_LIST,
-        owner: "1",
+        owner: PLAYER_ID,
         id: LOBBY_ID,
         name: LOBBY_NAME,
     }));
@@ -109,4 +109,12 @@ test("It calls leaveLobby function when clicking button to leave lobby", async (
     await userEvent.click(button);
 
     expect(leaveLobby).toHaveBeenCalledTimes(1);
+});
+
+test("It renders button to start game if player is owner", async () => {
+    render(
+        <Lobby />,
+    );
+
+    expect(await screen.findByText("Iniciar juego")).toBeVisible();
 });
