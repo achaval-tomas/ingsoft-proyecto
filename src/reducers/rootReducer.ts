@@ -40,11 +40,6 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             return gameState;
         }
         case "player-left": {
-            // if (action.playerId === s.selfPlayerState.id) {
-            //     navigate(`/lobby?player=${playerId}`);
-            //     return s;
-            // }
-
             const newGameState = { ...gameState };
             newGameState.otherPlayersState = newGameState.otherPlayersState.filter(p => p.id !== action.playerId);
 
