@@ -34,7 +34,7 @@ const ClientMessageSchema = z.discriminatedUnion("type", [
     }),
 ]);
 
-beforeAll(() => {
+beforeEach(() => {
     vi.mock("react-router-dom", async () => {
         const mod = await vi.importActual("react-router-dom");
 
@@ -47,12 +47,6 @@ beforeAll(() => {
         };
     });
 
-    return () => {
-        vi.restoreAllMocks();
-    };
-});
-
-beforeEach(() => {
     const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
 
     wsServer.on("connection", socket => {
