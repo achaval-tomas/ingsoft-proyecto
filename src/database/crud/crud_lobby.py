@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Lobby
-from src.schemas import lobby_schemas
+from src.schemas.lobby_schemas import LobbyCreateSchema
 
 
-def create_lobby(db: Session, lobby: lobby_schemas.LobbyCreate):
+def create_lobby(db: Session, lobby: LobbyCreateSchema):
     db_player = get_player(db=db, player_id=lobby.lobby_owner)
     if not db_player:
         return None

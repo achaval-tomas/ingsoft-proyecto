@@ -11,11 +11,15 @@ class PlayerId(BaseModel):
     playerId: str
 
 
-class PlayerCreate(PlayerBase):
+class PlayerIdSchema(BaseModel):
+    player_id: str
+
+
+class PlayerCreateSchema(PlayerBase):
     pass
 
 
-class Player(PlayerBase):
+class PlayerSchema(PlayerBase):
     player_id: str
     game_id: str
     lobby_id: str

@@ -8,7 +8,7 @@ class LobbyBase(BaseModel):
     max_players: int
 
 
-class LobbyCreate(LobbyBase):
+class LobbyCreateSchema(LobbyBase):
     pass
 
 
@@ -24,10 +24,10 @@ class LobbySchema(LobbyBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class LobbyJoin(BaseModel):
+class LobbyJoinSchema(BaseModel):
     player_id: str
     lobby_id: str
 
 
-class LobbyLeave(LobbyJoin):
+class LobbyLeaveSchema(LobbyJoinSchema):
     pass

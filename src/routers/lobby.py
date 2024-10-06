@@ -11,11 +11,17 @@ from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
 from src.routers.helpers.connection_manager import lobby_manager
-from src.schemas import lobby_schemas
+from src.schemas.lobby_schemas import (
+    LobbyCreateSchema,
+    LobbyIdSchema,
+    LobbyJoinSchema,
+    LobbyLeaveSchema,
+    LobbySchema,
+)
 
 
 def lobby_decoder(lobby: models.Lobby):
-    return lobby_schemas.LobbySchema(
+    return LobbySchema(
         lobby_id=lobby.lobby_id,
         lobby_name=lobby.lobby_name,
         lobby_owner=lobby.lobby_owner,
@@ -29,15 +35,15 @@ def lobby_decoder(lobby: models.Lobby):
 lobby_router = APIRouter()
 
 
-@lobby_router.post('/lobby', response_model=lobby_schemas.LobbyIdSchema)
-def create_lobby(lobby: lobby_schemas.LobbyCreate, db: Session = Depends(get_db)):
-    return lobby_schemas.LobbyIdSchema(
+@lobby_router.post('/lobby', response_model=LobbyIdSchema)
+def create_lobby(lobby: LobbyCreateSchema, db: Session = Depends(get_db)):
+    return LobbyIdSchema(
         lobby_id=crud_lobby.create_lobby(db=db, lobby=lobby),
     )
 
 
 @lobby_router.post('/lobby/join', status_code=202)
-async def join_lobby(body: lobby_schemas.LobbyJoin, db: Session = Depends(get_db)):
+async def join_lobby(body: LobbyJoinSchema, db: Session = Depends(get_db)):
     res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
@@ -55,13 +61,13 @@ async def join_lobby(body: lobby_schemas.LobbyJoin, db: Session = Depends(get_db
     )
 
 
-@lobby_router.get('/lobby', response_model=list[lobby_schemas.LobbySchema])
+@lobby_router.get('/lobby', response_model=list[LobbySchema])
 async def get_all_lobbies(db: Session = Depends(get_db)):
     return [lobby_decoder(lobby) for lobby in crud_lobby.get_available_lobbies(db=db)]
 
 
 @lobby_router.post('/lobby/leave', status_code=200)
-async def leave_lobby(body: lobby_schemas.LobbyLeave, db: Session = Depends(get_db)):
+async def leave_lobby(body: LobbyLeaveSchema, db: Session = Depends(get_db)):
     res = await ws_handle_leave_lobby(
         db=db,
         player_id=body.player_id,
