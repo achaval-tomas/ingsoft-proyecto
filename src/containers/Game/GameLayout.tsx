@@ -2,7 +2,6 @@ import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
 import { Color } from "../../domain/Color";
 import { OtherPlayerState, SelfPlayerState } from "../../domain/GameState";
-import { Rotation } from "../../domain/Rotation";
 import Board from "./components/Board";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
@@ -17,46 +16,38 @@ type GameLayoutProps = {
     onClickLeaveGame: () => void;
 };
 
-function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation } ) {
-    return (
-        <div className="invisible">
-            <ShapeCardHand shapeCards={[{ shape: "b-0", isBlocked: false }]} rotation={rotation} />
-        </div>
-    );
-}
-
 function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onClickEndTurn, onClickLeaveGame }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
-            style={{ gridTemplateRows: "1fr auto", gridTemplateColumns: "1fr" }}
+            style={{ gridTemplateRows: "3fr 1fr", gridTemplateColumns: "1fr" }}
         >
-            <div className="row-start-1 col-start-1 justify-self-center self-center">
-                <div className="flex flex-row">
-                    <div className="grid" style={{ gridTemplateRows: "auto 1fr auto", gridTemplateColumns: "auto 1fr auto" }}>
+            <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
+                <div className="flex flex-row w-full h-full ">
+                    <div className="grid w-full h-full" style={{ gridTemplateRows: "1fr 4.5fr 1fr", gridTemplateColumns: "1fr 4.5fr 1fr" }}>
                         <div className="row-start-2 col-start-2">
                             <Board tiles={tiles} activeSide={activeSide} />
                         </div>
-                        <div className="row-start-3 col-start-2 justify-self-center pt-[1em]">
-                            {( selfPlayerState.shapeCardsInHand.length >= 1) ?
-                                <ShapeCardHand shapeCards={selfPlayerState.shapeCardsInHand} rotation="r0" /> :
-                                <DummyInvisibleShapeCardHand rotation="r0" />}
-                        </div>
-                        <div className="row-start-2 col-start-3 self-center pl-[1em]">
-                            {(otherPlayersState.length >= 1 && otherPlayersState[0].shapeCardsInHand.length >= 1) ?
-                                <ShapeCardHand shapeCards={otherPlayersState[0].shapeCardsInHand} rotation="r90" /> :
-                                <DummyInvisibleShapeCardHand rotation="r90" />}
-                        </div>
-                        <div className="row-start-1 col-start-2 justify-self-center pb-[1em]">
-                            {(otherPlayersState.length >= 2 && otherPlayersState[1].shapeCardsInHand.length >= 1) ?
-                                <ShapeCardHand shapeCards={otherPlayersState[1].shapeCardsInHand} rotation="r180" /> :
-                                <DummyInvisibleShapeCardHand rotation="r180" />}
-                        </div>
-                        <div className="row-start-2 col-start-1 self-center pr-[1em]">
-                            {(otherPlayersState.length >= 3 && otherPlayersState[2].shapeCardsInHand.length >= 1) ?
-                                <ShapeCardHand shapeCards={otherPlayersState[2].shapeCardsInHand} rotation="r270" /> :
-                                <DummyInvisibleShapeCardHand rotation="r270" />}
-                        </div>
+                        <ShapeCardHand
+                            shapeCards={selfPlayerState.shapeCardsInHand}
+                            rotation="r0"
+                            className="row-start-3 col-start-2 h-full w-full justify-center pt-[3%]"
+                        />
+                        {otherPlayersState[0] && <ShapeCardHand
+                            shapeCards={otherPlayersState[0].shapeCardsInHand}
+                            rotation="r90"
+                            className="row-start-2 col-start-3 h-full w-full justify-center pl-[15%]"
+                        />}
+                        {otherPlayersState[1] && <ShapeCardHand
+                            shapeCards={otherPlayersState[1].shapeCardsInHand}
+                            rotation="r180"
+                            className="row-start-1 col-start-2 h-full w-full justify-center pb-[3%]"
+                        />}
+                        {otherPlayersState[2] && <ShapeCardHand
+                            shapeCards={otherPlayersState[2].shapeCardsInHand}
+                            rotation="r270"
+                            className="row-start-2 col-start-1 h-full w-full justify-center pr-[15%]"
+                        />}
                     </div>
                     <div className="relative w-0 h-[12em] self-center">
                         <div className="absolute left-32 w-[8em] h-[12em]">
@@ -79,3 +70,115 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onC
 }
 
 export default GameLayout;
+// import FilledButton from "../../components/FilledButton";
+// import TextButton from "../../components/TextButton";
+// import { Color } from "../../domain/Color";
+// import { OtherPlayerState, SelfPlayerState } from "../../domain/GameState";
+// import { Rotation } from "../../domain/Rotation";
+// import Board from "./components/Board";
+// import MovementCardDeck from "./components/MovementCardDeck";
+// import MovementCardHand from "./components/MovementCardHand";
+// import ShapeCard from "./components/ShapeCard";
+// import ShapeCardHand from "./components/ShapeCardHand";
+
+// type GameLayoutProps = {
+//     tiles: Color[];
+//     selfPlayerState: SelfPlayerState;
+//     otherPlayersState: OtherPlayerState[];
+//     activeSide: "b" | "r" | "t" | "l";
+//     onClickEndTurn: () => void;
+//     onClickLeaveGame: () => void;
+// };
+
+// function DummyInvisibleShapeCardHand({ rotation }: { rotation: Rotation } ) {
+//     return (
+//         <div className="invisible">
+//             <ShapeCardHand shapeCards={[{ shape: "b-0", isBlocked: false }]} rotation={rotation} />
+//         </div>
+//     );
+// }
+
+// function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onClickEndTurn, onClickLeaveGame }: GameLayoutProps) {
+//     return (
+//         <div
+//             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
+//             style={{ gridTemplateRows: "3fr 1fr", gridTemplateColumns: "1fr" }}
+//         >
+//             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
+//                 {/* <div className="flex flex-row h-full"> */}
+//                     <div className="grid h-full" style={{ gridTemplateRows: "1fr 5fr 1fr", gridTemplateColumns: "1fr 5fr 1fr" }}>
+//                         {/* <div className="row-start-2 col-start-2">
+//                             <Board tiles={tiles} activeSide={activeSide} />
+//                         </div> */}
+//                         {/* <div className="row-start-3 col-start-2 justify-self-center pt-[1em]">
+//                             {( selfPlayerState.shapeCardsInHand.length >= 1) ?
+//                                 <ShapeCardHand shapeCards={selfPlayerState.shapeCardsInHand} rotation="r0" /> :
+//                                 <DummyInvisibleShapeCardHand rotation="r0" />}
+//                         </div>
+//                         <div className="row-start-2 col-start-3 self-center pl-[1em]">
+//                             {(otherPlayersState.length >= 1 && otherPlayersState[0].shapeCardsInHand.length >= 1) ?
+//                                 <ShapeCardHand shapeCards={otherPlayersState[0].shapeCardsInHand} rotation="r90" /> :
+//                                 <DummyInvisibleShapeCardHand rotation="r90" />}
+//                         </div> */}
+//                         {/* <div className="row-start-1 col-start-2 justify-self-center pb-[1em]">
+//                             {(otherPlayersState.length >= 2 && otherPlayersState[1].shapeCardsInHand.length >= 1) ?
+//                                 <ShapeCardHand shapeCards={otherPlayersState[1].shapeCardsInHand} rotation="r180" /> :
+//                                 <DummyInvisibleShapeCardHand rotation="r180" />}
+//                         </div> */}
+//                         {/* <div className="row-start-2 col-start-1 self-center pr-[1em]">
+//                             {(otherPlayersState.length >= 3 && otherPlayersState[2].shapeCardsInHand.length >= 1) ?
+//                                 <ShapeCardHand shapeCards={otherPlayersState[2].shapeCardsInHand} rotation="r270" /> :
+//                                 <DummyInvisibleShapeCardHand rotation="r270" />}
+//                         </div> */}
+//                         {/* <div className="row-start-1 col-start-2 w-min h-full aspect-square">
+//                             <div className="h-full aspect-square">
+//                                 <img className="[height:inherit] [width:inherit]" src={"/src/assets/shapes/b-0.svg"} />
+//                             </div>
+//                         </div> */}
+//                         {/* <div className="row-start-1 col-start-2 h-full w-full bg-red-500" />
+//                         <div className="row-start-2 col-start-2 h-full w-full bg-blue-500" />
+//                         <div className="row-start-3 col-start-2 h-full w-full bg-green-500" />
+//                         <div className="row-start-2 col-start-1 h-full w-full bg-yellow-500" />
+//                         <div className="row-start-2 col-start-3 h-full w-full bg-purple-500" /> */}
+//                         {/* <img className="row-start-2 col-start-2" src={"/src/assets/shapes/b-0.svg"} /> */}
+//                         {/* <img className="row-start-3 col-start-2" src={"/src/assets/shapes/b-0.svg"} /> */}
+//                         <div className="row-start-1 col-start-2 h-full w-full bg-red-500 flex flex-row justify-center">
+//                             <div className="max-h-full aspect-square" >
+//                                 <div className="w-full h-full flex flex-col">
+//                                     {/* <div className="bg-lime-200 flex-1" /> */}
+//                                     <img className="flex-1 w-full" src={"/src/assets/shapes/b-0.svg"} style={{ minWidth: 0, minHeight: 0, height: "auto" }} />
+
+//                                 </div>
+//                             </div>
+//                             <div className="bg-lime-500 max-h-full aspect-square" />
+//                             <div className="bg-lime-700 max-h-full aspect-square" />
+//                         </div>
+//                         <div className="row-start-2 col-start-2 h-full w-full bg-blue-500" />
+//                         <div className="row-start-3 col-start-2 h-full w-full bg-green-500" />
+//                         <div className="row-start-2 col-start-1 h-full w-full bg-yellow-500" />
+//                         <div className="row-start-2 col-start-3 h-full w-full bg-purple-500" />
+//                         {/* <div className="row-start-1 col-start-2 self-center">
+//                             <ShapeCard shape="b-0" isBlocked={false} />
+//                         </div> */}
+//                     </div>
+//                     {/* <div className="relative w-0 h-[12em] self-center">
+//                         <div className="absolute left-32 w-[8em] h-[12em]">
+//                             <MovementCardDeck />
+//                         </div>
+//                     </div>
+//                 </div> */}
+//             </div>
+//             <div className="row-start-2 col-start-1 justify-self-center self-end py-4">
+//                 <MovementCardHand movements={selfPlayerState.movementCardsInHand} />
+//             </div>
+//             <div className="row-start-2 col-start-1 justify-self-end self-end">
+//                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
+//             </div>
+//             <div className="row-start-1 col-start-1 justify-self-end self-start">
+//                 <TextButton className="text-xl" padding="px-8 py-4" onClick={onClickLeaveGame}>Abandonar partida</TextButton>
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default GameLayout;

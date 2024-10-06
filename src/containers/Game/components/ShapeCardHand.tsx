@@ -5,6 +5,7 @@ import ShapeCard from "./ShapeCard";
 type ShapeCardHandProps = {
     shapeCards: ShapeCardState[];
     rotation: Rotation;
+    className: string;
 }
 
 function flexDirectionFromRotation(rotation: Rotation): string {
@@ -16,16 +17,16 @@ function flexDirectionFromRotation(rotation: Rotation): string {
     }
 }
 
-function ShapeCardHand({ shapeCards, rotation }: ShapeCardHandProps) {
-    const sharedClassNames = "relative overflow-hidden rounded-lg top-[0em] " +
+function ShapeCardHand({ shapeCards, rotation, className }: ShapeCardHandProps) {
+    const sharedClassNames = "relative overflow-hidden [border-radius:7.5%] top-[0em] " +
         "shadow-sm shadow-black transition-movement-card z-0";
 
     const nonBlockedClassNames = " group-hover:top-[-0.5em] group-hover:shadow-md group-hover:shadow-black group-hover:z-10";
 
     return (
-        <div className={`flex ${flexDirectionFromRotation(rotation)} gap-[1em]`}>
+        <div className={`${className} flex ${flexDirectionFromRotation(rotation)} gap-[3%]`}>
             {shapeCards.map(({ shape, isBlocked }, i) => (
-                <div key={i} className="group">
+                <div key={i} className="group max-h-full aspect-square">
                     <div className={sharedClassNames + (isBlocked ? "" : ` ${nonBlockedClassNames}`)}>
                         <ShapeCard shape={shape} isBlocked={isBlocked} />
                     </div>
