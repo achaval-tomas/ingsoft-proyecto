@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PlayerId } from "../../../domain/GameState";
 import { LobbyMessageInSchema } from "../../../domain/LobbyMessage";
 import { useNavigate } from "react-router-dom";
-import { toHome } from "../../../navigation/destinations";
+import { toHome, toPlay } from "../../../navigation/destinations";
 
 type PlayerObject = {
     name: string;
@@ -39,7 +39,7 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         setPlayers(message.players);
                         break;
                     case "game-started":
-                        navigate(`/play?player=${playerId}`);
+                        navigate(toPlay(playerId));
                         break;
                     case "lobby-state":
                         if (message.players.find(p => p.id === playerId) === undefined) {

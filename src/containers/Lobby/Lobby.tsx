@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
 import { leaveLobby } from "../../api/lobby";
 import { createGame } from "../../api/game";
-import { toHome, toInitial } from "../../navigation/destinations";
+import { toHome, toInitial, toPlay } from "../../navigation/destinations";
 
 function Lobby() {
     const [urlParams] = useSearchParams();
@@ -57,7 +57,7 @@ function Lobby() {
             }
 
             if (res === "Ok") {
-                navigate(`/play?player=${playerId}`);
+                navigate(toPlay(playerId));
             }
         } catch {
             navigate(toInitial());

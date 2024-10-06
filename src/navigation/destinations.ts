@@ -11,3 +11,7 @@ export function toLobby(playerId: PlayerId): string {
 export function toHome(playerId: PlayerId): string {
     return `/home?player=${playerId}`;
 }
+
+export function toPlay(playerId: PlayerId): string {
+    return `/play?player=${playerId}`;
+}
