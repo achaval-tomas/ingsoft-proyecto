@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import Dialog from "../../components/Dialog";
-import FilledButton from "../../components/FilledButton";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../../domain/AppState";
 import { Dispatch } from "redux";
@@ -11,6 +9,7 @@ import Action from "../../reducers/Action";
 import useGameWebSocket from "./hooks/useGameWebSocket";
 import useWinnerSelector from "./hooks/useWinnerSelector";
 import gameService from "../../services/gameService";
+import WinnerDialog from "./components/WinnerDialog";
 
 function Game() {
     const navigate = useNavigate();
@@ -65,17 +64,10 @@ function Game() {
                 onDismiss={() => setShowLeaveGameDialog(false)}
                 onConfirm={handleLeaveGame}
             />
-            {(winner != null) && <Dialog
-                isOpen={true}
+            <WinnerDialog
+                winner={winner}
                 onClose={() => navigate(`/lobby?player=${playerId}`)}
-            >
-                <div className="flex flex-col justify-center text-center gap-8">
-                    <p className="text-xl">¡{winner.name} ganó!</p>
-                    <FilledButton onClick={() => navigate(`/lobby?player=${playerId}`)}>
-                        OK
-                    </FilledButton>
-                </div>
-            </Dialog>}
+            />
         </>
     );
 }
