@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
-from src.database import models, schemas
+from src.database import models
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize
@@ -10,6 +10,7 @@ from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
 from src.routers.helpers.connection_manager import lobby_manager
+from src.schemas import lobby_schemas
 
 
 def lobby_decoder(lobby: models.Lobby):
@@ -21,12 +22,12 @@ lobby_router = APIRouter()
 
 
 @lobby_router.post('/lobby')
-def create_lobby(lobby: schemas.LobbyCreate, db: Session = Depends(get_db)):
+def create_lobby(lobby: lobby_schemas.LobbyCreate, db: Session = Depends(get_db)):
     return {'lobby_id': crud_lobby.create_lobby(db=db, lobby=lobby)}
 
 
 @lobby_router.post('/lobby/join', status_code=202)
-async def join_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
+async def join_lobby(body: lobby_schemas.LobbyJoin, db: Session = Depends(get_db)):
     res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
     if res == 1:
         raise HTTPException(status_code=404, detail='Player not found')
@@ -50,7 +51,7 @@ async def get_all_lobbies(db: Session = Depends(get_db)):
 
 
 @lobby_router.post('/lobby/leave', status_code=200)
-async def leave_lobby(body: schemas.LobbyJoin, db: Session = Depends(get_db)):
+async def leave_lobby(body: lobby_schemas.LobbyLeave, db: Session = Depends(get_db)):
     res = await ws_handle_leave_lobby(
         db=db,
         player_id=body.player_id,

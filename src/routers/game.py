@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy.orm import Session
 
 import src.routers.helpers.connection_manager as cm
-from src.database import schemas
 from src.database.crud import crud_game, crud_lobby
 from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
@@ -10,12 +9,13 @@ from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
 from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
 from src.routers.handlers.ws_handle_gamestate import ws_handle_gamestate
 from src.routers.handlers.ws_handle_leave_game import ws_handle_leave_game
+from src.schemas import game_schemas, player_schemas
 
 game_router = APIRouter()
 
 
 @game_router.post('/game', status_code=200)
-async def start_game(body: schemas.GameCreate, db: Session = Depends(get_db)):
+async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db)):
     rc = crud_game.create_game(db=db, lobby_id=body.lobby_id, player_id=body.player_id)
     if rc == 1:
         raise HTTPException(status_code=404, detail='Lobby not found')
@@ -33,7 +33,7 @@ async def start_game(body: schemas.GameCreate, db: Session = Depends(get_db)):
 
 
 @game_router.post('/game/leave', status_code=200)
-async def leave_game(body: schemas.PlayerId, db: Session = Depends(get_db)):
+async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_db)):
     res = await ws_handle_leave_game(player_id=body.playerId, db=db)
     if res == 1:
         raise HTTPException(status_code=404, detail='Game not found')
