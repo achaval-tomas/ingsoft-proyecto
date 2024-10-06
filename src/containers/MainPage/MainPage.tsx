@@ -72,18 +72,19 @@ function MainPage() {
         }
     }
 
+    if (urlParams.get("player") == null) {
+        return <Navigate to={toInitial()} replace />;
+    }
+
     return (
-        urlParams.get("player") ?
-            <MainPageLayout
-                onSubmitLobbyForm={s => void handleSubmit(s)}
-                lobbies={lobbies}
-                refreshHandler={() => {
-                    void fetchAndSaveLobbies();
-                }}
-                joinHandler={lobbyId => void joinHandler(lobbyId)}
-            />
-            :
-            <Navigate to="/" replace />
+        <MainPageLayout
+            onSubmitLobbyForm={s => void handleSubmit(s)}
+            lobbies={lobbies}
+            refreshHandler={() => {
+                void fetchAndSaveLobbies();
+            }}
+            joinHandler={lobbyId => void joinHandler(lobbyId)}
+        />
     );
 }
 
