@@ -14,10 +14,7 @@ create_player_router = APIRouter()
     status_code=201,
     response_model=PlayerIdSchema,
 )
-async def create_player(
-    player: PlayerCreateSchema,
-    db: Session = Depends(get_db),
-):
+async def create_player(player: PlayerCreateSchema, db: Session = Depends(get_db)):
     if not player.player_name:
         raise HTTPException(status_code=400, detail=errors.EMPTY_NAME)
 

@@ -45,6 +45,7 @@ def create_lobby(lobby: LobbyCreateSchema, db: Session = Depends(get_db)):
 @lobby_router.post('/lobby/join', status_code=202)
 async def join_lobby(body: LobbyJoinSchema, db: Session = Depends(get_db)):
     res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
+
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
@@ -53,6 +54,7 @@ async def join_lobby(body: LobbyJoinSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
     elif res == 4:
         raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED)
+
     await ws_share_player_list(
         player_id=body.player_id,
         lobby_id=body.lobby_id,
@@ -73,6 +75,7 @@ async def leave_lobby(body: LobbyLeaveSchema, db: Session = Depends(get_db)):
         player_id=body.player_id,
         lobby_id=body.lobby_id,
     )
+
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
@@ -83,7 +86,9 @@ async def leave_lobby(body: LobbyLeaveSchema, db: Session = Depends(get_db)):
 async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(get_db)):
     player = get_player(db=db, player_id=player_id)
     assert player is not None
+
     await lobby_manager.connect(ws, player_id)
+
     try:
         await ws_share_player_list(
             player_id=player_id,
@@ -91,10 +96,12 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
             db=db,
             broadcast=False,
         )
+
         while True:
             response = ''
             received = await ws.receive_text()
             request = deserialize(received)
+
             match request['type']:
                 case 'get-lobby-state':
                     response = await ws_handle_lobbystate(player_id, db)

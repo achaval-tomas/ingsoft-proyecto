@@ -14,7 +14,7 @@ from src.schemas.game_schemas import (
     OtherPlayersStateSchema,
     SelfPlayerStateSchema,
 )
-from src.schemas.message_schema import ErrorMessageSchema
+from src.schemas.message_schema import error_message
 
 
 def list_shape_cards(cards: PlayerCards):
@@ -76,15 +76,11 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
 def ws_handle_gamestate(player_id: str, db: Session):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
-        return ErrorMessageSchema(
-            message=errors.PLAYER_NOT_FOUND,
-        ).model_dump_json()
+        return error_message(detail=errors.PLAYER_NOT_FOUND)
 
     game_data = get_game(db=db, player_id=player_id)
     if not game_data:
-        return ErrorMessageSchema(
-            message=errors.GAME_NOT_FOUND,
-        ).model_dump_json()
+        return error_message(detail=errors.GAME_NOT_FOUND)
 
     selfPlayerState = SelfPlayerStateSchema(
         id=player_id,

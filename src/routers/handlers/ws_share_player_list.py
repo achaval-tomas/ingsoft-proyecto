@@ -6,13 +6,14 @@ from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Lobby
 from src.routers.helpers.connection_manager import lobby_manager
-from src.schemas.message_schema import ErrorMessageSchema
+from src.schemas.message_schema import error_message
 
 
 def player_list(lobby: Lobby, db: Session):
     players = []
     if lobby is not None:
         players = deserialize(lobby.players)
+
     players_info = []
     for player_id in players:
         player = get_player(player_id=player_id, db=db)
@@ -23,6 +24,7 @@ def player_list(lobby: Lobby, db: Session):
                     'name': player.player_name,
                 },
             )
+
     return serialize(
         {
             'type': 'player-list',
@@ -38,14 +40,14 @@ async def ws_share_player_list(
     broadcast: bool,
 ):
     lobby = get_lobby(db=db, lobby_id=lobby_id)
+
     if not lobby:
         await lobby_manager.send_personal_message(
-            message=ErrorMessageSchema(
-                message=errors.LOBBY_NOT_FOUND,
-            ).model_dump_json(),
+            message=error_message(detail=errors.LOBBY_NOT_FOUND),
             player_id=player_id,
         )
         return
+
     players = player_list(lobby=lobby, db=db)
     if broadcast:
         await lobby_manager.broadcast_in_lobby(
