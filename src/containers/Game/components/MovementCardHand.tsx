@@ -12,7 +12,7 @@ function MovementCardHand({ movements, className }: MovementCardHandProps) {
         "shadow-lg shadow-black group-hover:shadow-xl group-hover:shadow-black";
 
     return (
-        <div className={`${className} flex flex-row w-0 justify-center`}>
+        <div className={`${className} flex flex-row`}>
             {movements.length >= 1 && <div className="group h-full aspect-[1/1.5] max-w-min">
                 <div className={sharedClassNames + " bottom-[0em] group-hover:bottom-[2em] z-[10] -rotate-[15deg]"}>
                     <MovementCard movement={movements[0]} />
