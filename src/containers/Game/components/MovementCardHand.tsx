@@ -14,17 +14,17 @@ function MovementCardHand({ movements, className }: MovementCardHandProps) {
     return (
         <div className={`${className} flex flex-row`}>
             {movements.length >= 1 && <div className="group h-full aspect-[1/1.5] max-w-min">
-                <div className={sharedClassNames + " bottom-[0em] group-hover:bottom-[2em] z-[10] -rotate-[15deg]"}>
+                <div className={sharedClassNames + " bottom-[0%] group-hover:bottom-[10%] z-[10] -rotate-[15deg]"}>
                     <MovementCard movement={movements[0]} />
                 </div>
             </div>}
             {movements.length >= 2 && <div className="group h-full aspect-[1/1.5] max-w-min">
-                <div className={sharedClassNames + " bottom-[1em] group-hover:bottom-[3em] z-[11]"}>
+                <div className={sharedClassNames + " bottom-[10%] group-hover:bottom-[20%] z-[11]"}>
                     <MovementCard movement={movements[1]} />
                 </div>
             </div>}
             {movements.length >= 3 && <div className="group h-full aspect-[1/1.5] max-w-min">
-                <div className={sharedClassNames + " bottom-[0em] group-hover:bottom-[2em] z-[12] rotate-[15deg]"}>
+                <div className={sharedClassNames + " bottom-[0%] group-hover:bottom-[10%] z-[12] rotate-[15deg]"}>
                     <MovementCard movement={movements[2]} />
                 </div>
             </div>}

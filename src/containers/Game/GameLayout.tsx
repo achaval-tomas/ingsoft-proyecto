@@ -58,7 +58,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onC
             </div>
             <MovementCardHand
                 movements={selfPlayerState.movementCardsInHand}
-                className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[1.5%] pb-[0.5%] w-0 h-full"
+                className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[2.5%] pb-[0.5%] w-0 h-full"
             />
             <div className="row-start-2 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
