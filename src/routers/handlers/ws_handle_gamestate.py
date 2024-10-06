@@ -75,15 +75,16 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
 def ws_handle_gamestate(player_id: str, db: Session):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
-        error = ErrorMessageSchema()
-        error.type = 'error'
-        error.message = 'Player Not Found'
+        error = ErrorMessageSchema(
+            message='Player Not Found',
+        )
         return error.model_dump_json()
+
     game_data = get_game(db=db, player_id=player_id)
     if not game_data:
-        error = ErrorMessageSchema()
-        error.type = 'error'
-        error.message = 'Game Not Found'
+        error = ErrorMessageSchema(
+            message='Game Not Found',
+        )
         return error.model_dump_json()
 
     selfPlayerState = SelfPlayerStateSchema(

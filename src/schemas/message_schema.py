@@ -5,5 +5,6 @@ class MessageSchema(BaseModel):
     type: str
 
 
-class ErrorMessageSchema(MessageSchema):
+class ErrorMessageSchema(BaseModel):
+    type: str = 'error'
     message: str
