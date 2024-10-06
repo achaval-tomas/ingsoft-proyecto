@@ -1,4 +1,4 @@
-import { httpServerUrl } from "../services/config";
+import { httpServerUrl } from "./config";
 
 async function createPlayer(playerName: string): Promise<string> {
     const res = await fetch(`${httpServerUrl}/player`, {
@@ -17,4 +17,8 @@ async function createPlayer(playerName: string): Promise<string> {
     return data.player_id;
 }
 
-export { createPlayer };
+const playerService = {
+    createPlayer,
+};
+
+export default playerService;

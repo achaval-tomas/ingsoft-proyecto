@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import PlayerNameForm from "./components/PlayerNameForm";
 import { useState } from "react";
-import { createPlayer } from "../../api/player";
 import { toHome } from "../../navigation/destinations";
+import playerService from "../../services/playerService";
 
 function InitialPage() {
     const [serverError, setServerError] = useState<boolean>(false);
@@ -10,7 +10,7 @@ function InitialPage() {
 
     async function createPlayerHandler(playerName: string) {
         try {
-            const playerId = await createPlayer(playerName);
+            const playerId = await playerService.createPlayer(playerName);
 
             navigate(toHome(playerId));
         } catch {
