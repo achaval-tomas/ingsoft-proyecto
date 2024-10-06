@@ -6,6 +6,7 @@ import { GameMessageIn, GameMessageInSchema, GameMessageOut } from "../../../dom
 function createWebSocket(
     playerId: PlayerId,
     onOpen: (ws: WebSocket) => void,
+    onClose: (ws: WebSocket) => void,
     onReceive: (msg: GameMessageIn) => void,
 ): WebSocket {
     const ws = new WebSocket(`${wsServerUrl}/game/${playerId}`);
@@ -35,7 +36,7 @@ function createWebSocket(
     });
 
     ws.addEventListener("close", () => {
-        // TODO: onClose for reconnecting automatically
+        onClose(ws);
     });
 
     return ws;
@@ -80,7 +81,18 @@ function useGameWebSocket(
     const [wsGeneration, setWsGeneration] = useState(0);
 
     useEffect(() => {
-        const ws = createWebSocket(playerId, (ws) => tryFlushQueue(ws, messageQueueRef.current), onReceive);
+        const ws = createWebSocket(
+            playerId,
+            (ws) => tryFlushQueue(ws, messageQueueRef.current),
+            (ws) => {
+                setTimeout(() => {
+                    // If we haven't tried to recreate the ws 5 seconds
+                    // after it closed, then trigger recreation.
+                    setWsGeneration(g => wsRef.current === ws ? g + 1 : g);
+                }, 5000);
+            },
+            onReceive,
+        );
         wsRef.current = ws;
         return () => ws.close();
     }, [playerId, onReceive, wsGeneration]);
