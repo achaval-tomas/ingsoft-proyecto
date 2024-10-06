@@ -1,7 +1,8 @@
 import { LobbyElement } from "../containers/MainPage/components/LobbyList";
+import { httpServerUrl } from "../services/config";
 
 async function getJoinableLobbies(): Promise<LobbyElement[]> {
-    const res = await fetch("http://127.0.0.1:8000/lobby", {
+    const res = await fetch(`${httpServerUrl}/lobby`, {
         method: "GET",
         headers: {
             "Accept": "application/json",
@@ -19,7 +20,7 @@ async function createLobby(
     lobbyName: string,
     maxPlayers: number,
 ): Promise<string> {
-    const res = await fetch("http://127.0.0.1:8000/lobby", {
+    const res = await fetch(`${httpServerUrl}/lobby`, {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -43,7 +44,7 @@ type JoinLobbyResult = {
 };
 
 async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyResult> {
-    const res = await fetch("http://127.0.0.1:8000/lobby/join", {
+    const res = await fetch(`${httpServerUrl}/lobby/join`, {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -86,7 +87,7 @@ type LeaveLobbyResult = {
 };
 
 async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveLobbyResult> {
-    const res = await fetch("http://127.0.0.1:8000/lobby/leave", {
+    const res = await fetch(`${httpServerUrl}/lobby/leave`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

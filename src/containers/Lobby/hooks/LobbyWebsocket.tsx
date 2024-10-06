@@ -3,6 +3,7 @@ import { PlayerId } from "../../../domain/GameState";
 import { LobbyMessageInSchema } from "../../../domain/LobbyMessage";
 import { useNavigate } from "react-router-dom";
 import { toHome, toPlay } from "../../../navigation/destinations";
+import { wsServerUrl } from "../../../services/config";
 
 type PlayerObject = {
     name: string;
@@ -32,7 +33,7 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
             return;
         }
 
-        const ws = new WebSocket(`ws://127.0.0.1:8000/lobby/${playerId}`);
+        const ws = new WebSocket(`${wsServerUrl}/lobby/${playerId}`);
 
         wsRef.current = ws;
 

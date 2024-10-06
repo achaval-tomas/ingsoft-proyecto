@@ -1,3 +1,5 @@
+import { httpServerUrl } from "../services/config";
+
 type CreateGameResult = {
     type: "LobbyNotFound" | "NotOwner" | "NotEnoughPlayers" | "PlayerNotFound" | "Ok" | "Other";
     message: string;
@@ -7,7 +9,7 @@ async function createGame(
     playerId: string,
     lobbyId: string,
 ): Promise<CreateGameResult> {
-    const res = await fetch("http://127.0.0.1:8000/game", {
+    const res = await fetch(`${httpServerUrl}/game`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

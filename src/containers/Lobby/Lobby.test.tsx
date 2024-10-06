@@ -6,6 +6,7 @@ import Lobby from "./Lobby";
 import userEvent from "@testing-library/user-event";
 import * as apiFunctions from "../../api/lobby";
 import { leaveLobby } from "../../api/lobby";
+import { wsServerUrl } from "../../services/config";
 
 const PLAYER_ID = "1234";
 const PLAYER_NAME = "Pedro";
@@ -35,7 +36,7 @@ const ClientMessageSchema = z.discriminatedUnion("type", [
 ]);
 
 beforeEach(() => {
-    const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
+    const wsServer = new Server(`${wsServerUrl}/lobby/${PLAYER_ID}`);
 
     wsServer.on("connection", socket => {
         socket.on("message", message => {
