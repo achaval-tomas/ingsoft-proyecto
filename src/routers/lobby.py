@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
+from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
@@ -30,13 +31,13 @@ def create_lobby(lobby: lobby_schemas.LobbyCreate, db: Session = Depends(get_db)
 async def join_lobby(body: lobby_schemas.LobbyJoin, db: Session = Depends(get_db)):
     res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
     if res == 1:
-        raise HTTPException(status_code=404, detail='Player not found')
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
-        raise HTTPException(status_code=404, detail='Lobby not found')
+        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
     elif res == 3:
-        raise HTTPException(status_code=400, detail='Lobby is full')
+        raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
     elif res == 4:
-        raise HTTPException(status_code=400, detail='Already joined')
+        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED)
     await ws_share_player_list(
         player_id=body.player_id,
         lobby_id=body.lobby_id,
@@ -58,9 +59,9 @@ async def leave_lobby(body: lobby_schemas.LobbyLeave, db: Session = Depends(get_
         lobby_id=body.lobby_id,
     )
     if res == 1:
-        raise HTTPException(status_code=404, detail='Player not found')
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
-        raise HTTPException(status_code=404, detail='Lobby not found')
+        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
 
 
 @lobby_router.websocket('/lobby/{player_id}')

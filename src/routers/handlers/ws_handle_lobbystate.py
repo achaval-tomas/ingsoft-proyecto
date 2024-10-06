@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 
+from src.constants import errors
 from src.database.crud.crud_lobby import get_lobby, get_lobby_by_player_id
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
+from src.schemas.message_schema import ErrorMessageSchema
 
 
 def lobbystate_message(lobby_id: str, db: Session):
@@ -36,11 +38,8 @@ def lobbystate_message(lobby_id: str, db: Session):
 async def ws_handle_lobbystate(player_id: str, db: Session):
     lobby = get_lobby_by_player_id(db=db, player_id=player_id)
     if not lobby:
-        return serialize(
-            {
-                'type': 'error',
-                'message': 'El lobby con el que se desea conectar no existe',
-            },
-        )
+        return ErrorMessageSchema(
+            message=errors.LOBBY_NOT_FOUND,
+        ).model_dump_json()
 
     return lobbystate_message(lobby_id=lobby.lobby_id, db=db)

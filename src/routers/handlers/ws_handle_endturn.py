@@ -1,20 +1,19 @@
 from sqlalchemy.orm import Session
 
 import src.routers.helpers.connection_manager as cm
+from src.constants import errors
 from src.database.crud.crud_game import end_game_turn
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import serialize
+from src.schemas.message_schema import ErrorMessageSchema
 
 
 async def ws_handle_endturn(player_id: str, db: Session):
     player = get_player(db=db, player_id=player_id)
     if not player:
-        return serialize(
-            {
-                'type': 'error',
-                'message': 'El jugador que solicitó abandonar no existe',
-            },
-        )
+        return ErrorMessageSchema(
+            message=errors.PLAYER_NOT_FOUND,
+        ).model_dump_json()
 
     res = end_game_turn(db=db, player_id=player_id)
 
@@ -30,17 +29,11 @@ async def ws_handle_endturn(player_id: str, db: Session):
             ),
         )
     elif res == 1:
-        return serialize(
-            {
-                'type': 'error',
-                'message': 'El jugador no está en una partida',
-            },
-        )
+        return ErrorMessageSchema(
+            message=errors.NOT_IN_GAME,
+        ).model_dump_json()
     elif res == 2:
-        return serialize(
-            {
-                'type': 'error',
-                'message': 'Debes esperar a que sea tu turno!',
-            },
-        )
+        return ErrorMessageSchema(
+            message=errors.NOT_YOUR_TURN,
+        ).model_dump_json()
     return ''

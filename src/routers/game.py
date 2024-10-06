@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy.orm import Session
 
 import src.routers.helpers.connection_manager as cm
+from src.constants import errors
 from src.database.crud import crud_game, crud_lobby
 from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
@@ -18,16 +19,16 @@ game_router = APIRouter()
 async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db)):
     rc = crud_game.create_game(db=db, lobby_id=body.lobby_id, player_id=body.player_id)
     if rc == 1:
-        raise HTTPException(status_code=404, detail='Lobby not found')
+        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
     elif rc == 2:
         raise HTTPException(
             status_code=400,
-            detail='You must be the game owner to start it',
+            detail=errors.MUST_BE_OWNER,
         )
     elif rc == 3:
-        raise HTTPException(status_code=400, detail='Not enough players to start')
+        raise HTTPException(status_code=400, detail=errors.NOT_ENOUGH_PLAYERS)
     elif rc == 4:
-        raise HTTPException(status_code=404, detail='A player is missing')
+        raise HTTPException(status_code=404, detail=errors.PLAYER_IS_MISSING)
     await ws_handle_game_start(db=db, lobby_id=body.lobby_id)
     crud_lobby.delete_lobby(lobby_id=body.lobby_id, db=db)
 
@@ -36,9 +37,9 @@ async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db
 async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_db)):
     res = await ws_handle_leave_game(player_id=body.playerId, db=db)
     if res == 1:
-        raise HTTPException(status_code=404, detail='Game not found')
+        raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
     elif res == 2:
-        raise HTTPException(status_code=404, detail='Player not found')
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
 
 
 @game_router.websocket('/game/{player_id}')
