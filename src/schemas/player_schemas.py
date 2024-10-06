@@ -41,3 +41,8 @@ class PlayerListMessageSchema(BaseModel):
 
 class PlayerMessageSchema(MessageSchema, PlayerId):
     pass
+
+
+class WinnerMessageSchema(PlayerId):
+    type: str = 'player-won'
+    playerName: str
