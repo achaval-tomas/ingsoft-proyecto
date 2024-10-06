@@ -34,6 +34,30 @@ const ClientMessageSchema = z.discriminatedUnion("type", [
     }),
 ]);
 
+beforeEach(() => {
+    const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
+
+    wsServer.on("connection", socket => {
+        socket.on("message", message => {
+            try {
+                const m = ClientMessageSchema.parse(JSON.parse(message as string));
+                switch (m.type) {
+                    case "get-lobby-state":
+                        sendLobbyState(socket, PLAYER_ID);
+                        break;
+                }
+            } catch {
+                console.log("invalid client websocket message");
+            }
+        });
+    });
+
+
+    return () => {
+        wsServer.close();
+    };
+});
+
 describe("Lobby tests being owner", () => {
     beforeEach(() => {
         vi.mock("react-router-dom", async () => {
@@ -48,23 +72,6 @@ describe("Lobby tests being owner", () => {
             };
         });
 
-        const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
-
-        wsServer.on("connection", socket => {
-            socket.on("message", message => {
-                try {
-                    const m = ClientMessageSchema.parse(JSON.parse(message as string));
-                    switch (m.type) {
-                        case "get-lobby-state":
-                            sendLobbyState(socket, PLAYER_ID);
-                            break;
-                    }
-                } catch {
-                    console.log("invalid client websocket message");
-                }
-            });
-        });
-
         vi.mock("../../api/lobby.tsx", async (original) => {
             return {
                 ...await original(),
@@ -74,7 +81,6 @@ describe("Lobby tests being owner", () => {
 
         return () => {
             vi.restoreAllMocks();
-            wsServer.close();
         };
     });
 
@@ -129,33 +135,8 @@ describe("Lobby tests not being owner", () => {
             };
         });
 
-        const wsServer = new Server(`ws://127.0.0.1:8000/lobby/${PLAYER_ID}`);
-
-        wsServer.on("connection", socket => {
-            socket.on("message", message => {
-                try {
-                    const m = ClientMessageSchema.parse(JSON.parse(message as string));
-                    switch (m.type) {
-                        case "get-lobby-state":
-                            sendLobbyState(socket, "1");
-                            break;
-                    }
-                } catch {
-                    console.log("invalid client websocket message");
-                }
-            });
-        });
-
-        vi.mock("../../api/lobby.tsx", async (original) => {
-            return {
-                ...await original(),
-                leaveLobby: () => "mocked",
-            };
-        });
-
         return () => {
             vi.restoreAllMocks();
-            wsServer.close();
         };
     });
 
