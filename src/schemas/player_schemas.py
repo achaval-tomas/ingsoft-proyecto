@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
+from src.schemas.message_schema import MessageSchema
+
 
 class PlayerBase(BaseModel):
     player_name: str
@@ -35,3 +37,7 @@ class PlayerInfoSchema(BaseModel):
 class PlayerListMessageSchema(BaseModel):
     type: str = 'player-list'
     players: list[PlayerInfoSchema]
+
+
+class PlayerMessageSchema(MessageSchema, PlayerId):
+    pass

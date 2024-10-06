@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 import src.routers.helpers.connection_manager as cm
 from src.database.crud import crud_game
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import serialize
 from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
+from src.schemas.player_schemas import PlayerMessageSchema
 
 
 async def ws_handle_leave_game(player_id: str, db: Session):
@@ -19,12 +19,10 @@ async def ws_handle_leave_game(player_id: str, db: Session):
         await cm.game_manager.broadcast_in_game(
             db=db,
             game_id=game_id,
-            message=serialize(
-                {
-                    'type': 'player-left',
-                    'playerId': player_id,
-                },
-            ),
+            message=PlayerMessageSchema(
+                type='player-left',
+                playerId=player_id,
+            ).model_dump_json(),
         )
     elif res == 3:
         await ws_handle_announce_winner(db=db, winner_id=winner_id)

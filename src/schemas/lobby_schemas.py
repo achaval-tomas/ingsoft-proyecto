@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
+from src.schemas.player_schemas import PlayerInfoSchema
+
 
 class LobbyBase(BaseModel):
     lobby_name: str
@@ -31,3 +33,11 @@ class LobbyJoinSchema(BaseModel):
 
 class LobbyLeaveSchema(LobbyJoinSchema):
     pass
+
+
+class LobbyStateMessageSchema(BaseModel):
+    type: str = 'lobby-state'
+    players: list[PlayerInfoSchema]
+    owner: str
+    id: str
+    name: str

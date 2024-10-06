@@ -4,8 +4,8 @@ import src.routers.helpers.connection_manager as cm
 from src.constants import errors
 from src.database.crud.crud_game import end_game_turn
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import serialize
 from src.schemas.message_schema import error_message
+from src.schemas.player_schemas import PlayerMessageSchema
 
 
 async def ws_handle_endturn(player_id: str, db: Session):
@@ -19,12 +19,10 @@ async def ws_handle_endturn(player_id: str, db: Session):
         await cm.game_manager.broadcast_in_game(
             game_id=player.game_id,
             db=db,
-            message=serialize(
-                {
-                    'type': 'turn-ended',
-                    'playerId': player_id,
-                },
-            ),
+            message=PlayerMessageSchema(
+                type='turn-ended',
+                playerId=player_id,
+            ).model_dump_json(),
         )
     elif res == 1:
         return error_message(detail=errors.NOT_IN_GAME)
