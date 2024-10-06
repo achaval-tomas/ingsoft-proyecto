@@ -3,8 +3,8 @@ import LobbyLayout from "./components/LobbyLayout";
 import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
 import { leaveLobby } from "../../api/lobby";
-import { createGame } from "../../api/game";
 import { toHome, toInitial, toPlay } from "../../navigation/destinations";
+import gameService from "../../services/gameService";
 
 function Lobby() {
     const [urlParams] = useSearchParams();
@@ -45,7 +45,7 @@ function Lobby() {
 
     async function startHandler() {
         try {
-            const res = await createGame(playerId, lobbyId);
+            const res = await gameService.createGame(playerId, lobbyId);
 
             if (res.type === "PlayerNotFound" || res.type === "Other") {
                 alert(res.message);
