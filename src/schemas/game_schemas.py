@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from src.schemas import card_schemas
 from src.schemas.message_schema import MessageSchema
@@ -22,8 +22,7 @@ class GameCreate(BaseModel):
 class Game(GameBase):
     game_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PlayerBaseSchema(BaseModel):

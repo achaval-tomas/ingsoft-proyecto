@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class LobbyBase(BaseModel):
@@ -12,13 +12,16 @@ class LobbyCreate(LobbyBase):
     pass
 
 
-class Lobby(LobbyBase):
+class LobbyIdSchema(BaseModel):
+    lobby_id: str
+
+
+class LobbySchema(LobbyBase):
     lobby_id: str
     player_amount: int
     players: list[str]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LobbyJoin(BaseModel):

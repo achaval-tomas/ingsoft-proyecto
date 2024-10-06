@@ -15,16 +15,25 @@ from src.schemas import lobby_schemas
 
 
 def lobby_decoder(lobby: models.Lobby):
-    lobby.players = deserialize(lobby.players)
-    return lobby
+    return lobby_schemas.LobbySchema(
+        lobby_id=lobby.lobby_id,
+        lobby_name=lobby.lobby_name,
+        lobby_owner=lobby.lobby_owner,
+        players=deserialize(lobby.players),
+        player_amount=lobby.player_amount,
+        min_players=lobby.min_players,
+        max_players=lobby.max_players,
+    )
 
 
 lobby_router = APIRouter()
 
 
-@lobby_router.post('/lobby')
+@lobby_router.post('/lobby', response_model=lobby_schemas.LobbyIdSchema)
 def create_lobby(lobby: lobby_schemas.LobbyCreate, db: Session = Depends(get_db)):
-    return {'lobby_id': crud_lobby.create_lobby(db=db, lobby=lobby)}
+    return lobby_schemas.LobbyIdSchema(
+        lobby_id=crud_lobby.create_lobby(db=db, lobby=lobby),
+    )
 
 
 @lobby_router.post('/lobby/join', status_code=202)
@@ -46,7 +55,7 @@ async def join_lobby(body: lobby_schemas.LobbyJoin, db: Session = Depends(get_db
     )
 
 
-@lobby_router.get('/lobby')
+@lobby_router.get('/lobby', response_model=list[lobby_schemas.LobbySchema])
 async def get_all_lobbies(db: Session = Depends(get_db)):
     return [lobby_decoder(lobby) for lobby in crud_lobby.get_available_lobbies(db=db)]
 
