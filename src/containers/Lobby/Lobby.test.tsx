@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { Client, Server } from "mock-socket";
 import Lobby from "./Lobby";
 import userEvent from "@testing-library/user-event";
-import * as apiFunctions from "../../api/lobby";
-import { leaveLobby } from "../../api/lobby";
 import { wsServerUrl } from "../../services/config";
+import lobbyService from "../../services/lobbyService";
+import * as reactRouter from "react-router-dom";
 
 const PLAYER_ID = "1234";
 const PLAYER_NAME = "Pedro";
@@ -98,19 +98,21 @@ describe("Lobby tests being owner", () => {
     });
 
     test("It calls leaveLobby function when clicking button to leave lobby", async () => {
-        vi.spyOn(apiFunctions, "leaveLobby");
+        const navigateMock = vi.fn();
+        vi.spyOn(reactRouter, "useNavigate").mockImplementation(() => navigateMock);
+        vi.spyOn(lobbyService, "leaveLobby");
 
         render(
             <Lobby />,
         );
 
-        expect(leaveLobby).toHaveBeenCalledTimes(0);
+        expect(lobbyService.leaveLobby).toHaveBeenCalledTimes(0);
 
         const button = screen.getByText("Salir");
 
         await userEvent.click(button);
 
-        expect(leaveLobby).toHaveBeenCalledTimes(1);
+        expect(lobbyService.leaveLobby).toHaveBeenCalledTimes(1);
     });
 
     test("It renders button to start game if player is owner", async () => {

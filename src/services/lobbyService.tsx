@@ -1,5 +1,5 @@
 import { LobbyElement } from "../containers/MainPage/components/LobbyList";
-import { httpServerUrl } from "../services/config";
+import { httpServerUrl } from "./config";
 
 async function getJoinableLobbies(): Promise<LobbyElement[]> {
     const res = await fetch(`${httpServerUrl}/lobby`, {
@@ -116,4 +116,11 @@ async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveLobby
     return { type: "Other", message: "Error al intentar abandonar partida" };
 }
 
-export { getJoinableLobbies, createLobby, joinLobby, leaveLobby };
+const lobbyService = {
+    getJoinableLobbies,
+    createLobby,
+    joinLobby,
+    leaveLobby,
+};
+
+export default lobbyService;
