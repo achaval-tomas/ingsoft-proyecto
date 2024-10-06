@@ -1,5 +1,6 @@
 import { PlayerId } from "../domain/GameState";
 import { httpServerUrl } from "./config";
+import { post } from "./util";
 
 type CreateGameResult = {
     type: "LobbyNotFound" | "NotOwner" | "NotEnoughPlayers" | "PlayerNotFound" | "Ok" | "Other";
@@ -10,16 +11,9 @@ async function createGame(
     playerId: string,
     lobbyId: string,
 ): Promise<CreateGameResult> {
-    const res = await fetch(`${httpServerUrl}/game`, {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            player_id: playerId,
-            lobby_id: lobbyId,
-        }),
+    const res = await post(`${httpServerUrl}/game`, {
+        player_id: playerId,
+        lobby_id: lobbyId,
     });
 
     if (res.ok) {
@@ -48,14 +42,7 @@ async function createGame(
 }
 
 async function leaveGame(playerId: PlayerId) {
-    return fetch(`${httpServerUrl}/game/leave`, {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ playerId }),
-    });
+    return post(`${httpServerUrl}/game/leave`, { playerId });
 }
 
 const gameService = {
