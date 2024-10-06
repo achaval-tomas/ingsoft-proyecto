@@ -29,7 +29,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
 
             return newGameState;
         }
-        case "winner": {
+        case "player-won": {
             const newGameState = { ...gameState };
             newGameState.winner = action.playerId;
 
