@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import PlayerNameForm from "./components/PlayerNameForm";
 import { useState } from "react";
 import { createPlayer } from "../../api/player";
+import { toHome } from "../../navigation/destinations";
 
 function InitialPage() {
     const [serverError, setServerError] = useState<boolean>(false);
@@ -11,7 +12,7 @@ function InitialPage() {
         try {
             const playerId = await createPlayer(playerName);
 
-            navigate(`home?player=${playerId}`);
+            navigate(toHome(playerId));
         } catch {
             setServerError(true);
         }

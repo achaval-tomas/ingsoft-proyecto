@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
 import { leaveLobby } from "../../api/lobby";
 import { createGame } from "../../api/game";
+import { toHome } from "../../navigation/destinations";
 
 function Lobby() {
     const [urlParams] = useSearchParams();
@@ -32,7 +33,7 @@ function Lobby() {
             }
 
             if (res === "Sala no encontrada" || res === "Ok") {
-                navigate(`/home?player=${playerId}`);
+                navigate(toHome(playerId));
             }
         } catch {
             navigate("/");
@@ -52,7 +53,7 @@ function Lobby() {
             }
 
             if (res === "Sala no encontrada") {
-                navigate(`/home?player=${playerId}`);
+                navigate(toHome(playerId));
             }
 
             if (res === "Ok") {
