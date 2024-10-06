@@ -12,7 +12,7 @@ export default {
                 border: colors.zinc["700"],
             },
             transitionProperty: {
-                "movement-card": "top, box-shadow, z-index",
+                "movement-card": "top, bottom, box-shadow, z-index",
             },
         },
     },

@@ -20,7 +20,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onC
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
-            style={{ gridTemplateRows: "3fr 1fr", gridTemplateColumns: "1fr" }}
+            style={{ gridTemplateRows: "5fr 2fr", gridTemplateColumns: "1fr" }}
         >
             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
                 <div className="flex flex-row w-full h-full ">
@@ -56,8 +56,11 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onC
                     </div>
                 </div>
             </div>
-            <div className="row-start-2 col-start-1 justify-self-center self-end py-4">
-                <MovementCardHand movements={selfPlayerState.movementCardsInHand} />
+            <div className="row-start-2 col-start-1 justify-center justify-self-center h-full w-0 pt-[1.5%] pb-[0.5%]">
+                <MovementCardHand
+                    movements={selfPlayerState.movementCardsInHand}
+                    className="h-full"
+                />
             </div>
             <div className="row-start-2 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
