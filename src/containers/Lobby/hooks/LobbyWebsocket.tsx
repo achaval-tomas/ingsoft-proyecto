@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PlayerId } from "../../../domain/GameState";
 import { LobbyMessageInSchema } from "../../../domain/LobbyMessage";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,11 @@ type LobbyWebsocketFields = {
     ownerId: PlayerId;
 }
 
+
 function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
+    const wsRef = useRef<WebSocket | null>(null);
+    const [wsGeneration, setWsGeneration] = useState(0);
+
     const [players, setPlayers] = useState<PlayerObject[]>([]);
     const [lobbyId, setLobbyId] = useState<string>("");
     const [lobbyName, setLobbyName] = useState<string>("");
@@ -28,9 +32,11 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
             return;
         }
 
-        const socket = new WebSocket(`ws://127.0.0.1:8000/lobby/${playerId}`);
+        const ws = new WebSocket(`ws://127.0.0.1:8000/lobby/${playerId}`);
 
-        socket.onmessage = (e: MessageEvent) => {
+        wsRef.current = ws;
+
+        ws.onmessage = (e: MessageEvent) => {
             const messageString = e.data as string;
             try {
                 const message = LobbyMessageInSchema.parse(JSON.parse(messageString));
@@ -60,15 +66,21 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
 
         };
 
-        socket.onopen = () => {
-            socket.send(JSON.stringify({ type: "get-lobby-state" }));
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ type: "get-lobby-state" }));
+        };
+
+        ws.onclose = () => {
+            setTimeout(() => {
+                setWsGeneration(g => wsRef.current === ws ? g + 1 : g);
+            }, 5000);
         };
 
         return () => {
-            socket.close();
+            ws.close();
         };
 
-    }, [playerId, navigate]);
+    }, [playerId, navigate, wsGeneration]);
 
     return { players, lobbyId, lobbyName, ownerId };
 }
