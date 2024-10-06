@@ -58,18 +58,17 @@ function MainPage() {
         const playerId = urlParams.get("player") ?? "";
         const res = await joinLobby(playerId, lobbyId);
 
-        if (res === "Ok" || res === "El jugador ya está en esta sala") {
+        if (res.type === "Ok" || res.type === "AlreadyJoined") {
             navigate(toLobby(playerId));
             return;
         }
 
-        if (res !== null) {
-            alert(res);
+        if (res.type === "PlayerNotFound") {
+            navigate(toInitial());
+            return;
         }
 
-        if (res === "Jugador no existente") {
-            navigate(toInitial());
-        }
+        alert(res.message);
     }
 
     if (urlParams.get("player") == null) {

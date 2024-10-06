@@ -1,14 +1,12 @@
-type CreateGameResult =
-    | "Sala no encontrada"
-    | "Jugador no encontrado"
-    | "Ok"
-    | "Solo el dueño de la sala puede iniciarlo"
-    | "No se completó el mínimo de jugadores"
+type CreateGameResult = {
+    type: "LobbyNotFound" | "NotOwner" | "NotEnoughPlayers" | "PlayerNotFound" | "Ok" | "Other";
+    message: string;
+};
 
 async function createGame(
     playerId: string,
     lobbyId: string,
-): Promise<CreateGameResult | null> {
+): Promise<CreateGameResult> {
     const res = await fetch("http://127.0.0.1:8000/game", {
         method: "POST",
         headers: {
@@ -22,28 +20,28 @@ async function createGame(
     });
 
     if (res.ok) {
-        return "Ok";
+        return { type: "Ok", message: "" };
     }
 
     const json = await res.json() as { detail: string };
 
-    if (res.status === 404 && json.detail === "Player not found") {
-        return "Jugador no encontrado";
+    if (res.status === 404 && json.detail === "No se pudo encontrar a uno de los jugadores") {
+        return { type: "PlayerNotFound", message: json.detail };
     }
 
-    if (res.status === 404 && json.detail === "Lobby not found") {
-        return "Sala no encontrada";
+    if (res.status === 404 && json.detail === "No se pudo encontrar la sala deseada") {
+        return { type: "LobbyNotFound", message: json.detail };
     }
 
-    if (res.status === 400 && json.detail === "You must be the game owner to start it") {
-        return "Solo el dueño de la sala puede iniciarlo";
+    if (res.status === 400 && json.detail === "Debes ser el creador de la sala para realizar esta acción!") {
+        return { type: "NotOwner", message: json.detail };
     }
 
-    if (res.status === 400 && json.detail === "Not enough players to start") {
-        return "No se completó el mínimo de jugadores";
+    if (res.status === 400 && json.detail === "No hay suficientes jugadores para empezar. Espera a que se unan más!") {
+        return { type: "NotEnoughPlayers", message: json.detail };
     }
 
-    return null;
+    return { type: "Other", message: "Hubo un error en el tu pedido" };
 }
 
 export { createGame };

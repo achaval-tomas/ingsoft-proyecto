@@ -28,12 +28,15 @@ function Lobby() {
         try {
             const res = await leaveLobby(playerId, lobbyId);
 
-            if (res === "Jugador no encontrado" || res === null) {
+            if (res.type === "PlayerNotFound" || res.type === "Other") {
+                alert(res.message);
                 navigate(toInitial());
+                return;
             }
 
-            if (res === "Sala no encontrada" || res === "Ok") {
+            if (res.type === "LobbyNotFound" || res.type === "Ok") {
                 navigate(toHome(playerId));
+                return;
             }
         } catch {
             navigate(toInitial());
@@ -44,19 +47,20 @@ function Lobby() {
         try {
             const res = await createGame(playerId, lobbyId);
 
-            if (res === "Jugador no encontrado" || res === null) {
+            if (res.type === "PlayerNotFound" || res.type === "Other") {
+                alert(res.message);
                 navigate(toInitial());
             }
 
-            if (res === "No se completó el mínimo de jugadores" || res === "Solo el dueño de la sala puede iniciarlo") {
-                alert(res);
+            if (res.type === "NotEnoughPlayers" || res.type === "NotOwner") {
+                alert(res.message);
             }
 
-            if (res === "Sala no encontrada") {
+            if (res.type === "LobbyNotFound") {
                 navigate(toHome(playerId));
             }
 
-            if (res === "Ok") {
+            if (res.type === "Ok") {
                 navigate(toPlay(playerId));
             }
         } catch {

@@ -37,14 +37,12 @@ async function createLobby(
     return data.lobby_id;
 }
 
-type joinLobbyResponse =
-    | "Esta sala está llena"
-    | "El jugador ya está en esta sala"
-    | "Sala no existente"
-    | "Jugador no existente"
-    | "Ok"
+type JoinLobbyResult = {
+    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "Ok" | "Other";
+    message: string;
+};
 
-async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyResponse | null> {
+async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyResult> {
     const res = await fetch("http://127.0.0.1:8000/lobby/join", {
         method: "POST",
         headers: {
@@ -58,36 +56,36 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<joinLobbyRe
     });
 
     if (res.ok) {
-        return "Ok";
+        return { type: "Ok", message: "" };
     }
 
     const json = await res.json() as { detail: string };
 
-    if (res.status === 400 && json.detail === "Lobby is full") {
-        return "Esta sala está llena";
+    if (res.status === 400 && json.detail === "Esta sala está llena!") {
+        return { type: "LobbyFull", message: json.detail };
     }
 
-    if (res.status === 400 && json.detail === "Already joined") {
-        return "El jugador ya está en esta sala";
+    if (res.status === 400 && json.detail === "El jugador ya está en la partida") {
+        return { type: "AlreadyJoined", message: json.detail };
     }
 
-    if (res.status === 404 && json.detail === "Player not found") {
-        return "Jugador no existente";
+    if (res.status === 404 && json.detail === "No se pudo encontrar al jugador que realizó la solicitud") {
+        return { type: "PlayerNotFound", message: json.detail };
     }
 
-    if (res.status === 404 && json.detail === "Lobby not found") {
-        return "Sala no existente";
+    if (res.status === 404 && json.detail === "No se pudo encontrar la sala deseada") {
+        return { type: "LobbyNotFound", message: json.detail };
     }
 
-    return null;
+    return { type: "Other", message: "Error al intentar crear partida" };
 }
 
-export type LeaveBodyReturnCode =
-    | "Sala no encontrada"
-    | "Jugador no encontrado"
-    | "Ok"
+type LeaveLobbyResult = {
+    type: "PlayerNotFound" | "LobbyNotFound" | "Ok" | "Other";
+    message: string;
+};
 
-async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveBodyReturnCode | null> {
+async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveLobbyResult> {
     const res = await fetch("http://127.0.0.1:8000/lobby/leave", {
         method: "POST",
         headers: {
@@ -101,20 +99,20 @@ async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveBodyR
     });
 
     if (res.ok) {
-        return "Ok";
+        return { type: "Ok", message: "" };
     }
 
     const json = await res.json() as { detail: string };
 
-    if (res.status === 404 && json.detail === "Player not found") {
-        return "Jugador no encontrado";
+    if (res.status === 404 && json.detail === "No se pudo encontrar al jugador que realizó la solicitud") {
+        return { type: "PlayerNotFound", message: json.detail };
     }
 
-    if (res.status === 404 && json.detail === "Lobby not found") {
-        return "Sala no encontrada";
+    if (res.status === 404 && json.detail === "No se pudo encontrar la sala deseada") {
+        return { type: "LobbyNotFound", message: json.detail };
     }
 
-    return null;
+    return { type: "Other", message: "Error al intentar abandonar partida" };
 }
 
 export { getJoinableLobbies, createLobby, joinLobby, leaveLobby };
