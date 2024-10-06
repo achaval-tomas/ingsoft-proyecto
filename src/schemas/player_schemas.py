@@ -25,3 +25,13 @@ class PlayerSchema(PlayerBase):
     lobby_id: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PlayerInfoSchema(BaseModel):
+    id: str
+    name: str
+
+
+class PlayerListMessageSchema(BaseModel):
+    type: str = 'player-list'
+    players: list[PlayerInfoSchema]

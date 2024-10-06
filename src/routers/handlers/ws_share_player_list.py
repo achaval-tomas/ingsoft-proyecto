@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from src.constants import errors
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize, serialize
+from src.database.crud.tools.jsonify import deserialize
 from src.database.models import Lobby
 from src.routers.helpers.connection_manager import lobby_manager
 from src.schemas.message_schema import error_message
+from src.schemas.player_schemas import PlayerInfoSchema, PlayerListMessageSchema
 
 
 def player_list(lobby: Lobby, db: Session):
@@ -19,18 +20,15 @@ def player_list(lobby: Lobby, db: Session):
         player = get_player(player_id=player_id, db=db)
         if player:
             players_info.append(
-                {
-                    'id': player.player_id,
-                    'name': player.player_name,
-                },
+                PlayerInfoSchema(
+                    id=player.player_id,
+                    name=player.player_name,
+                ),
             )
 
-    return serialize(
-        {
-            'type': 'player-list',
-            'players': players_info,
-        },
-    )
+    return PlayerListMessageSchema(
+        players=players_info,
+    ).model_dump_json()
 
 
 async def ws_share_player_list(
