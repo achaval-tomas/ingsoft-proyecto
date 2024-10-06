@@ -1,18 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.constants import errors
 from src.database.crud import crud_player
-from src.database.schemas import PlayerCreate
 from src.database.session import get_db
+from src.schemas.player_schemas import PlayerCreateSchema, PlayerIdSchema
 
 create_player_router = APIRouter()
 
 
-@create_player_router.post('/player', status_code=201)
-async def create_player(player: PlayerCreate, db: Session = Depends(get_db)):
+@create_player_router.post(
+    '/player',
+    status_code=201,
+    response_model=PlayerIdSchema,
+)
+async def create_player(player: PlayerCreateSchema, db: Session = Depends(get_db)):
     if not player.player_name:
-        raise HTTPException(status_code=400, detail='Player name cannot be empty')
+        raise HTTPException(status_code=400, detail=errors.EMPTY_NAME)
 
-    return {
-        'player_id': crud_player.create_player(db=db, player=player),
-    }
+    return PlayerIdSchema(
+        player_id=crud_player.create_player(db=db, player=player),
+    )

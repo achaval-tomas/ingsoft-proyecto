@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
 
-from src.database.schemas import GameCreate, LobbyCreate, PlayerCreate
 from src.main import app
+from src.schemas.game_schemas import GameCreate
+from src.schemas.lobby_schemas import LobbyCreate
+from src.schemas.player_schemas import PlayerCreate
 
 client = TestClient(app)
 

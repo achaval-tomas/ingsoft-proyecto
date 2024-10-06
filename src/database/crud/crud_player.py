@@ -2,10 +2,11 @@ from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
-from src.database import models, schemas
+from src.database import models
+from src.schemas.player_schemas import PlayerCreateSchema
 
 
-def create_player(db: Session, player: schemas.PlayerCreate):
+def create_player(db: Session, player: PlayerCreateSchema):
     db_player = models.Player(player_name=player.player_name, player_id=str(uuid4()))
     db.add(db_player)
     db.commit()
