@@ -4,7 +4,7 @@ import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
 import { createLobby, getJoinableLobbies, joinLobby } from "../../api/lobby";
-import { toLobby } from "../../navigation/destinations";
+import { toInitial, toLobby } from "../../navigation/destinations";
 
 export interface LobbyForm {
     name: string;
@@ -44,7 +44,7 @@ function MainPage() {
 
             if (lobbyId === null) {
                 alert("Jugador no existente");
-                navigate("/");
+                navigate(toInitial());
                 return;
             }
 
@@ -68,7 +68,7 @@ function MainPage() {
         }
 
         if (res === "Jugador no existente") {
-            navigate("/");
+            navigate(toInitial());
         }
     }
 

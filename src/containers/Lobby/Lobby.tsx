@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
 import { leaveLobby } from "../../api/lobby";
 import { createGame } from "../../api/game";
-import { toHome } from "../../navigation/destinations";
+import { toHome, toInitial } from "../../navigation/destinations";
 
 function Lobby() {
     const [urlParams] = useSearchParams();
@@ -17,7 +17,7 @@ function Lobby() {
         const playerUrlParam = urlParams.get("player");
 
         if (playerUrlParam === null) {
-            navigate("/");
+            navigate(toInitial());
         } else {
             setPlayerId(playerUrlParam);
         }
@@ -29,14 +29,14 @@ function Lobby() {
             const res = await leaveLobby(playerId, lobbyId);
 
             if (res === "Jugador no encontrado" || res === null) {
-                navigate("/");
+                navigate(toInitial());
             }
 
             if (res === "Sala no encontrada" || res === "Ok") {
                 navigate(toHome(playerId));
             }
         } catch {
-            navigate("/");
+            navigate(toInitial());
         }
     }
 
@@ -45,7 +45,7 @@ function Lobby() {
             const res = await createGame(playerId, lobbyId);
 
             if (res === "Jugador no encontrado" || res === null) {
-                navigate("/");
+                navigate(toInitial());
             }
 
             if (res === "No se completó el mínimo de jugadores" || res === "Solo el dueño de la sala puede iniciarlo") {
@@ -60,7 +60,7 @@ function Lobby() {
                 navigate(`/play?player=${playerId}`);
             }
         } catch {
-            navigate("/");
+            navigate(toInitial());
         }
     }
 
