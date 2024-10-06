@@ -4,6 +4,7 @@ import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
 import { createLobby, getJoinableLobbies, joinLobby } from "../../api/lobby";
+import { toLobby } from "../../navigation/destinations";
 
 export interface LobbyForm {
     name: string;
@@ -47,7 +48,7 @@ function MainPage() {
                 return;
             }
 
-            navigate(`/lobby?player=${playerId}`);
+            navigate(toLobby(playerId));
         } catch {
             alert("Error al comunicarse con el servidor, intente de nuevo más tarde.");
         }
@@ -58,7 +59,7 @@ function MainPage() {
         const res = await joinLobby(playerId, lobbyId);
 
         if (res === "Ok" || res === "El jugador ya está en esta sala") {
-            navigate(`/lobby?player=${playerId}`);
+            navigate(toLobby(playerId));
             return;
         }
 

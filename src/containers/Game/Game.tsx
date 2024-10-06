@@ -10,6 +10,7 @@ import useGameWebSocket from "./hooks/useGameWebSocket";
 import useWinnerSelector from "./hooks/useWinnerSelector";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
+import { toLobby } from "../../navigation/destinations";
 
 function Game() {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ function Game() {
 
     const handleLeaveGame = () => {
         void gameService.leaveGame(playerId);
-        navigate(`/lobby?player=${playerId}`);
+        navigate(toLobby(playerId));
     };
 
     if (gameState === null) {
@@ -66,7 +67,7 @@ function Game() {
             />
             <WinnerDialog
                 winner={winner}
-                onClose={() => navigate(`/lobby?player=${playerId}`)}
+                onClose={() => navigate(toLobby(playerId))}
             />
         </>
     );
