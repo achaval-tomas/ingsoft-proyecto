@@ -1,10 +1,14 @@
 import { describe, expect, test } from "vitest";
 import { Color } from "./Color";
 import { Position, positionToBoardIndex, sortPositions } from "./Position";
-import { findConnectedTiles } from "./Board";
+import { BoardTileShapeData, findConnectedTiles, findFormedShapes } from "./Board";
 
-function toBoardTiles(data: string[]): Color[] {
-    return data.toReversed().join("").split("").map<Color>(c => {
+function reverseFlattenRowArray<T>(rows: T[][]): T[] {
+    return rows.toReversed().flat();
+}
+
+function toBoardTiles(rows: string[]): Color[] {
+    return reverseFlattenRowArray(rows.map(w => w.split(""))).map<Color>(c => {
         switch (c) {
             case "r": return "red";
             case "g": return "green";
@@ -58,5 +62,21 @@ describe("findConnectedTiles", () => {
 
     test("corner top right", () => {
         testSelection([5, 5], [[5, 5]]);
+    });
+});
+
+describe("findFormedShapes", () => {
+    test("works correctly with same board as findConnectedTiles", () => {
+        const formedShapesData = findFormedShapes(testBoardTiles);
+        const expected: (BoardTileShapeData | null)[] = reverseFlattenRowArray([
+            [{ shape: "b-4" }, null, null, null, null, null],
+            [{ shape: "b-4" }, { shape: "b-4" }, { shape: "b-4" }, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+        ]);
+
+        expect(formedShapesData).toEqual(expected);
     });
 });
