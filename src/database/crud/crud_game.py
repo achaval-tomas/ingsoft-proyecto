@@ -144,7 +144,7 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     if player is None:
         return 1
 
-    game = get_game(db=db, game_id=player.game_id)
+    game = get_game(db=db, player_id=player_id)
     if game is None:
         return 2
 
@@ -163,7 +163,7 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     movement = movement_data[req.movement]
     target = rotate_movement(movement.target, req.rotation)
 
-    rc = swap_tiles(game, req.position, target, clamp=movement.clamps)
+    rc = swap_tiles(db, game, req.position, target, clamp=movement.clamps)
     if rc == 1:
         return 6
 

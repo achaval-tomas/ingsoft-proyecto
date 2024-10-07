@@ -18,13 +18,13 @@ class MovementData:
 
 
 movement_data = {
-    MovementType.DIAGONAL_ADJACENT: MovementData(clamps=False, target=(1, 1)),
-    MovementType.DIAGONAL_SPACED: MovementData(clamps=False, target=(2, 2)),
-    MovementType.L_CCW: MovementData(clamps=False, target=(2, 1)),
-    MovementType.L_CW: MovementData(clamps=False, target=(1, 2)),
-    MovementType.STRAIGHT_ADJACENT: MovementData(clamps=False, target=(1, 0)),
-    MovementType.STRAIGHT_EDGE: MovementData(clamps=True, target=(5, 0)),
-    MovementType.STRAIGHT_SPACED: MovementData(clamps=False, target=(2, 0)),
+    MovementType.DIAGONAL_ADJACENT.value: MovementData(clamps=False, target=(1, 1)),
+    MovementType.DIAGONAL_SPACED.value: MovementData(clamps=False, target=(2, 2)),
+    MovementType.L_CCW.value: MovementData(clamps=False, target=(2, 1)),
+    MovementType.L_CW.value: MovementData(clamps=False, target=(1, 2)),
+    MovementType.STRAIGHT_ADJACENT.value: MovementData(clamps=False, target=(1, 0)),
+    MovementType.STRAIGHT_EDGE.value: MovementData(clamps=True, target=(5, 0)),
+    MovementType.STRAIGHT_SPACED.value: MovementData(clamps=False, target=(2, 0)),
 }
 
 
