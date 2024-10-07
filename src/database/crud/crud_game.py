@@ -7,6 +7,7 @@ from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player, get_player_cards
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Game, Lobby, PlayerCards
+from src.schemas.card_schemas import ShapeCardSchema
 
 
 def create_game(db: Session, lobby_id: str, player_id: str):
@@ -91,7 +92,7 @@ def refill_cards(db: Session, player_id: str):
         2 -> Player is not currently in a game
         3 -> There is a winner (player_id) because he has no more cards available
     """
-    player = get_player(player_id=player_id)
+    player = get_player(db=db, player_id=player_id)
     if player is None:
         return 1
 
@@ -110,7 +111,8 @@ def refill_cards(db: Session, player_id: str):
     # Get player shape cards in hand array
     shape_cards_hand = deserialize(player_cards.shape_cards_in_hand)
     for c in shape_cards_hand:
-        if c.isBlocked:
+        card = ShapeCardSchema.model_validate_json(c)
+        if card.isBlocked:
             # case no handing cards because of blocked card
             return 0
 
