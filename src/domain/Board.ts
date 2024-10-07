@@ -2,7 +2,6 @@ import { Color } from "./Color";
 import { Shape } from "./Shape";
 import { boardIndexToPosition, positionToBoardIndex } from "./Position";
 import { getShapeFromNormalizedShapeData, normalizeShapeData, ShapeData } from "./ShapeData";
-import { BoardState } from "./GameState";
 
 export type BoardTileShapeData = {
     shape: Shape;
@@ -41,7 +40,7 @@ export function findConnectedTiles(boardTiles: readonly Color[], startIndex: num
     return selected.map(i => boardIndexToPosition(i));
 }
 
-export function findFormedShapes(boardState: BoardState): (BoardTileShapeData | null)[] {
+export function findFormedShapes(boardTiles: readonly Color[]): (BoardTileShapeData | null)[] {
     const boardTilesData = Array<BoardTileShapeData | null | undefined>(36).fill(undefined);
 
     for (let tileIndex = 0; tileIndex < boardTilesData.length; tileIndex++) {
@@ -50,12 +49,12 @@ export function findFormedShapes(boardState: BoardState): (BoardTileShapeData | 
             continue;
         }
 
-        const shapeCandidate = findConnectedTiles(boardState.tiles, tileIndex);
+        const shapeCandidate = findConnectedTiles(boardTiles, tileIndex);
         const normalizedShapeCandidate = normalizeShapeData(shapeCandidate);
-        const shapeOrNull = getShapeFromNormalizedShapeData(normalizedShapeCandidate) ?? null;
+        const shapeWithDataOrNull = getShapeFromNormalizedShapeData(normalizedShapeCandidate) ?? null;
 
         for (const cell of shapeCandidate) {
-            boardTilesData[positionToBoardIndex(cell)] = shapeOrNull;
+            boardTilesData[positionToBoardIndex(cell)] = shapeWithDataOrNull && { shape: shapeWithDataOrNull.shape };
         }
     }
 
