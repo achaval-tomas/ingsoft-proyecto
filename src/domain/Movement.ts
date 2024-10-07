@@ -11,3 +11,8 @@ export const MovementSchema = z.enum([
 ]);
 
 export type Movement = z.infer<typeof MovementSchema>;
+
+export type MovementData = {
+    clamps: boolean;
+    target: [number, number];
+};
