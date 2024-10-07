@@ -214,13 +214,9 @@ def test_card_ws_movement():
     pos1 = board[7]
 
     cards = get_player_cards(db=db, player_id=current_turn)
-    mov_cards = deserialize(cards.movement_cards)
-    mov_cards.pop(0)
 
-    new_card = 'diagonal-adjacent'
-    mov_cards.append(new_card)
-
-    cards.movement_cards = serialize(mov_cards)
+    new_cards = ['diagonal-adjacent', 'l-ccw', 'straight-edge']
+    cards.movement_cards = serialize(new_cards)
     db.commit()
 
     data = UseMovementCardSchema(
@@ -240,7 +236,7 @@ def test_card_ws_movement():
         assert (
             data_received
             == MovementCardUsedSchema(
-                position=[0, 0],
+                position=(0, 0),
                 rotation='r0',
                 movement='diagonal-adjacent',
             ).model_dump_json()
@@ -251,3 +247,61 @@ def test_card_ws_movement():
 
         assert pos0 == board[7]
         assert pos1 == board[0]
+
+        data = UseMovementCardSchema(
+            type='use-movement-card',
+            position=(0, 0),
+            rotation='r0',
+            movement='l-ccw',
+        ).model_dump_json()
+
+        pos0 = board[0]
+        pos1 = board[8]
+        print(board)
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == MovementCardUsedSchema(
+                position=(0, 0),
+                rotation='r0',
+                movement='l-ccw',
+            ).model_dump_json()
+        )
+
+        game = get_game(db, player_id)
+        db.refresh(game)
+        board = deserialize(game.board)
+        print(board)
+        assert pos0 == board[8]
+        assert pos1 == board[0]
+
+        data = UseMovementCardSchema(
+            type='use-movement-card',
+            position=(1, 1),
+            rotation='r90',
+            movement='straight-edge',
+        ).model_dump_json()
+
+        pos0 = board[7]
+        pos1 = board[31]
+
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == MovementCardUsedSchema(
+                position=(1, 1),
+                rotation='r90',
+                movement='straight-edge',
+            ).model_dump_json()
+        )
+
+        game = get_game(db, player_id)
+        db.refresh(game)
+        board = deserialize(game.board)
+
+        assert pos0 == board[31]
+        assert pos1 == board[7]
