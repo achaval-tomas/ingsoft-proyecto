@@ -29,7 +29,7 @@ function Game() {
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
 
-    const [movCardSelected, setMovCardSelected] = useState<number | null>(null);
+    const [movementCardSelected, setMovementCardSelected] = useState<number | null>(null);
     const [tileSelected, setTileSelected] = useState<number | null>(null);
 
 
@@ -51,7 +51,7 @@ function Game() {
             return;
         }
 
-        setMovCardSelected(movCardSelected === i ? null : i);
+        setMovementCardSelected(movementCardSelected === i ? null : i);
         setTileSelected(null);
     };
 
@@ -75,7 +75,7 @@ function Game() {
                 selfPlayerState={gameState.selfPlayerState}
                 otherPlayersState={gameState.otherPlayersState}
                 activeSide={activeSide}
-                movementCardSelected={movCardSelected}
+                movementCardSelected={movementCardSelected}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickMovementCard={handleClickMovementCard}
