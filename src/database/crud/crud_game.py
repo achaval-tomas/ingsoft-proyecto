@@ -133,6 +133,8 @@ def refill_cards(db: Session, player_id: str):
     player_cards.shape_cards_deck = serialize(shape_cards_deck)
     db.commit()
 
+    return 0
+
 
 def get_game(db: Session, player_id: str):
     player = get_player(db=db, player_id=player_id)
