@@ -1,13 +1,9 @@
 import { LobbyElement } from "../containers/MainPage/components/LobbyList";
+import { httpServerUrl } from "./config";
+import { get, post } from "./util";
 
 async function getJoinableLobbies(): Promise<LobbyElement[]> {
-    const res = await fetch("http://127.0.0.1:8000/lobby", {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-    });
+    const res = await get(`${httpServerUrl}/lobby`);
 
     const data = await res.json() as LobbyElement[];
 
@@ -19,18 +15,11 @@ async function createLobby(
     lobbyName: string,
     maxPlayers: number,
 ): Promise<string> {
-    const res = await fetch("http://127.0.0.1:8000/lobby", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            lobby_name: lobbyName,
-            lobby_owner: playerId,
-            min_players: 2,
-            max_players: maxPlayers,
-        }),
+    const res = await post(`${httpServerUrl}/lobby`, {
+        lobby_name: lobbyName,
+        lobby_owner: playerId,
+        min_players: 2,
+        max_players: maxPlayers,
     });
 
     const data = await res.json() as { lobby_id: string };
@@ -43,16 +32,9 @@ type JoinLobbyResult = {
 };
 
 async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyResult> {
-    const res = await fetch("http://127.0.0.1:8000/lobby/join", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            player_id: playerId,
-            lobby_id: lobbyId,
-        }),
+    const res = await post(`${httpServerUrl}/lobby/join`, {
+        player_id: playerId,
+        lobby_id: lobbyId,
     });
 
     if (res.ok) {
@@ -86,16 +68,9 @@ type LeaveLobbyResult = {
 };
 
 async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveLobbyResult> {
-    const res = await fetch("http://127.0.0.1:8000/lobby/leave", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            player_id: playerId,
-            lobby_id: lobbyId,
-        }),
+    const res = await post(`${httpServerUrl}/lobby/leave`, {
+        player_id: playerId,
+        lobby_id: lobbyId,
     });
 
     if (res.ok) {
@@ -115,4 +90,11 @@ async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveLobby
     return { type: "Other", message: "Error al intentar abandonar partida" };
 }
 
-export { getJoinableLobbies, createLobby, joinLobby, leaveLobby };
+const lobbyService = {
+    getJoinableLobbies,
+    createLobby,
+    joinLobby,
+    leaveLobby,
+};
+
+export default lobbyService;

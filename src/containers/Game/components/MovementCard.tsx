@@ -7,7 +7,7 @@ type MovementCardProps = {
 function MovementCard({ movement }: MovementCardProps) {
     const imageSrc = `/src/assets/movements/${movement}.svg`;
 
-    return <img src={imageSrc} className="w-[8em] h-[12em]" />;
+    return <img src={imageSrc} className="h-full" />;
 }
 
 export default MovementCard;

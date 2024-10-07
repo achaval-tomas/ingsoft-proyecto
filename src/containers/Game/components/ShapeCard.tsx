@@ -8,7 +8,7 @@ type ShapeCardProps = {
 function ShapeCard({ shape, isBlocked }: ShapeCardProps) {
     const imageSrc = `/src/assets/shapes/${isBlocked ? "backside" : shape}.svg`;
 
-    return <img src={imageSrc} className="w-[6em] h-[6em]" />;
+    return <img src={imageSrc} className="w-full h-full" />;
 }
 
 export default ShapeCard;

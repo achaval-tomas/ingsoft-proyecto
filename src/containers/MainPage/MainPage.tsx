@@ -3,8 +3,8 @@ import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
-import { createLobby, getJoinableLobbies, joinLobby } from "../../api/lobby";
 import { toInitial, toLobby } from "../../navigation/destinations";
+import lobbyService from "../../services/lobbyService";
 
 export interface LobbyForm {
     name: string;
@@ -12,7 +12,7 @@ export interface LobbyForm {
 
 async function getLobbies(): Promise<LobbyElement[]> {
     try {
-        return await getJoinableLobbies();
+        return await lobbyService.getJoinableLobbies();
     } catch {
         return [];
     }
@@ -36,7 +36,7 @@ function MainPage() {
         try {
             const playerId = urlParams.get("player") ?? "";
 
-            const lobbyId = await createLobby(
+            const lobbyId = await lobbyService.createLobby(
                 playerId,
                 state.name,
                 state.maxPlayers,
@@ -56,7 +56,7 @@ function MainPage() {
 
     async function joinHandler(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
-        const res = await joinLobby(playerId, lobbyId);
+        const res = await lobbyService.joinLobby(playerId, lobbyId);
 
         if (res.type === "Ok" || res.type === "AlreadyJoined") {
             navigate(toLobby(playerId));

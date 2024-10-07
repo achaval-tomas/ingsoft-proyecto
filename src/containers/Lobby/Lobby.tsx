@@ -2,9 +2,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import LobbyLayout from "./components/LobbyLayout";
 import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
-import { leaveLobby } from "../../api/lobby";
-import { createGame } from "../../api/game";
 import { toHome, toInitial, toPlay } from "../../navigation/destinations";
+import lobbyService from "../../services/lobbyService";
+import gameService from "../../services/gameService";
 
 function Lobby() {
     const [urlParams] = useSearchParams();
@@ -26,7 +26,7 @@ function Lobby() {
 
     async function quitHandler() {
         try {
-            const res = await leaveLobby(playerId, lobbyId);
+            const res = await lobbyService.leaveLobby(playerId, lobbyId);
 
             if (res.type === "PlayerNotFound" || res.type === "Other") {
                 alert(res.message);
@@ -45,7 +45,7 @@ function Lobby() {
 
     async function startHandler() {
         try {
-            const res = await createGame(playerId, lobbyId);
+            const res = await gameService.createGame(playerId, lobbyId);
 
             if (res.type === "PlayerNotFound" || res.type === "Other") {
                 alert(res.message);

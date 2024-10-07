@@ -1,5 +1,7 @@
+import { httpServerUrl } from "./config";
+
 async function createPlayer(playerName: string): Promise<string> {
-    const res = await fetch("http://127.0.0.1:8000/player", {
+    const res = await fetch(`${httpServerUrl}/player`, {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -15,4 +17,8 @@ async function createPlayer(playerName: string): Promise<string> {
     return data.player_id;
 }
 
-export { createPlayer };
+const playerService = {
+    createPlayer,
+};
+
+export default playerService;

@@ -38,7 +38,11 @@ function Game() {
     };
 
     if (gameState === null) {
-        return <p>Loading...</p>;
+        return (
+            <div className="flex w-screen h-screen justify-center items-center">
+                <p className="animate-pulse text-2xl">Loading...</p>
+            </div>
+        );
     }
 
     const activeSide = playerIndexToActiveSide(
