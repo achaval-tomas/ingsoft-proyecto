@@ -23,14 +23,11 @@ def get_player(db: Session, player_id: str):
 
 
 def get_player_cards(db: Session, player_id: str):
-    cards = (
+    return (
         db.query(models.PlayerCards)
         .filter(models.PlayerCards.player_id == player_id)
         .one_or_none()
     )
-    if not cards:
-        return None
-    return cards
 
 
 def delete_player(db: Session, player_id: str):
