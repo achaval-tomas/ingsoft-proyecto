@@ -28,6 +28,11 @@ function Game() {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
+
+    const [movCardSelected, setMovCardSelected] = useState<number | null>(null);
+    const [tileSelected, setTileSelected] = useState<number | null>(null);
+
+
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
     };
@@ -35,6 +40,19 @@ function Game() {
     const handleLeaveGame = () => {
         void gameService.leaveGame(playerId);
         navigate(toLobby(playerId));
+    };
+
+    const handleClickMovementCard = (i: number) => {
+        if (gameState === null) {
+            return;
+        }
+
+        if (gameState.selfPlayerState.movementCardsInHand.length < i + 1) {
+            return;
+        }
+
+        setMovCardSelected(movCardSelected === i ? null : i);
+        setTileSelected(null);
     };
 
     if (gameState === null) {
@@ -57,8 +75,10 @@ function Game() {
                 selfPlayerState={gameState.selfPlayerState}
                 otherPlayersState={gameState.otherPlayersState}
                 activeSide={activeSide}
+                movementCardSelected={movCardSelected}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
+                onClickMovementCard={handleClickMovementCard}
             />
             <ConfirmDialog
                 isOpen={showLeaveGameDialog}

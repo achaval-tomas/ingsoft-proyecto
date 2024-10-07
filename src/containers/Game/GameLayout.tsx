@@ -12,11 +12,13 @@ type GameLayoutProps = {
     selfPlayerState: SelfPlayerState;
     otherPlayersState: OtherPlayerState[];
     activeSide: "b" | "r" | "t" | "l";
+    movementCardSelected: number | null;
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
+    onClickMovementCard: (i: number) => void;
 };
 
-function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onClickEndTurn, onClickLeaveGame }: GameLayoutProps) {
+function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, movementCardSelected, onClickEndTurn, onClickLeaveGame, onClickMovementCard }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -59,6 +61,8 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, onC
             <MovementCardHand
                 movements={selfPlayerState.movementCardsInHand}
                 className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[2.5%] pb-[0.5%] w-0 h-full"
+                movementCardSelected={movementCardSelected}
+                onClickMovementCard={onClickMovementCard}
             />
             <div className="row-start-2 col-start-1 justify-self-end self-end">
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
