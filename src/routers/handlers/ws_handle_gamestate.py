@@ -1,4 +1,3 @@
-import jsonpickle
 from sqlalchemy.orm import Session
 
 from src.constants import errors
@@ -18,26 +17,20 @@ from src.schemas.message_schema import error_message
 
 
 def list_shape_cards(cards: PlayerCards):
-    shape_cards = []
-    for card in jsonpickle.loads(cards.shape_cards_in_hand):
-        card_data = ShapeCardSchema(
-            shape=card['shape']['_value_'],
-            isBlocked=card['isBlocked'],
-        )
-        shape_cards.append(card_data)
-    return shape_cards
+    return [
+        ShapeCardSchema.model_validate_json(card)
+        for card in deserialize(cards.shape_cards_in_hand)
+    ]
 
 
 def list_movement_cards(cards: PlayerCards):
-    return [
-        card['mov_type']['_value_'] for card in jsonpickle.loads(cards.movement_cards)
-    ]
+    return deserialize(cards.movement_cards)
 
 
 def extract_own_cards(db: Session, player: SelfPlayerStateSchema):
     player_cards = get_player_cards(db=db, player_id=player.id)
 
-    player.shapeCardsInDeckCount = len(jsonpickle.loads(player_cards.shape_cards_deck))
+    player.shapeCardsInDeckCount = len(deserialize(player_cards.shape_cards_deck))
 
     player.shapeCardsInHand = list_shape_cards(player_cards)
 
@@ -47,7 +40,7 @@ def extract_own_cards(db: Session, player: SelfPlayerStateSchema):
 def extract_other_player_cards(db: Session, player: OtherPlayersStateSchema):
     player_cards = get_player_cards(db=db, player_id=player.id)
 
-    player.shapeCardsInDeckCount = len(jsonpickle.loads(player_cards.shape_cards_deck))
+    player.shapeCardsInDeckCount = len(deserialize(player_cards.shape_cards_deck))
 
     player.shapeCardsInHand = list_shape_cards(player_cards)
 

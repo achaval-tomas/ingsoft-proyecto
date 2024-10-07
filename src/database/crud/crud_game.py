@@ -1,10 +1,8 @@
 import random
 
-import jsonpickle
 from sqlalchemy.orm import Session
 
-from src.database.cards.movement_card import MovementCard, MovementType
-from src.database.cards.shape_card import ShapeCard, ShapeType
+from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
@@ -52,39 +50,32 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     db.refresh(db_game)
 
     game_id = db_game.game_id
+    shape_card_dealer = ShapeCardDealer(nplayers=lobby.player_amount)
     for id in player_order:
         player = get_player(db=db, player_id=id)
         if player is None:
             return 4
         player.game_id = game_id
         db.commit()
-        hand_cards(db=db, player_id=id)
+        hand_initial_cards(db=db, player_id=id, shape_card_dealer=shape_card_dealer)
 
     return 0
 
 
-def hand_cards(db: Session, player_id: str):
-    mov_cards = [
-        MovementCard(mov_type=MovementType.STRAIGHT_ADJACENT),
-        MovementCard(mov_type=MovementType.L_CCW),
-        MovementCard(mov_type=MovementType.DIAGONAL_SPACED),
-    ]
+def hand_initial_cards(db: Session, player_id: str, shape_card_dealer: ShapeCardDealer):
+    mov_cards = MovCardDealer.deal_movement_cards()
 
-    shape_cards_hand = [
-        ShapeCard(shape=ShapeType.C_16),
-        ShapeCard(shape=ShapeType.B_2),
-        ShapeCard(shape=ShapeType.C_3),
-    ]
+    shape_cards_deck = shape_card_dealer.deal_shape_cards()
 
-    shape_cards_deck = [ShapeCard(shape=ShapeType.C_7)] * 10
+    shape_cards_hand = [c.model_dump_json() for c in shape_cards_deck[0:3]]
+    shape_cards_deck = [c.model_dump_json() for c in shape_cards_deck[3:]]
 
     db_cards = PlayerCards(
         player_id=player_id,
-        movement_cards=jsonpickle.dumps(mov_cards, unpicklable=False),
-        shape_cards_in_hand=jsonpickle.dumps(shape_cards_hand, unpicklable=False),
-        shape_cards_deck=jsonpickle.dumps(shape_cards_deck, unpicklable=False),
+        movement_cards=serialize(mov_cards),
+        shape_cards_in_hand=serialize(shape_cards_hand),
+        shape_cards_deck=serialize(shape_cards_deck),
     )
-
     db.add(db_cards)
     db.commit()
     db.refresh(db_cards)
