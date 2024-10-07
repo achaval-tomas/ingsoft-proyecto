@@ -1,7 +1,6 @@
 from fastapi.testclient import TestClient
 
-from src.database.crud.crud_game import refill_cards
-from src.database.crud.crud_player import get_player_cards
+from src.database.crud.crud_cards import get_player_cards, refill_cards
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
 from src.main import app

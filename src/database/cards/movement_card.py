@@ -25,4 +25,5 @@ def rotate_movement(target: tuple[int, int], rot: str):
             return (-target[0], -target[1])
         case 'r270':
             return (target[1], -target[0])
+
     return target

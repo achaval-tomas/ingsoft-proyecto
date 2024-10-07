@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 
 from src.constants import errors
+from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game
-from src.database.crud.crud_player import get_player, get_player_cards
+from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize
 from src.database.models import Game, PlayerCards
 from src.schemas.card_schemas import ShapeCardSchema

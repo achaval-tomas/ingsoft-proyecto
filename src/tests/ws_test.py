@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
+from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game
-from src.database.crud.crud_player import get_player_cards
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
 from src.main import app
@@ -257,7 +257,7 @@ def test_card_ws_movement():
 
         pos0 = board[0]
         pos1 = board[8]
-        print(board)
+
         websocket_owner.send_text(data)
         data_received = websocket_owner.receive_text()
 
@@ -273,7 +273,7 @@ def test_card_ws_movement():
         game = get_game(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
-        print(board)
+
         assert pos0 == board[8]
         assert pos1 == board[0]
 
