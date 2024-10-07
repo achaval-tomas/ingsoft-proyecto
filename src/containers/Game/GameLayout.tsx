@@ -13,12 +13,14 @@ type GameLayoutProps = {
     otherPlayersState: OtherPlayerState[];
     activeSide: "b" | "r" | "t" | "l";
     movementCardSelected: number | null;
+    tileSelected: number | null;
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
     onClickMovementCard: (i: number) => void;
+    onClickTile: (i: number) => void;
 };
 
-function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, movementCardSelected, onClickEndTurn, onClickLeaveGame, onClickMovementCard }: GameLayoutProps) {
+function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, movementCardSelected, tileSelected, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -28,7 +30,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, mov
                 <div className="flex flex-row w-full h-full ">
                     <div className="grid w-full h-full" style={{ gridTemplateRows: "1fr 4.5fr 1fr", gridTemplateColumns: "1fr 4.5fr 1fr" }}>
                         <div className="row-start-2 col-start-2">
-                            <Board tiles={tiles} activeSide={activeSide} />
+                            <Board tiles={tiles} activeSide={activeSide} tileSelected={tileSelected} tilesSelectable={[]} onClickTile={onClickTile} />
                         </div>
                         <ShapeCardHand
                             shapeCards={selfPlayerState.shapeCardsInHand}

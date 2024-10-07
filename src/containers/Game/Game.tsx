@@ -55,6 +55,19 @@ function Game() {
         setTileSelected(null);
     };
 
+    const handleClickTile = (i: number) => {
+        if (movementCardSelected === null) {
+            return;
+        }
+
+        if (tileSelected === null) {
+            setTileSelected(i);
+            return;
+        }
+
+        // use movement card
+    };
+
     if (gameState === null) {
         return (
             <div className="flex w-screen h-screen justify-center items-center">
@@ -76,9 +89,11 @@ function Game() {
                 otherPlayersState={gameState.otherPlayersState}
                 activeSide={activeSide}
                 movementCardSelected={movementCardSelected}
+                tileSelected={tileSelected}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickMovementCard={handleClickMovementCard}
+                onClickTile={handleClickTile}
             />
             <ConfirmDialog
                 isOpen={showLeaveGameDialog}
