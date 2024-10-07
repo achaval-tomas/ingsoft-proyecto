@@ -26,3 +26,16 @@ movement_data = {
     MovementType.STRAIGHT_EDGE: MovementData(clamps=True, target=(5, 0)),
     MovementType.STRAIGHT_SPACED: MovementData(clamps=False, target=(2, 0)),
 }
+
+
+def rotate_movement(target: tuple[int, int], rot: str):
+    match rot:
+        case 'r0':
+            pass
+        case 'r90':
+            return (-target[1], target[0])
+        case 'r180':
+            return (-target[0], -target[1])
+        case 'r270':
+            return (target[1], -target[0])
+    return target

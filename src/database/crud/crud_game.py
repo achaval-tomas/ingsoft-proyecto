@@ -3,11 +3,12 @@ import random
 from sqlalchemy.orm import Session
 
 from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
+from src.database.cards.movement_card import movement_data, rotate_movement
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player, get_player_cards
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Game, Lobby, PlayerCards
-from src.schemas.card_schemas import ShapeCardSchema
+from src.schemas.card_schemas import ShapeCardSchema, UseMovementCardSchema
 
 
 def create_game(db: Session, lobby_id: str, player_id: str):
@@ -136,6 +137,73 @@ def refill_cards(db: Session, player_id: str):
     db.commit()
 
     return 0
+
+
+def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
+    player = get_player(player_id=player_id, db=db)
+    if player is None:
+        return 1
+
+    game = get_game(db=db, game_id=player.game_id)
+    if game is None:
+        return 2
+
+    player_cards = get_player_cards(db=db, player_id=player_id)
+    if player_cards is None:
+        return 3
+
+    player_movement_cards = deserialize(player_cards.movement_cards)
+    if req.movement not in player_movement_cards:
+        return 4
+
+    player_order = deserialize(game.player_order)
+    if player_order[game.current_turn] != player_id:
+        return 5
+
+    movement = movement_data[req.movement]
+    target = rotate_movement(movement.target, req.rotation)
+
+    rc = swap_tiles(game, req.position, target, clamp=movement.clamps)
+    if rc == 1:
+        return 6
+
+    return 0
+
+
+def swap_tiles(
+    db: Session,
+    game: Game,
+    origin: tuple[int, int],
+    target: tuple[int, int],
+    clamp: bool,
+):
+    board_origin = origin[1] * 6 + origin[0]
+    if not 0 <= board_origin < 36:
+        return 1
+
+    target_x = origin[0] + target[0]
+    target_y = origin[1] + target[1]
+
+    if clamp:
+        target_x = clamp_val_to_board_range(target_x)
+        target_y = clamp_val_to_board_range(target_y)
+
+    board_target = target_y * 6 + target_x
+
+    if not 0 <= board_target < 36:
+        return 1
+
+    board = deserialize(game.board)
+    board[board_origin], board[board_target] = board[board_target], board[board_origin]
+
+    game.board = serialize(board)
+    db.commit()
+
+    return 0
+
+
+def clamp_val_to_board_range(val: int):
+    return 0 if val < 0 else (5 if val > 5 else val)
 
 
 def get_game(db: Session, player_id: str):
