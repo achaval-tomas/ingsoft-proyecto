@@ -48,6 +48,7 @@ function CreateLobbyForm({ lobbyNamePlaceholder, onCancel, onSubmit }: CreateLob
                 inputTestId="lobby-max-players"
             />
             <Field
+                disabled={true}
                 label="Contraseña"
                 type="password"
                 placeholder="Pública"
