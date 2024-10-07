@@ -167,6 +167,10 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     if rc == 1:
         return 6
 
+    player_movement_cards.remove(req.movement)
+    player_cards.movement_cards = serialize(player_movement_cards)
+    db.commit()
+
     return 0
 
 
