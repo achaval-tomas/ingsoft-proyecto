@@ -1,15 +1,14 @@
 import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
-import { Color } from "../../domain/Color";
 import { OtherPlayerState, SelfPlayerState } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
-import Board from "./components/Board";
+import Board, { BoardTileData } from "./components/Board";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
 import ShapeCardHand from "./components/ShapeCardHand";
 
 type GameLayoutProps = {
-    tiles: Color[];
+    tiles: BoardTileData[];
     selfPlayerState: SelfPlayerState;
     otherPlayersState: OtherPlayerState[];
     activeSide: "b" | "r" | "t" | "l";

@@ -11,6 +11,7 @@ import useWinnerSelector from "./hooks/useWinnerSelector";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
+import useFormedShapes from "./hooks/useFormedShapes";
 import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
 import { Position, positionsEqual } from "../../domain/Position";
 import { RotationSchema } from "../../domain/Rotation";
@@ -30,6 +31,13 @@ function Game() {
     useEffect(() => (() => { dispatch({ type: "clear-game-state" }); }), [dispatch]);
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
+
+    const formedShapes = useFormedShapes(gameState?.boardState ?? null);
+
+    const tilesData = useMemo(
+        () => gameState?.boardState?.tiles?.map((color, i) => ({ color, isHighlighted: formedShapes![i] != null })),
+        [gameState?.boardState?.tiles, formedShapes],
+    );
 
     const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
     const [selectedTile, setSelectedTile] = useState<Position | null>(null);
@@ -113,7 +121,7 @@ function Game() {
     return (
         <>
             <GameLayout
-                tiles={gameState.boardState.tiles}
+                tiles={tilesData!}
                 selfPlayerState={gameState.selfPlayerState}
                 otherPlayersState={gameState.otherPlayersState}
                 activeSide={activeSide}

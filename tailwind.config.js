@@ -14,6 +14,17 @@ export default {
             transitionProperty: {
                 "movement-card": "top, bottom, box-shadow, z-index",
             },
+            animation: {
+                highlight:
+                    "highlight 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+            keyframes: {
+                highlight: {
+                    "0%": { backgroundColor: "rgba(255, 255, 255, 0.3)" },
+                    "50%": { backgroundColor: "rgba(0, 0, 0, 0.3)" },
+                    "100%": { backgroundColor: "rgba(255, 255, 255, 0.3)" },
+                },
+            },
         },
     },
     plugins: [],
