@@ -17,3 +17,9 @@ NOT_ENOUGH_PLAYERS = (
 )
 
 PLAYER_IS_MISSING = 'No se pudo encontrar a uno de los jugadores'
+
+INVALID_CARD = 'No puedes utilizar esta carta!'
+
+MOVEMENT_OUT_OF_BOUNDS = 'No es posible realizar este movimiento'
+
+INTERNAL_SERVER_ERROR = 'Hubo un problema en el servidor.'
