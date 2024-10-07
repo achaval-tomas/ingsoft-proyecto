@@ -25,7 +25,7 @@ class ShapeCardDealer:
 
 
 class MovCardDealer:
-    def deal_movement_cards():
+    def deal_movement_cards(ncards: int = 3):
         cards = [c.value for c in MovementType] * 7
         shuffle(cards)
-        return cards[0:3]
+        return cards[0:ncards]

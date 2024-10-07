@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
 from src.database.crud.crud_lobby import get_lobby
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_player import get_player, get_player_cards
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Game, Lobby, PlayerCards
 
@@ -79,6 +79,59 @@ def hand_initial_cards(db: Session, player_id: str, shape_card_dealer: ShapeCard
     db.add(db_cards)
     db.commit()
     db.refresh(db_cards)
+
+
+def refill_cards(db: Session, player_id: str):
+    """
+    Refill cards for player_id
+
+    Return codes:
+        0 -> Player succesfully got cards refilled
+        1 -> Player does not exist in the database
+        2 -> Player is not currently in a game
+        3 -> There is a winner (player_id) because he has no more cards available
+    """
+    player = get_player(player_id=player_id)
+    if player is None:
+        return 1
+
+    player_cards = get_player_cards(db=db, player_id=player_id)
+    if player_cards is None:
+        return 2
+
+    # Get player movement cards array
+    mov_cards = deserialize(player_cards.movement_cards)
+    new_mov_cards = MovCardDealer.deal_movement_cards(3 - len(mov_cards))
+    mov_cards += new_mov_cards
+
+    player_cards.movement_cards = serialize(mov_cards)
+    db.commit()
+
+    # Get player shape cards in hand array
+    shape_cards_hand = deserialize(player_cards.shape_cards_in_hand)
+    for c in shape_cards_hand:
+        if c.isBlocked:
+            # case no handing cards because of blocked card
+            return 0
+
+    # Get player shape cards deck array
+    shape_cards_deck = deserialize(player_cards.shape_cards_deck)
+
+    to_hand = 3 - len(shape_cards_hand)
+    available = len(shape_cards_deck)
+
+    if (to_hand == 3) and (available == 0):
+        # case winner
+        return 3
+
+    new_shape_cards = shape_cards_deck[0:to_hand]
+    shape_cards_hand += new_shape_cards
+    shape_cards_deck = shape_cards_deck[to_hand:]
+
+    # Update player cards
+    player_cards.shape_cards_in_hand = serialize(shape_cards_hand)
+    player_cards.shape_cards_deck = serialize(shape_cards_deck)
+    db.commit()
 
 
 def get_game(db: Session, player_id: str):
@@ -179,6 +232,8 @@ def end_game_turn(db: Session, player_id: str):
     player_order = deserialize(game.player_order)
     if player_id != player_order[game.current_turn]:
         return 2
+
+    refill_cards(db=db, player_id=player_id)
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
