@@ -11,6 +11,7 @@ import useWinnerSelector from "./hooks/useWinnerSelector";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
+import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
 
 function Game() {
     const navigate = useNavigate();
@@ -28,10 +29,10 @@ function Game() {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
+    const [movementCardSelected, setMovementCardSelected] = useState<number | undefined>(undefined);
+    const [tileSelected, setTileSelected] = useState<number | undefined>(undefined);
 
-    const [movementCardSelected, setMovementCardSelected] = useState<number | null>(null);
-    const [tileSelected, setTileSelected] = useState<number | null>(null);
-
+    const [selectableTiles, setSelectableTiles] = useState<PossibleTargetsInBoard>({});
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
@@ -51,17 +52,21 @@ function Game() {
             return;
         }
 
-        setMovementCardSelected(movementCardSelected === i ? null : i);
-        setTileSelected(null);
+        setMovementCardSelected(movementCardSelected === i ? undefined : i);
+        setSelectableTiles({});
+        setTileSelected(undefined);
     };
 
     const handleClickTile = (i: number) => {
-        if (movementCardSelected === null) {
+        if (movementCardSelected === undefined) {
             return;
         }
 
-        if (tileSelected === null) {
+        if (tileSelected === undefined) {
             setTileSelected(i);
+            if (gameState) {
+                setSelectableTiles(getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[movementCardSelected], i));
+            }
             return;
         }
 
@@ -90,6 +95,7 @@ function Game() {
                 activeSide={activeSide}
                 movementCardSelected={movementCardSelected}
                 tileSelected={tileSelected}
+                selectableTiles={Object.values(selectableTiles)}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickMovementCard={handleClickMovementCard}

@@ -39,7 +39,7 @@ export function getMovementData(movement: Movement): MovementData {
 
 type Rotation = "r0" | "r90" | "r180" | "r270";
 
-type PossibleTargetsInBoard = {
+export type PossibleTargetsInBoard = {
     [key in Rotation]?: number;
 };
 

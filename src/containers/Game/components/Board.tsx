@@ -8,7 +8,7 @@ type BoardTileProps = {
 }
 
 function BoardTile({ color, selected, selectable, onClickTile }: BoardTileProps) {
-    const borderStyle = selected ? { boxShadow: "0 0 2px 4px white" } : (selectable ? { boxShadow: "0 0 2px 4px orange" } : {});
+    const borderStyle = selected ? { boxShadow: "0 0 2px 4px white" } : (selectable ? { boxShadow: "0 0 2px 4px lightgreen" } : {});
     return (
         <div className={colorToBackgroundClassName(color) + " rounded shadow-md shadow-black"} onClick={onClickTile}>
             <div className="w-full h-full rounded border border-transparent hover:border-white" style={borderStyle} />
@@ -20,7 +20,7 @@ type BoardProps = {
     tiles: Color[]; // length must be 36
     activeSide: "b" | "r" | "t" | "l";
     tileSelected: number | null;
-    tilesSelectable: number[];
+    selectableTiles:number[];
     onClickTile: (i: number) => void;
 }
 
@@ -33,13 +33,21 @@ function borderColorFromActiveSide(activeSide: "b" | "r" | "t" | "l"): string {
     }
 }
 
-function Board({ tiles, activeSide, tileSelected, tilesSelectable, onClickTile }: BoardProps) {
+function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }: BoardProps) {
+    const conversion = [30, 18, 6, -6, -18, -30];
+    const boardTiles = tiles.map((t, i) => {
+        const realI = i + conversion[Math.floor(i / 6)];
+
+        return <BoardTile key={realI} color={t} selected={realI === tileSelected} selectable={selectableTiles.includes(realI)}
+            onClickTile={() => onClickTile(realI)}
+        />;
+    });
     return (
         <div
             className={`grid h-full aspect-square gap-[3%] p-[3%] bg-zinc-700 h-fit rounded-lg shadow-md shadow-black border border-transparent ${borderColorFromActiveSide(activeSide)}`}
             style={{ grid: "repeat(6, 1fr) / repeat(6, 1fr)" }}
         >
-            {tiles.map((t, i) => <BoardTile key={i} color={t} selected={i === tileSelected} selectable={tilesSelectable.includes(i)} onClickTile={() => onClickTile(i)} />)}
+            {boardTiles}
         </div>
     );
 }
