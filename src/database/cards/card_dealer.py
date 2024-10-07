@@ -1,6 +1,6 @@
 from random import shuffle
 
-from src.database.cards.movement_card import MovementType
+from src.database.cards.movement_card import movement_data
 from src.database.cards.shape_card import ShapeType
 from src.schemas.card_schemas import ShapeCardSchema
 
@@ -26,6 +26,6 @@ class ShapeCardDealer:
 
 class MovCardDealer:
     def deal_movement_cards(ncards: int = 3):
-        cards = [c.value for c in MovementType] * 7
+        cards = list(movement_data.keys()) * 7
         shuffle(cards)
         return cards[0:ncards]

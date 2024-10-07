@@ -1,6 +1,5 @@
 from fastapi.testclient import TestClient
 
-from src.database.cards.movement_card import MovementType
 from src.database.crud.crud_game import get_game
 from src.database.crud.crud_player import get_player_cards
 from src.database.crud.tools.jsonify import deserialize, serialize
@@ -49,8 +48,8 @@ def test_game_ws_end_turn():
         'lobby_id': lobby_id,
     }
 
-    response_lobby = client.post('/lobby/join', json=data_join)
-    response_game = client.post('/game', json=data_create)
+    client.post('/lobby/join', json=data_join)
+    client.post('/game', json=data_create)
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -104,7 +103,7 @@ def test_game_ws_gamestate():
     lobby_id = lobby_json['lobby_id']
 
     data_create = {'player_id': owner_id, 'lobby_id': lobby_id}
-    response_game = client.post('/game', json=data_create)
+    client.post('/game', json=data_create)
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -132,7 +131,7 @@ def test_game_ws_gamestate_br():
     lobby_id = lobby_json['lobby_id']
 
     data_create = {'player_id': owner_id, 'lobby_id': lobby_id}
-    response_game = client.post('/game', json=data_create)
+    client.post('/game', json=data_create)
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -218,7 +217,7 @@ def test_card_ws_movement():
     mov_cards = deserialize(cards.movement_cards)
     mov_cards.pop(0)
 
-    new_card = MovementType.DIAGONAL_ADJACENT.value
+    new_card = 'diagonal-adjacent'
     mov_cards.append(new_card)
 
     cards.movement_cards = serialize(mov_cards)
