@@ -36,3 +36,36 @@ export function getMovementData(movement: Movement): MovementData {
             return { clamps: false, target: [1, 2] };
     }
 }
+
+type Rotation = "r0" | "r90" | "r180" | "r270";
+
+type PossibleTargetsInBoard = {
+    [key in Rotation]?: number;
+};
+
+export function getPossibleTargetsInBoard(movement: Movement, position: number): PossibleTargetsInBoard {
+    const movementData = getMovementData(movement);
+    const targetX = movementData.target[0];
+    const targetY = movementData.target[1];
+
+    const posibleTargets: PossibleTargetsInBoard = {};
+
+    const rotations: {[key in Rotation]: [number, number]} = {
+        "r0": [targetX, targetY],
+        "r90": [-targetY, targetX],
+        "r180": [-targetX, -targetY],
+        "r270": [targetY, -targetX],
+    };
+
+    (Object.keys(rotations) as Rotation[]).forEach(r => {
+        const [targetX, targetY] = rotations[r];
+
+        // check that the rotation target is inside the board
+        if (5 - (position % 6) >= targetX && position % 6 >= -targetX
+           && position + 6 * targetY < 36 && position + 6 * targetY >= 0) {
+            posibleTargets[r] = position + targetX + 6 * targetY;
+        }
+    });
+
+    return posibleTargets;
+}
