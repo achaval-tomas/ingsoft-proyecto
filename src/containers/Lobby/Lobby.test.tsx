@@ -65,7 +65,7 @@ describe("Lobby tests being owner", () => {
 
             return {
                 ...mod,
-                useNavigate: () => { },
+                useNavigate: () => { return () => {}; },
                 useSearchParams: () => [
                     { get: () => PLAYER_ID },
                 ],
@@ -75,7 +75,11 @@ describe("Lobby tests being owner", () => {
         vi.mock("../../api/lobby.tsx", async (original) => {
             return {
                 ...await original(),
-                leaveLobby: () => "mocked",
+                leaveLobby: () => {
+                    return new Promise(resolve => {
+                        resolve({ type: "Ok", message: "" });
+                    });
+                },
             };
         });
 
@@ -128,7 +132,7 @@ describe("Lobby tests not being owner", () => {
 
             return {
                 ...mod,
-                useNavigate: () => { },
+                useNavigate: () => { return () => {}; },
                 useSearchParams: () => [
                     { get: () => PLAYER_ID },
                 ],
