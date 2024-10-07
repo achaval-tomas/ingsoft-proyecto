@@ -65,6 +65,15 @@ describe("findConnectedTiles", () => {
     });
 });
 
+const testBoardTiles2: readonly Color[] = Object.freeze(toBoardTiles([
+    "rgbbyy",
+    "rrrryy",
+    "gyybbg",
+    "yybggg",
+    "ggyryb",
+    "gggrrr",
+]));
+
 describe("findFormedShapes", () => {
     test("works correctly with same board as findConnectedTiles", () => {
         const formedShapesData = findFormedShapes(testBoardTiles);
@@ -75,6 +84,20 @@ describe("findFormedShapes", () => {
             [null, null, null, null, null, null],
             [null, null, null, null, null, null],
             [null, null, null, null, null, null],
+        ]);
+
+        expect(formedShapesData).toEqual(expected);
+    });
+
+    test("works correctly with testBoardTiles2", () => {
+        const formedShapesData = findFormedShapes(testBoardTiles2);
+        const expected: (BoardTileShapeData | null)[] = reverseFlattenRowArray<(BoardTileShapeData | null)>([
+            [{ shape: "c-6" }, null, null, null, { shape: "b-1" }, { shape: "b-1" }],
+            [{ shape: "c-6" }, { shape: "c-6" }, { shape: "c-6" }, { shape: "c-6" }, { shape: "b-1" }, { shape: "b-1" }],
+            [null, { shape: "b-0" }, { shape: "b-0" }, null, null, { shape: "b-6" }],
+            [{ shape: "b-0" }, { shape: "b-0" }, null, { shape: "b-6" }, { shape: "b-6" }, { shape: "b-6" }],
+            [{ shape: "c-17" }, { shape: "c-17" }, null, { shape: "b-4" }, null, null],
+            [{ shape: "c-17" }, { shape: "c-17" }, { shape: "c-17" }, { shape: "b-4" }, { shape: "b-4" }, { shape: "b-4" }],
         ]);
 
         expect(formedShapesData).toEqual(expected);
