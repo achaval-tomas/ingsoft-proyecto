@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Position } from "./Position";
+import { Rotation } from "./Rotation";
 
 export const MovementSchema = z.enum([
     "straight-adjacent",
@@ -37,8 +38,6 @@ export function getMovementData(movement: Movement): MovementData {
             return { clamps: false, target: [1, 2] };
     }
 }
-
-type Rotation = "r0" | "r90" | "r180" | "r270";
 
 export type PossibleTargetsInBoard = {
     [key in Rotation]?: Position;
