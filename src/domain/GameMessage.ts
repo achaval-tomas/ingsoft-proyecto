@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { GameStateSchema, PlayerIdSchema } from "./GameState";
 import { RotationSchema } from "./Rotation";
+import { ShapeSchema } from "./Shape";
 import { MovementSchema } from "./Movement";
 
 // Messages received from the backend
@@ -8,6 +9,12 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("turn-ended"), // Received when someone's turn has ended.
         playerId: PlayerIdSchema, // ID of the player whose turn has finished.
+        newShapeCards: ShapeSchema.array().max(3), // New shape cards that have been handed out to the player, or [].
+        // New movement cards that have been handed out to the player, or [].
+        // This _only_ applies when this message is sent to the same player whose turn has ended.
+        // Otherwise, we only care about the number of movement cards that were handed out,
+        // but that is implicit, as it can be calculated from the game state.
+        newMovementCards: MovementSchema.array().max(3).optional(),
     }),
     z.object({
         type: z.literal("player-won"), // Received when someone has won.
