@@ -1,4 +1,4 @@
-from pytest import Session
+from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_cards import use_movement_card
