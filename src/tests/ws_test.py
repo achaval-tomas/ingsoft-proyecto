@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from src.database.crud.crud_cards import get_player_cards
+from src.database.crud.crud_cards import cancel_movements, get_player_cards
 from src.database.crud.crud_game import get_game
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
@@ -208,15 +208,15 @@ def test_card_ws_movement():
 
     game = get_game(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]
-    board = deserialize(game.board)
+    original_board = deserialize(game.board)
 
-    pos0 = board[0]
-    pos1 = board[7]
+    pos0 = original_board[0]
+    pos1 = original_board[7]
 
     cards = get_player_cards(db=db, player_id=current_turn)
 
-    new_cards = ['diagonal-adjacent', 'l-ccw', 'straight-edge']
-    cards.movement_cards = serialize(new_cards)
+    initial_cards = ['diagonal-adjacent', 'l-ccw', 'straight-edge']
+    cards.movement_cards = serialize(initial_cards)
     db.commit()
 
     data = UseMovementCardSchema(
@@ -305,3 +305,14 @@ def test_card_ws_movement():
 
         assert pos0 == board[31]
         assert pos1 == board[7]
+
+        cancel_movements(db=next(get_db()), player_id=current_turn)
+
+        game = get_game(db, player_id)
+        db.refresh(game)
+        board = deserialize(game.board)
+        assert original_board == board
+
+        cards = get_player_cards(db=next(get_db()), player_id=current_turn)
+        assert set(deserialize(cards.movement_cards)) == set(initial_cards)
+        assert deserialize(cards.temp_swaps_performed) == []
