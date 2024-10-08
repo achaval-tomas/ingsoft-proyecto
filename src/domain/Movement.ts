@@ -49,7 +49,7 @@ export function getPossibleTargetsInBoard(movement: Movement, position: Position
     const targetX = movementData.target[0];
     const targetY = movementData.target[1];
 
-    const posibleTargets: PossibleTargetsInBoard = {};
+    const possibleTargets: PossibleTargetsInBoard = {};
 
     const rotations: {[key in Rotation]: [number, number]} = {
         "r0": [targetX, targetY],
@@ -71,9 +71,9 @@ export function getPossibleTargetsInBoard(movement: Movement, position: Position
 
         if (5 - position[0] >= targetX && position[0] >= -targetX
            && 5 - position[1] >= targetY && position[1] >= -targetY) {
-            posibleTargets[r] = [position[0] + targetX, position[1] + targetY];
+            possibleTargets[r] = [position[0] + targetX, position[1] + targetY];
         }
     });
 
-    return posibleTargets;
+    return possibleTargets;
 }
