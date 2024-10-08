@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Position } from "./Position";
 
 export const MovementSchema = z.enum([
     "straight-adjacent",
@@ -15,7 +16,7 @@ export type Movement = z.infer<typeof MovementSchema>;
 
 export type MovementData = {
     clamps: boolean;
-    target: [number, number];
+    target: Position;
 };
 
 export function getMovementData(movement: Movement): MovementData {
@@ -40,7 +41,7 @@ export function getMovementData(movement: Movement): MovementData {
 type Rotation = "r0" | "r90" | "r180" | "r270";
 
 export type PossibleTargetsInBoard = {
-    [key in Rotation]?: number;
+    [key in Rotation]?: Position;
 };
 
 export function getPossibleTargetsInBoard(movement: Movement, position: number): PossibleTargetsInBoard {
