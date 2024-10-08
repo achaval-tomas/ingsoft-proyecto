@@ -3,17 +3,20 @@ import { Color, colorToBackgroundClassName } from "../../../domain/Color";
 import { boardIndexToPosition } from "../../../domain/Position";
 
 type BoardTileProps = {
+    rowStart: number;
     color: Color;
     selected: boolean;
     selectable: boolean;
     onClickTile: () => void;
 }
 
-function BoardTile({ color, selected, selectable, onClickTile }: BoardTileProps) {
+function BoardTile({ rowStart, color, selected, selectable, onClickTile }: BoardTileProps) {
     const borderStyle = selected ? { boxShadow: "0 0 2px 4px white" } : (selectable ? { boxShadow: "0 0 2px 4px lightgreen" } : {});
+
     return (
-        <div className={colorToBackgroundClassName(color) + " rounded shadow-md shadow-black"} onClick={onClickTile}>
-            <div className="w-full h-full rounded border border-transparent hover:border-white" style={borderStyle} />
+        <div className={colorToBackgroundClassName(color) + " rounded shadow-md shadow-black"} onClick={onClickTile} style={{ gridRowStart: rowStart }}>
+            <div className="w-full h-full rounded border border-transparent hover:border-white" style={borderStyle}>
+            </div>
         </div>
     );
 }
@@ -36,10 +39,8 @@ function borderColorFromActiveSide(activeSide: "b" | "r" | "t" | "l"): string {
 }
 
 function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }: BoardProps) {
-    const conversion = [30, 18, 6, -6, -18, -30];
     const boardTiles = tiles.map((t, i) => {
-        const realI = i + conversion[Math.floor(i / 6)];
-        const coords: Position = boardIndexToPosition(realI);
+        const coords: Position = boardIndexToPosition(i);
 
         const positionsEqual = (a: Position, b: Position) => {
             return a[0] === b[0] && a[1] === b[1];
@@ -47,11 +48,12 @@ function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }
 
         return (
             <BoardTile
-                key={realI}
+                rowStart={6 - coords[1]}
+                key={i}
                 color={t}
                 selected={tileSelected != null && positionsEqual(tileSelected, coords)}
                 selectable={selectableTiles.some(e => positionsEqual(e, coords))}
-                onClickTile={() => onClickTile(coords)}
+                onClickTile={() => { console.log(coords);onClickTile(coords); }}
             />
         );
     });
