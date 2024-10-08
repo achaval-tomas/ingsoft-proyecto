@@ -45,6 +45,13 @@ export const GameMessageOutSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("end-turn"), // Manually end the current turn.
     }),
+    z.object({
+        // use a movement card
+        type: z.literal("use-movement-card"),
+        position: z.tuple([z.number().min(0).max(5), z.number().min(0).max(5)]),
+        rotation: RotationSchema,
+        movement: MovementSchema,
+    }),
 ]);
 
 export type GameMessageIn = z.infer<typeof GameMessageInSchema>;
