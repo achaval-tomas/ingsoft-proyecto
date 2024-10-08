@@ -132,7 +132,26 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     return 0
 
 
+def confirm_movements(db: Session, player_id: str):
+    """
+    Confirms temporary movements. To be used on end_turn.
+    Returns 1 on unexpected problem, 0 if successful
+    """
+    player_cards = get_player_cards(db=db, player_id=player_id)
+    if player_cards is None:
+        return 1
+
+    player_cards.temp_swaps_performed = serialize([])
+    db.commit()
+
+    return 0
+
+
 def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
+    """
+    Cancels the last 'nmovs' movements made by the player
+    during their current turn.
+    """
     player_cards = get_player_cards(db=db, player_id=player_id)
     if player_cards is None:
         return 1
