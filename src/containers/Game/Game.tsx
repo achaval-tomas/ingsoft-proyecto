@@ -49,6 +49,10 @@ function Game() {
     };
 
     const handleClickMovementCard = (i: number) => {
+        if (gameState?.selfPlayerState.roundOrder !== gameState?.currentRoundPlayer) {
+            return;
+        }
+
         if (gameState == null) {
             return;
         }
@@ -62,6 +66,10 @@ function Game() {
     };
 
     const handleClickTile = (pos: Position) => {
+        if (gameState?.selfPlayerState.roundOrder !== gameState?.currentRoundPlayer) {
+            return;
+        }
+
         if (movementCardSelected == null) {
             return;
         }
