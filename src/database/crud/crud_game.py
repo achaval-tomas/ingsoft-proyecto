@@ -83,7 +83,7 @@ def swap_tiles(
 
     board_target = target_y * 6 + target_x
 
-    if not 0 <= board_target < 36:
+    if not 0 <= board_target < 36 or board_origin == board_target:
         return 1
 
     board = deserialize(game.board)
