@@ -1,5 +1,7 @@
 import AppState from "../domain/AppState";
 import { GameState, getAllPlayers } from "../domain/GameState";
+import { getTargetFromPositionClamped } from "../domain/Movement";
+import { positionToBoardIndex } from "../domain/Position";
 import Action from "./Action";
 
 function computeNextPlayer(s: GameState): number {
@@ -47,6 +49,18 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             if (player != null && player.roundOrder === gameState.currentRoundPlayer) {
                 newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
             }
+
+            return newGameState;
+        }
+        case "movement-card-used": {
+            const newGameState = { ...gameState };
+
+            const swp1 = positionToBoardIndex(action.position);
+            const swp2 = positionToBoardIndex(getTargetFromPositionClamped(action.movement, action.rotation, action.position));
+
+            const tmp = newGameState.boardState.tiles[swp1];
+            newGameState.boardState.tiles[swp1] = newGameState.boardState.tiles[swp2];
+            newGameState.boardState.tiles[swp2] = tmp;
 
             return newGameState;
         }
