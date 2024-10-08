@@ -61,17 +61,14 @@ export function getPossibleTargetsInBoard(movement: Movement, position: Position
     (Object.keys(rotations) as Rotation[]).forEach(r => {
         const [targetX, targetY] = rotations[r];
 
-        // check that the rotation target is inside the board
-        /*
-        if (5 - (position % 6) >= targetX && position % 6 >= -targetX
-           && position + 6 * targetY < 36 && position + 6 * targetY >= 0) {
-            posibleTargets[r] = position + targetX + 6 * targetY;
-        }
-        */
+        if (movementData.clamps || (5 - position[0] >= targetX && position[0] >= -targetX
+                                   && 5 - position[1] >= targetY && position[1] >= -targetY)) {
+            const possibleTargetX = Math.max(0, Math.min(position[0] + targetX, 5));
+            const possibleTargetY = Math.max(0, Math.min(position[1] + targetY, 5));
 
-        if (5 - position[0] >= targetX && position[0] >= -targetX
-           && 5 - position[1] >= targetY && position[1] >= -targetY) {
-            possibleTargets[r] = [position[0] + targetX, position[1] + targetY];
+            if (possibleTargetX !== position[0] || possibleTargetY !== position[1]) {
+                possibleTargets[r] = [possibleTargetX, possibleTargetY];
+            }
         }
     });
 
