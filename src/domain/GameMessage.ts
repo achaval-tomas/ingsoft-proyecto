@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { GameStateSchema, PlayerIdSchema } from "./GameState";
+import { RotationSchema } from "./Rotation";
+import { MovementSchema } from "./Movement";
 
 // Messages received from the backend
 export const GameMessageInSchema = z.discriminatedUnion("type", [
@@ -21,6 +23,13 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         // rejected one of our messages.
         type: z.literal("game-state"),
         gameState: GameStateSchema,
+    }),
+    z.object({
+        // Received when a user makes a movement
+        type: z.literal("movement-card-used"),
+        position: z.tuple([z.number().min(0).max(5), z.number().min(0).max(5)]),
+        rotation: RotationSchema,
+        movement: MovementSchema,
     }),
     z.object({
         type: z.literal("error"), // Received when the server has detected an error.
