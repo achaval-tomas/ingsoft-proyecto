@@ -53,8 +53,8 @@ export function getPossibleTargetsInBoard(movement: Movement, position: Position
 
         if (movementData.clamps || (5 - position[0] >= targetX && position[0] >= -targetX
                                    && 5 - position[1] >= targetY && position[1] >= -targetY)) {
-            const possibleTargetX = Math.max(0, Math.min(position[0] + targetX, 5));
-            const possibleTargetY = Math.max(0, Math.min(position[1] + targetY, 5));
+            const possibleTargetX = clamp(position[0] + targetX, 0, 5);
+            const possibleTargetY = clamp(position[1] + targetY, 0, 5);
 
             if (possibleTargetX !== position[0] || possibleTargetY !== position[1]) {
                 possibleTargets[r] = [possibleTargetX, possibleTargetY];
@@ -83,6 +83,10 @@ export function getTarget(movement: Movement, rotation: Rotation): Position {
 export function getTargetFromPositionClamped(movement: Movement, rotation: Rotation, position: Position): Position {
     const target = getTarget(movement, rotation);
 
-    return [Math.max(0, Math.min(position[0] + target[0], 5)), Math.max(0, Math.min(position[1] + target[1], 5))];
+    return [clamp(position[0] + target[0], 0, 5), clamp(position[1] + target[1], 0, 5)];
 
+}
+
+function clamp(n: number, min: number, max: number): number {
+    return Math.max(min, Math.min(n, max));
 }
