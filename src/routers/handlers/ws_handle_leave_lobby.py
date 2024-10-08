@@ -10,7 +10,7 @@ from src.schemas.message_schema import simple_message
 async def ws_handle_leave_lobby(player_id: str, lobby_id: str, db: Session):
     player = get_player(player_id=player_id, db=db)
     if not player:
-        return 2
+        return 1
 
     res = crud_lobby.leave_lobby(db=db, player_id=player_id)
 
