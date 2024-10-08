@@ -45,20 +45,11 @@ export type PossibleTargetsInBoard = {
 
 export function getPossibleTargetsInBoard(movement: Movement, position: Position): PossibleTargetsInBoard {
     const movementData = getMovementData(movement);
-    const targetX = movementData.target[0];
-    const targetY = movementData.target[1];
 
     const possibleTargets: PossibleTargetsInBoard = {};
 
-    const rotations: {[key in Rotation]: [number, number]} = {
-        "r0": [targetX, targetY],
-        "r90": [-targetY, targetX],
-        "r180": [-targetX, -targetY],
-        "r270": [targetY, -targetX],
-    };
-
-    (Object.keys(rotations) as Rotation[]).forEach(r => {
-        const [targetX, targetY] = rotations[r];
+    (["r0", "r90", "r180", "r270"] as Rotation[]).forEach(r => {
+        const [targetX, targetY] = getTarget(movement, r);
 
         if (movementData.clamps || (5 - position[0] >= targetX && position[0] >= -targetX
                                    && 5 - position[1] >= targetY && position[1] >= -targetY)) {
@@ -72,4 +63,19 @@ export function getPossibleTargetsInBoard(movement: Movement, position: Position
     });
 
     return possibleTargets;
+}
+
+export function getTarget(movement: Movement, rotation: Rotation): Position {
+    const movementTarget = getMovementData(movement).target;
+
+    switch (rotation) {
+        case "r0":
+            return [movementTarget[0], movementTarget[1]];
+        case "r90":
+            return [-movementTarget[1], movementTarget[0]];
+        case "r180":
+            return [-movementTarget[0], -movementTarget[1]];
+        case "r270":
+            return [movementTarget[1], -movementTarget[0]];
+    }
 }
