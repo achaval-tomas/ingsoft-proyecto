@@ -1,8 +1,6 @@
-from pydantic import BaseModel
-
-
-class ShapeData(BaseModel):
-    data: list[tuple[int, int]]
+class ShapeData:
+    def __init__(self, data: list[tuple[int, int]]):
+        self.data = data
 
 
 shape_data = {

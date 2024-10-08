@@ -2,7 +2,6 @@ import random
 
 from sqlalchemy.orm import Session
 
-from src.database.cards.card_dealer import ShapeCardDealer
 from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
@@ -51,18 +50,15 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     db.refresh(db_game)
 
     game_id = db_game.game_id
-    shape_card_dealer = ShapeCardDealer(nplayers=lobby.player_amount)
     for id in player_order:
         player = get_player(db=db, player_id=id)
         if player is None:
             return 4
+
         player.game_id = game_id
         db.commit()
-        crud_cards.hand_initial_cards(
-            db=db,
-            player_id=id,
-            shape_card_dealer=shape_card_dealer,
-        )
+
+    crud_cards.hand_all_initial_cards(db=db, players=player_order)
 
     return 0
 

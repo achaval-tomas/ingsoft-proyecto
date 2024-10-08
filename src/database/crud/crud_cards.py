@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
+import src.database.cards.card_dealer as cd
+import src.database.crud.crud_game as crud_game
 from src.database.cards.movement_card import movement_data, rotate_movement
-from src.database.crud import crud_game
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import PlayerCards
@@ -15,8 +15,23 @@ def get_player_cards(db: Session, player_id: str):
     )
 
 
-def hand_initial_cards(db: Session, player_id: str, shape_card_dealer: ShapeCardDealer):
-    mov_cards = MovCardDealer.deal_movement_cards()
+def hand_all_initial_cards(db: Session, players: list[str]):
+    """Player list must be previously validated"""
+    shape_card_dealer = cd.ShapeCardDealer(nplayers=len(players))
+    for id in players:
+        hand_initial_cards(
+            db=db,
+            player_id=id,
+            shape_card_dealer=shape_card_dealer,
+        )
+
+
+def hand_initial_cards(
+    db: Session,
+    player_id: str,
+    shape_card_dealer: cd.ShapeCardDealer,
+):
+    mov_cards = cd.MovCardDealer.deal_movement_cards(player_id=player_id)
 
     shape_cards_deck = shape_card_dealer.deal_shape_cards()
 
@@ -56,7 +71,7 @@ def refill_cards(db: Session, player_id: str):
 
     # Get player movement cards array
     mov_cards = deserialize(player_cards.movement_cards)
-    new_mov_cards = MovCardDealer.deal_movement_cards(3 - len(mov_cards))
+    new_mov_cards = cd.MovCardDealer.deal_movement_cards(player_id, 3 - len(mov_cards))
     mov_cards += new_mov_cards
 
     player_cards.movement_cards = serialize(mov_cards)
@@ -188,3 +203,16 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
         db.commit()
 
     return 0
+
+
+def currently_used_movements(db: Session, player_id: str):
+    game = crud_game.get_game(db=db, player_id=player_id)
+
+    cards = []
+    for player in deserialize(game.player_order):
+        p_cards = get_player_cards(db=db, player_id=player)
+        if not p_cards:
+            continue
+        cards += deserialize(p_cards.movement_cards)
+
+    return cards

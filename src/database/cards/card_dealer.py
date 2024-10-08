@@ -1,7 +1,9 @@
 from random import shuffle
 
+import src.database.crud.crud_cards as cc
 from src.database.cards.movement_card import movement_data
 from src.database.cards.shape_card import shape_data
+from src.database.session import get_db
 from src.schemas.card_schemas import ShapeCardSchema
 
 
@@ -46,7 +48,11 @@ class ShapeCardDealer:
 
 
 class MovCardDealer:
-    def deal_movement_cards(ncards: int = 3):
+    def deal_movement_cards(player_id: str, ncards: int = 3):
         cards = list(movement_data.keys()) * 7
         shuffle(cards)
+
+        for c in cc.currently_used_movements(db=next(get_db()), player_id=player_id):
+            cards.remove(c)
+
         return cards[0:ncards]
