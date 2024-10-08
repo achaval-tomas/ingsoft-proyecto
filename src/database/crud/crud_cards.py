@@ -28,6 +28,7 @@ def hand_initial_cards(db: Session, player_id: str, shape_card_dealer: ShapeCard
         movement_cards=serialize(mov_cards),
         shape_cards_in_hand=serialize(shape_cards_hand),
         shape_cards_deck=serialize(shape_cards_deck),
+        temp_swaps_performed=serialize([]),
     )
 
     db.add(db_cards)
@@ -121,6 +122,50 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
 
     player_movement_cards.remove(req.movement)
     player_cards.movement_cards = serialize(player_movement_cards)
+
+    temp_moves = deserialize(player_cards.temp_swaps_performed)
+    temp_moves.append((req.movement, req.position, target, movement.clamps))
+    player_cards.temp_swaps_performed = serialize(temp_moves)
+
     db.commit()
+
+    return 0
+
+
+def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
+    player_cards = get_player_cards(db=db, player_id=player_id)
+    if player_cards is None:
+        return 1
+
+    game = crud_game.get_game(db=db, player_id=player_id)
+    if game is None:
+        return 2
+
+    mov_cards = deserialize(player_cards.movement_cards)
+
+    used_movements = deserialize(player_cards.temp_swaps_performed)
+    used_mov_count = len(used_movements)
+
+    for m in range(max(nmovs, used_mov_count)):
+        movement_data = used_movements[used_mov_count - m - 1]
+
+        rc = crud_game.swap_tiles(
+            db=db,
+            game=game,
+            origin=movement_data[1],
+            target=movement_data[2],
+            clamp=movement_data[3],
+        )
+
+        if rc == 1:
+            return 3
+
+        mov_cards.append(movement_data[0])
+        player_cards.movement_cards = serialize(mov_cards)
+
+        used_movements.pop(used_mov_count - m - 1)
+        player_cards.temp_swaps_performed = serialize(used_movements)
+
+        db.commit()
 
     return 0

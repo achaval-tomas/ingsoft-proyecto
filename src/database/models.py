@@ -37,3 +37,4 @@ class PlayerCards(Base):
     movement_cards = Column(String)
     shape_cards_in_hand = Column(String)
     shape_cards_deck = Column(String)
+    temp_swaps_performed = Column(String)
