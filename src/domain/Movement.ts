@@ -44,7 +44,7 @@ export type PossibleTargetsInBoard = {
     [key in Rotation]?: Position;
 };
 
-export function getPossibleTargetsInBoard(movement: Movement, position: number): PossibleTargetsInBoard {
+export function getPossibleTargetsInBoard(movement: Movement, position: Position): PossibleTargetsInBoard {
     const movementData = getMovementData(movement);
     const targetX = movementData.target[0];
     const targetY = movementData.target[1];
@@ -62,9 +62,16 @@ export function getPossibleTargetsInBoard(movement: Movement, position: number):
         const [targetX, targetY] = rotations[r];
 
         // check that the rotation target is inside the board
+        /*
         if (5 - (position % 6) >= targetX && position % 6 >= -targetX
            && position + 6 * targetY < 36 && position + 6 * targetY >= 0) {
             posibleTargets[r] = position + targetX + 6 * targetY;
+        }
+        */
+
+        if (5 - position[0] >= targetX && position[0] >= -targetX
+           && 5 - position[1] >= targetY && position[1] >= -targetY) {
+            posibleTargets[r] = [position[0] + targetX, position[1] + targetY];
         }
     });
 

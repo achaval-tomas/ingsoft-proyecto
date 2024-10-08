@@ -2,6 +2,7 @@ import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
 import { Color } from "../../domain/Color";
 import { OtherPlayerState, SelfPlayerState } from "../../domain/GameState";
+import { Position } from "../../domain/Position";
 import Board from "./components/Board";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
@@ -13,12 +14,12 @@ type GameLayoutProps = {
     otherPlayersState: OtherPlayerState[];
     activeSide: "b" | "r" | "t" | "l";
     movementCardSelected: number | null;
-    tileSelected: number | null;
-    selectableTiles: number[];
+    tileSelected: Position | null;
+    selectableTiles: Position[];
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
     onClickMovementCard: (i: number) => void;
-    onClickTile: (i: number) => void;
+    onClickTile: (i: Position) => void;
 };
 
 function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, movementCardSelected, tileSelected, selectableTiles, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile }: GameLayoutProps) {

@@ -1,4 +1,6 @@
+import { Position } from "../../../domain/Position";
 import { Color, colorToBackgroundClassName } from "../../../domain/Color";
+import { boardIndexToPosition } from "../../../domain/Position";
 
 type BoardTileProps = {
     color: Color;
@@ -19,9 +21,9 @@ function BoardTile({ color, selected, selectable, onClickTile }: BoardTileProps)
 type BoardProps = {
     tiles: Color[]; // length must be 36
     activeSide: "b" | "r" | "t" | "l";
-    tileSelected: number | null;
-    selectableTiles:number[];
-    onClickTile: (i: number) => void;
+    tileSelected: Position | null;
+    selectableTiles: Position[];
+    onClickTile: (i: Position) => void;
 }
 
 function borderColorFromActiveSide(activeSide: "b" | "r" | "t" | "l"): string {
@@ -37,10 +39,21 @@ function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }
     const conversion = [30, 18, 6, -6, -18, -30];
     const boardTiles = tiles.map((t, i) => {
         const realI = i + conversion[Math.floor(i / 6)];
+        const coords: Position = boardIndexToPosition(realI);
 
-        return <BoardTile key={realI} color={t} selected={realI === tileSelected} selectable={selectableTiles.includes(realI)}
-            onClickTile={() => onClickTile(realI)}
-        />;
+        const positionsEqual = (a: Position, b: Position) => {
+            return a[0] === b[0] && a[1] === b[1];
+        };
+
+        return (
+            <BoardTile
+                key={realI}
+                color={t}
+                selected={tileSelected != null && positionsEqual(tileSelected, coords)}
+                selectable={selectableTiles.some(e => positionsEqual(e, coords))}
+                onClickTile={() => onClickTile(coords)}
+            />
+        );
     });
     return (
         <div

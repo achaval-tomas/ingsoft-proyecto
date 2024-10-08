@@ -12,6 +12,7 @@ import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
 import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
+import { Position } from "../../domain/Position";
 
 function Game() {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ function Game() {
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
     const [movementCardSelected, setMovementCardSelected] = useState<number | null>(null);
-    const [tileSelected, setTileSelected] = useState<number | null>(null);
+    const [tileSelected, setTileSelected] = useState<Position | null>(null);
 
     const selectableTiles: PossibleTargetsInBoard = useMemo(() => (gameState != null && movementCardSelected != null && tileSelected != null)
         ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[movementCardSelected], tileSelected)
@@ -59,13 +60,13 @@ function Game() {
         setTileSelected(null);
     };
 
-    const handleClickTile = (i: number) => {
+    const handleClickTile = (pos: Position) => {
         if (movementCardSelected == null) {
             return;
         }
 
         if (tileSelected == null) {
-            setTileSelected(i);
+            setTileSelected(pos);
             return;
         }
 
