@@ -29,10 +29,13 @@ function Game() {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    const [movementCardSelected, setMovementCardSelected] = useState<number | undefined>(undefined);
-    const [tileSelected, setTileSelected] = useState<number | undefined>(undefined);
+    const [movementCardSelected, setMovementCardSelected] = useState<number | null>(null);
+    const [tileSelected, setTileSelected] = useState<number | null>(null);
 
-    const [selectableTiles, setSelectableTiles] = useState<PossibleTargetsInBoard>({});
+    const selectableTiles: PossibleTargetsInBoard = useMemo(() => (gameState != null && movementCardSelected != null && tileSelected != null)
+        ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[movementCardSelected], tileSelected)
+        : { }, [gameState, movementCardSelected, tileSelected]);
+
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
@@ -44,7 +47,7 @@ function Game() {
     };
 
     const handleClickMovementCard = (i: number) => {
-        if (gameState === null) {
+        if (gameState == null) {
             return;
         }
 
@@ -52,21 +55,17 @@ function Game() {
             return;
         }
 
-        setMovementCardSelected(movementCardSelected === i ? undefined : i);
-        setSelectableTiles({});
-        setTileSelected(undefined);
+        setMovementCardSelected(movementCardSelected === i ? null : i);
+        setTileSelected(null);
     };
 
     const handleClickTile = (i: number) => {
-        if (movementCardSelected === undefined) {
+        if (movementCardSelected == null) {
             return;
         }
 
-        if (tileSelected === undefined) {
+        if (tileSelected == null) {
             setTileSelected(i);
-            if (gameState) {
-                setSelectableTiles(getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[movementCardSelected], i));
-            }
             return;
         }
 
