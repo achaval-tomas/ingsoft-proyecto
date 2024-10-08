@@ -66,10 +66,6 @@ function Game() {
     };
 
     const handleClickTile = (pos: Position) => {
-        if (gameState?.selfPlayerState.roundOrder !== gameState?.currentRoundPlayer) {
-            return;
-        }
-
         if (movementCardSelected == null) {
             return;
         }
