@@ -79,3 +79,10 @@ export function getTarget(movement: Movement, rotation: Rotation): Position {
             return [movementTarget[1], -movementTarget[0]];
     }
 }
+
+export function getTargetFromPositionClamped(movement: Movement, rotation: Rotation, position: Position): Position {
+    const target = getTarget(movement, rotation);
+
+    return [Math.max(0, Math.min(position[0] + target[0], 5)), Math.max(0, Math.min(position[1] + target[1], 5))];
+
+}
