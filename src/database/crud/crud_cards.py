@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-import src.database.cards.card_dealer as cd
 import src.database.crud.crud_game as crud_game
+from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
 from src.database.cards.movement_card import movement_data, rotate_movement
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
@@ -16,8 +16,14 @@ def get_player_cards(db: Session, player_id: str):
 
 
 def hand_all_initial_cards(db: Session, players: list[str]):
-    """Player list must be previously validated"""
-    shape_card_dealer = cd.ShapeCardDealer(nplayers=len(players))
+    """
+    Deals the initial shape and movement cards for
+    every player in 'players' list.
+
+    IMPORTANT: Player list must be previously validated.
+    """
+    shape_card_dealer = ShapeCardDealer(nplayers=len(players))
+
     for id in players:
         hand_initial_cards(
             db=db,
@@ -29,9 +35,9 @@ def hand_all_initial_cards(db: Session, players: list[str]):
 def hand_initial_cards(
     db: Session,
     player_id: str,
-    shape_card_dealer: cd.ShapeCardDealer,
+    shape_card_dealer: ShapeCardDealer,
 ):
-    mov_cards = cd.MovCardDealer.deal_movement_cards(player_id=player_id)
+    mov_cards = MovCardDealer.deal_movement_cards(player_id=player_id)
 
     shape_cards_deck = shape_card_dealer.deal_shape_cards()
 
@@ -69,23 +75,20 @@ def refill_cards(db: Session, player_id: str):
     if player_cards is None:
         return 2
 
-    # Get player movement cards array
     mov_cards = deserialize(player_cards.movement_cards)
-    new_mov_cards = cd.MovCardDealer.deal_movement_cards(player_id, 3 - len(mov_cards))
+    new_mov_cards = MovCardDealer.deal_movement_cards(player_id, 3 - len(mov_cards))
     mov_cards += new_mov_cards
 
     player_cards.movement_cards = serialize(mov_cards)
     db.commit()
 
-    # Get player shape cards in hand array
     shape_cards_hand = deserialize(player_cards.shape_cards_in_hand)
-    for c in shape_cards_hand:
-        card = ShapeCardSchema.model_validate_json(c)
-        if card.isBlocked:
-            # case no handing cards because of blocked card
-            return 0
 
-    # Get player shape cards deck array
+    if any(
+        ShapeCardSchema.model_validate_json(c).isBlocked for c in shape_cards_hand
+    ):  # There is a blocked card, shape refill not allowed.
+        return 0
+
     shape_cards_deck = deserialize(player_cards.shape_cards_deck)
 
     to_hand = 3 - len(shape_cards_hand)
@@ -99,7 +102,6 @@ def refill_cards(db: Session, player_id: str):
     shape_cards_hand += new_shape_cards
     shape_cards_deck = shape_cards_deck[to_hand:]
 
-    # Update player cards
     player_cards.shape_cards_in_hand = serialize(shape_cards_hand)
     player_cards.shape_cards_deck = serialize(shape_cards_deck)
     db.commit()
@@ -205,7 +207,11 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     return 0
 
 
-def currently_used_movements(db: Session, player_id: str):
+def currently_used_movement_cards(db: Session, player_id: str):
+    """
+    Returns a list of all movement cards held by
+    players who are in game with player @player_id
+    """
     game = crud_game.get_game(db=db, player_id=player_id)
 
     cards = []

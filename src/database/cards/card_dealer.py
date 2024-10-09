@@ -1,8 +1,9 @@
+from contextlib import suppress
 from random import shuffle
 
-import src.database.crud.crud_cards as cc
 from src.database.cards.movement_card import movement_data
 from src.database.cards.shape_card import shape_data
+from src.database.crud import crud_cards
 from src.database.session import get_db
 from src.schemas.card_schemas import ShapeCardSchema
 
@@ -11,19 +12,19 @@ class ShapeCardDealer:
     def __init__(self, nplayers: int):
         shape_cards_b = [
             ShapeCardSchema(
-                shape=c,
+                shape=s,
                 isBlocked=False,
             )
-            for c in shape_data
-            if c[0] == 'b'
+            for s in shape_data
+            if s[0] == 'b'
         ] * 2
         shape_cards_c = [
             ShapeCardSchema(
-                shape=c,
+                shape=s,
                 isBlocked=False,
             )
-            for c in shape_data
-            if c[0] == 'c'
+            for s in shape_data
+            if s[0] == 'c'
         ] * 2
 
         shuffle(shape_cards_b)
@@ -52,7 +53,11 @@ class MovCardDealer:
         cards = list(movement_data.keys()) * 7
         shuffle(cards)
 
-        for c in cc.currently_used_movements(db=next(get_db()), player_id=player_id):
-            cards.remove(c)
+        for c in crud_cards.currently_used_movement_cards(
+            db=next(get_db()),
+            player_id=player_id,
+        ):
+            with suppress(ValueError):
+                cards.remove(c)
 
         return cards[0:ncards]

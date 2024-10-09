@@ -58,6 +58,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
         player.game_id = game_id
         db.commit()
 
+    # Already verified player_order contains only valid players
     crud_cards.hand_all_initial_cards(db=db, players=player_order)
 
     return 0
@@ -78,8 +79,8 @@ def swap_tiles(
     target_y = origin[1] + target[1]
 
     if clamp:
-        target_x = clamp_val_to_board_range(target_x)
-        target_y = clamp_val_to_board_range(target_y)
+        target_x = clamp_val(target_x)
+        target_y = clamp_val(target_y)
 
     board_target = target_y * 6 + target_x
 
@@ -95,8 +96,9 @@ def swap_tiles(
     return 0
 
 
-def clamp_val_to_board_range(val: int):
-    return 0 if val < 0 else (5 if val > 5 else val)
+def clamp_val(val: int):
+    """Clamps a value to the range [0,5] (valid board coordinate)"""
+    return max(0, min(val, 5))
 
 
 def get_game(db: Session, player_id: str):
