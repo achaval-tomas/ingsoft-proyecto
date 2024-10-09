@@ -1,4 +1,4 @@
-import { Position } from "../../../domain/Position";
+import { Position, positionsEqual } from "../../../domain/Position";
 import { Color, colorToBackgroundClassName } from "../../../domain/Color";
 import { boardIndexToPosition } from "../../../domain/Position";
 
@@ -41,10 +41,6 @@ function borderColorFromActiveSide(activeSide: "b" | "r" | "t" | "l"): string {
 function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }: BoardProps) {
     const boardTiles = tiles.map((t, i) => {
         const coords: Position = boardIndexToPosition(i);
-
-        const positionsEqual = (a: Position, b: Position) => {
-            return a[0] === b[0] && a[1] === b[1];
-        };
 
         return (
             <BoardTile

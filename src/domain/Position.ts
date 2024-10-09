@@ -11,3 +11,7 @@ export function positionToBoardIndex([x, y]: readonly [number, number]): number 
 export function boardIndexToPosition(index: number): Position {
     return [index % 6, Math.floor(index / 6)];
 }
+
+export function positionsEqual(a: Position, b: Position): boolean {
+    return a[0] === b[0] && a[1] === b[1];
+};
