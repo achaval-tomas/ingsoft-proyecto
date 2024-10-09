@@ -49,7 +49,7 @@ function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }
                 color={t}
                 selected={tileSelected != null && positionsEqual(tileSelected, coords)}
                 selectable={selectableTiles.some(e => positionsEqual(e, coords))}
-                onClickTile={() => { console.log(coords);onClickTile(coords); }}
+                onClickTile={() => onClickTile(coords)}
             />
         );
     });
