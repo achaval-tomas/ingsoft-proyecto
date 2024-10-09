@@ -6,10 +6,12 @@ from src.constants import errors
 from src.database.crud import crud_game, crud_lobby
 from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
+from src.routers.handlers.ws_handle_cancel_movements import ws_handle_cancel_movements
 from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
 from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
 from src.routers.handlers.ws_handle_gamestate import ws_handle_gamestate
 from src.routers.handlers.ws_handle_leave_game import ws_handle_leave_game
+from src.routers.handlers.ws_handle_movement_card import ws_handle_movement_card
 from src.schemas import game_schemas, player_schemas
 
 game_router = APIRouter()
@@ -65,6 +67,17 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
                     response = ws_handle_gamestate(player_id=player_id, db=db)
                 case 'end-turn':
                     response = await ws_handle_endturn(player_id=player_id, db=db)
+                case 'use-movement-card':
+                    response = await ws_handle_movement_card(
+                        player_id=player_id,
+                        db=db,
+                        data=received,
+                    )
+                case 'cancel-movements':
+                    response = await ws_handle_cancel_movements(
+                        player_id=player_id,
+                        db=db,
+                    )
 
             if response != '':
                 await cm.game_manager.send_personal_message(

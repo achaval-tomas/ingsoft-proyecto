@@ -22,14 +22,6 @@ def get_player(db: Session, player_id: str):
     )
 
 
-def get_player_cards(db: Session, player_id: str):
-    return (
-        db.query(models.PlayerCards)
-        .filter(models.PlayerCards.player_id == player_id)
-        .one_or_none()
-    )
-
-
 def delete_player(db: Session, player_id: str):
     db.query(models.Player).filter(models.Player.player_id == player_id).delete()
     db.commit()

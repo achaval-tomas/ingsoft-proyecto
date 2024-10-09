@@ -1,16 +1,29 @@
-from enum import Enum
+class MovementData:
+    def __init__(self, clamps, target):
+        self.clamps: bool = clamps
+        self.target: tuple[int, int] = target
 
 
-class MovementType(Enum):
-    DIAGONAL_ADJACENT = 'diagonal-adjacent'
-    DIAGONAL_SPACED = 'diagonal-spaced'
-    L_CCW = 'l-ccw'
-    L_CW = 'l-cw'
-    STRAIGHT_ADJACENT = 'straight-adjacent'
-    STRAIGHT_EDGE = 'straight-edge'
-    STRAIGHT_SPACED = 'straight-spaced'
+movement_data = {
+    'diagonal-adjacent': MovementData(clamps=False, target=(1, 1)),
+    'diagonal-spaced': MovementData(clamps=False, target=(2, 2)),
+    'l-ccw': MovementData(clamps=False, target=(2, 1)),
+    'l-cw': MovementData(clamps=False, target=(1, 2)),
+    'straight-adjacent': MovementData(clamps=False, target=(1, 0)),
+    'straight-edge': MovementData(clamps=True, target=(5, 0)),
+    'straight-spaced': MovementData(clamps=False, target=(2, 0)),
+}
 
 
-class MovementCard:
-    def __init__(self, mov_type: MovementType):
-        self.mov_type = mov_type
+def rotate_movement(target: tuple[int, int], rot: str):
+    match rot:
+        case 'r0':
+            pass
+        case 'r90':
+            return (-target[1], target[0])
+        case 'r180':
+            return (-target[0], -target[1])
+        case 'r270':
+            return (target[1], -target[0])
+
+    return target

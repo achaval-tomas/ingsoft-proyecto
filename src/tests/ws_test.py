@@ -1,6 +1,14 @@
 from fastapi.testclient import TestClient
 
+from src.database.crud.crud_cards import cancel_movements, get_player_cards
+from src.database.crud.crud_game import get_game
+from src.database.crud.tools.jsonify import deserialize, serialize
+from src.database.session import get_db
 from src.main import app
+from src.schemas.card_schemas import MovementCardUsedSchema, UseMovementCardSchema
+from src.schemas.game_schemas import GameCreate
+from src.schemas.lobby_schemas import LobbyCreateSchema
+from src.schemas.player_schemas import PlayerCreateSchema
 
 client = TestClient(app)
 
@@ -40,8 +48,8 @@ def test_game_ws_end_turn():
         'lobby_id': lobby_id,
     }
 
-    response_lobby = client.post('/lobby/join', json=data_join)
-    response_game = client.post('/game', json=data_create)
+    client.post('/lobby/join', json=data_join)
+    client.post('/game', json=data_create)
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -95,7 +103,7 @@ def test_game_ws_gamestate():
     lobby_id = lobby_json['lobby_id']
 
     data_create = {'player_id': owner_id, 'lobby_id': lobby_id}
-    response_game = client.post('/game', json=data_create)
+    client.post('/game', json=data_create)
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -123,7 +131,7 @@ def test_game_ws_gamestate_br():
     lobby_id = lobby_json['lobby_id']
 
     data_create = {'player_id': owner_id, 'lobby_id': lobby_id}
-    response_game = client.post('/game', json=data_create)
+    client.post('/game', json=data_create)
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -161,3 +169,150 @@ def test_lobby_ws_lobbystate():
             'id': lobby_id,
             'name': "cage's room",
         }
+
+
+def test_card_ws_movement():
+    player_test = PlayerCreateSchema(player_name='TestGame')
+    player_test_id = client.post('/player', json=player_test.model_dump())
+    player_test_json = player_test_id.json()
+    player_id = player_test_json['player_id']
+
+    data_joiner = {
+        'player_name': 'cage joiner',
+    }
+    joiner = client.post('/player', json=data_joiner)
+    joiner_json = joiner.json()
+    joiner_id = joiner_json['player_id']
+
+    lobby_test = LobbyCreateSchema(
+        lobby_name='LobbyTest',
+        lobby_owner=player_id,
+        min_players=0,
+        max_players=4,
+    )
+    lobby_test_id = client.post('/lobby', json=lobby_test.model_dump())
+    lobby_json = lobby_test_id.json()
+    lobby_id = lobby_json['lobby_id']
+
+    data = {
+        'player_id': joiner_id,
+        'lobby_id': lobby_id,
+    }
+    response = client.post('/lobby/join', json=data)
+
+    game_test = GameCreate(lobby_id=lobby_id, player_id=player_id)
+    response = client.post('/game', json=game_test.model_dump())
+    assert response.status_code == 200
+
+    db = next(get_db())
+
+    game = get_game(db, player_id)
+    current_turn = deserialize(game.player_order)[game.current_turn]
+    original_board = deserialize(game.board)
+
+    pos0 = original_board[0]
+    pos1 = original_board[7]
+
+    cards = get_player_cards(db=db, player_id=current_turn)
+
+    initial_cards = ['diagonal-adjacent', 'l-ccw', 'straight-edge']
+    cards.movement_cards = serialize(initial_cards)
+    db.commit()
+
+    data = UseMovementCardSchema(
+        type='use-movement-card',
+        position=[0, 0],
+        rotation='r0',
+        movement='diagonal-adjacent',
+    ).model_dump_json()
+
+    with client.websocket_connect('/game/' + current_turn) as websocket_owner:
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'game-state'
+
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == MovementCardUsedSchema(
+                position=(0, 0),
+                rotation='r0',
+                movement='diagonal-adjacent',
+            ).model_dump_json()
+        )
+
+        game = get_game(db, player_id)
+        board = deserialize(game.board)
+
+        assert pos0 == board[7]
+        assert pos1 == board[0]
+
+        data = UseMovementCardSchema(
+            type='use-movement-card',
+            position=(0, 0),
+            rotation='r0',
+            movement='l-ccw',
+        ).model_dump_json()
+
+        pos0 = board[0]
+        pos1 = board[8]
+
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == MovementCardUsedSchema(
+                position=(0, 0),
+                rotation='r0',
+                movement='l-ccw',
+            ).model_dump_json()
+        )
+
+        game = get_game(db, player_id)
+        db.refresh(game)
+        board = deserialize(game.board)
+
+        assert pos0 == board[8]
+        assert pos1 == board[0]
+
+        data = UseMovementCardSchema(
+            type='use-movement-card',
+            position=(1, 1),
+            rotation='r90',
+            movement='straight-edge',
+        ).model_dump_json()
+
+        pos0 = board[7]
+        pos1 = board[31]
+
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == MovementCardUsedSchema(
+                position=(1, 1),
+                rotation='r90',
+                movement='straight-edge',
+            ).model_dump_json()
+        )
+
+        game = get_game(db, player_id)
+        db.refresh(game)
+        board = deserialize(game.board)
+
+        assert pos0 == board[31]
+        assert pos1 == board[7]
+
+        cancel_movements(db=next(get_db()), player_id=current_turn)
+
+        game = get_game(db, player_id)
+        db.refresh(game)
+        board = deserialize(game.board)
+        assert original_board == board
+
+        cards = get_player_cards(db=next(get_db()), player_id=current_turn)
+        assert set(deserialize(cards.movement_cards)) == set(initial_cards)
+        assert deserialize(cards.temp_swaps_performed) == []
