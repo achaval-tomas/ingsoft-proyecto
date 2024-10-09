@@ -30,3 +30,21 @@ shape_data = {
     'b-5': ShapeData(data=[[0, 0], [1, 0], [2, 0], [3, 0]]),
     'b-6': ShapeData(data=[[0, 0], [1, 0], [2, 0], [2, 1]]),
 }
+
+
+def rotate_shape_data_90(data: list[tuple[int, int]]):
+    return [[-c[1], c[0]] for c in data]
+
+
+def rotate_shape(data: list[tuple[int, int]], r_amount: int):
+    if r_amount == 0:
+        return data
+    data = rotate_shape_data_90(data=data)
+    if r_amount == 1:
+        return data
+    data = rotate_shape_data_90(data=data)
+    if r_amount == 2:
+        return data
+    data = rotate_shape_data_90(data=data)
+    if r_amount == 3:
+        return data

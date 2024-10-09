@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 import src.database.crud.crud_game as crud_game
 from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
 from src.database.cards.movement_card import movement_data, rotate_movement
+from src.database.cards.shape_card import rotate_shape
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import PlayerCards
@@ -244,3 +245,98 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     player_order = deserialize(game.player_order)
     if player_order[game.current_turn] != player_id:
         return 5
+
+    board = deserialize(game.board)
+    start_index = board_position_to_index(req.position)
+    shape = find_connected_tiles(board, start_index)
+
+    """
+    Ejemplo con b-2
+    shape = [(0,2), (1,2), (1,1), (2,1)]
+    deberia llevarlo a shape = [(0,1), (1,1), (1,0), (2,0)]
+    """
+
+    shape = normalize_shape(shape=shape)
+
+    player_shape_cards = deserialize(player_cards.shape_cards_in_hand)
+    player_shape_cards = [
+        ShapeCardSchema.model_validate_json(s) for s in player_shape_cards
+    ]
+    player_shape_cards = [s for s in player_shape_cards if not s.isBlocked]
+
+    shape_used = find_connected_tiles(shape_cards=player_shape_cards, shape=shape)
+
+    if shape_used is None:
+        return 4
+
+    player_shape_cards = player_shape_cards.remove(shape_used)
+    player_cards.shape_cards_in_hand = serialize(
+        [ShapeCardSchema.model_dump_json(s) for s in player_shape_cards]
+    )
+
+
+def find_connected_tiles(board: list[str], start_index: int):
+    target_color = board[start_index]
+
+    visited = [False] * 36
+    queue = [start_index]
+    selected = list[int]
+
+    while len(queue) != 0:
+        tile_index = queue.pop(0)
+
+        if visited[tile_index]:
+            continue
+        visited[tile_index] = True
+
+        tile_color = board[tile_index]
+
+        if tile_color != target_color:
+            continue
+        selected.append(tile_index)
+
+        [x, y] = index_to_board_position(tile_index)
+
+        if x > 0:
+            queue.append(board_position_to_index([x - 1, y]))
+        if x < 5:
+            queue.append(board_position_to_index([x + 1, y]))
+        if y > 0:
+            queue.append(board_position_to_index([x, y - 1]))
+        if x < 5:
+            queue.append(board_position_to_index([x, y + 1]))
+
+    return map(index_to_board_position, selected)
+
+
+def normalize_shape(shape: list[tuple[int, int]]):
+    min_x = min(s[0] for s in shape)
+    min_y = min(s[1] for s in shape)
+
+    new_shape = [[s[0] - min_x, s[1] - min_y] for s in shape]
+
+    return new_shape
+
+
+def index_to_board_position(index: int):
+    return [index % 6, index // 6]
+
+
+def board_position_to_index(position: tuple[int, int]):
+    return position[1] * 6 + position[0]
+
+
+def find_shape_in_hand(
+    shape_cards: list[tuple[int, int]],
+    shape: list[tuple[int, int]],
+):
+    for s in shape_cards:
+        if shape == rotate_shape(s, 0):
+            return s
+        if shape == rotate_shape(s, 1):
+            return s
+        if shape == rotate_shape(s, 2):
+            return s
+        if shape == rotate_shape(s, 3):
+            return s
+    return None
