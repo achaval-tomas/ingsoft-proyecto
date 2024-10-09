@@ -99,7 +99,7 @@ def refill_cards(db: Session, player_id: str):
     if any(
         ShapeCardSchema.model_validate_json(c).isBlocked for c in shape_cards_hand
     ):  # There is a blocked card, shape refill not allowed.
-        return 0, None, None
+        return 0, mov_cards, shape_cards_hand
 
     shape_cards_deck = deserialize(player_cards.shape_cards_deck)
 
@@ -114,15 +114,11 @@ def refill_cards(db: Session, player_id: str):
     shape_cards_hand += new_shape_cards
     shape_cards_deck = shape_cards_deck[to_hand:]
 
-    shape_card_schemas = [
-        ShapeCardSchema.model_validate_json(c) for c in shape_cards_hand
-    ]
-
     player_cards.shape_cards_in_hand = serialize(shape_cards_hand)
     player_cards.shape_cards_deck = serialize(shape_cards_deck)
     db.commit()
 
-    return 0, mov_cards, shape_card_schemas
+    return 0, mov_cards, shape_cards_hand
 
 
 def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):

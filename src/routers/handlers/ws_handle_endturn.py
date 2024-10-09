@@ -5,6 +5,7 @@ from src.database.crud.crud_game import delete_game, end_game_turn, get_game_pla
 from src.database.crud.crud_player import get_player
 from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
+from src.schemas.card_schemas import ShapeCardSchema
 from src.schemas.game_schemas import TurnEndedMessageSchema
 from src.schemas.message_schema import error_message
 
@@ -14,7 +15,7 @@ async def ws_handle_endturn(player_id: str, db: Session):
     if not player:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
 
-    res, new_movement_cards, new_shape_cards = end_game_turn(db=db, player_id=player_id)
+    res, mov_cards, shape_cards = end_game_turn(db=db, player_id=player_id)
 
     match res:
         case 1:
@@ -28,9 +29,11 @@ async def ws_handle_endturn(player_id: str, db: Session):
             delete_game(db=db, game_id=player.game_id)
             return ''
 
+    shape_cards = [ShapeCardSchema.model_validate_json(c) for c in shape_cards]
+
     msg = TurnEndedMessageSchema(
         playerId=player_id,
-        newShapeCards=new_shape_cards,
+        newShapeCards=shape_cards,
     )
 
     players = get_game_players(db=db, game_id=player.game_id)
@@ -42,6 +45,6 @@ async def ws_handle_endturn(player_id: str, db: Session):
             message=msg.model_dump_json(),
         )
 
-    msg.newMovementCards = new_movement_cards
+    msg.newMovementCards = mov_cards
 
     return msg.model_dump_json()
