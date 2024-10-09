@@ -200,7 +200,7 @@ def end_game_turn(db: Session, player_id: str):
     if player_id != player_order[game.current_turn]:
         return 2
 
-    rc = crud_cards.confirm_movements(db=db, player_id=player_id)
+    rc = crud_cards.cancel_movements(db=db, player_id=player_id)
     if rc == 1:
         return 3
 

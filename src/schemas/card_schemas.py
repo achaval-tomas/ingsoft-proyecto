@@ -24,3 +24,9 @@ class UseShapeCardSchema(BaseModel):
     type: str
     position: tuple[int, int]
     targetPlayerId: str
+
+
+class ShapeCardUsedSchema(BaseModel):
+    type: str = 'shape-card-used'
+    position: tuple[int, int]
+    targetPlayerId: str

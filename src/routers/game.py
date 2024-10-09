@@ -80,7 +80,7 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
                         db=db,
                     )
                 case 'use-shape-card':
-                    response = ws_handle_shape_card(
+                    response = await ws_handle_shape_card(
                         player_id=player_id,
                         db=db,
                         data=received,
