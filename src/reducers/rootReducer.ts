@@ -27,6 +27,18 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
     switch (action.type) {
         case "turn-ended": {
             const newGameState = { ...gameState };
+
+            if (action.playerId === gameState.selfPlayerState.id) {
+                newGameState.selfPlayerState.shapeCardsInHand = action.newShapeCards;
+                newGameState.selfPlayerState.movementCardsInHand = action.newMovementCards ?? [];
+            } else {
+                const dealtPlayer = newGameState.otherPlayersState.find(p => p.id === action.playerId);
+
+                if (dealtPlayer != null) {
+                    dealtPlayer.shapeCardsInHand = action.newShapeCards;
+                }
+            }
+
             newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
 
             return newGameState;
