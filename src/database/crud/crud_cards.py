@@ -182,7 +182,7 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     used_movements = deserialize(player_cards.temp_swaps_performed)
     used_mov_count = len(used_movements)
 
-    for m in range(max(nmovs, used_mov_count)):
+    for m in range(min(nmovs, used_mov_count)):
         movement_data = used_movements[used_mov_count - m - 1]
 
         rc = crud_game.swap_tiles(
