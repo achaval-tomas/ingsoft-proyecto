@@ -81,6 +81,7 @@ function Game() {
             );
 
             if (rotation == null) {
+                setTileSelected(pos);
                 return;
             }
 
