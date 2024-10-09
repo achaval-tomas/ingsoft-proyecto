@@ -12,8 +12,8 @@ import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
 import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
-import { Position } from "../../domain/Position";
-import { Rotation } from "../../domain/Rotation";
+import { Position, positionsEqual } from "../../domain/Position";
+import { RotationSchema } from "../../domain/Rotation";
 
 function Game() {
     const navigate = useNavigate();
@@ -76,7 +76,9 @@ function Game() {
         }
 
         if (gameState != null) {
-            const rotation = (Object.keys(selectableTiles) as Rotation[]).find(k => selectableTiles[k]![0] === pos[0] && selectableTiles[k]![1] === pos[1]);
+            const rotation = (Object.values(RotationSchema.enum)).find(r =>
+                selectableTiles[r] != null && positionsEqual(selectableTiles[r], pos),
+            );
 
             if (rotation == null) {
                 return;
