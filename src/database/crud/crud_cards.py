@@ -6,7 +6,11 @@ from src.database.cards.movement_card import movement_data, rotate_movement
 from src.database.crud.crud_player import get_player
 from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import PlayerCards
-from src.schemas.card_schemas import ShapeCardSchema, UseMovementCardSchema
+from src.schemas.card_schemas import (
+    ShapeCardSchema,
+    UseMovementCardSchema,
+    UseShapeCardSchema,
+)
 
 
 def get_player_cards(db: Session, player_id: str):
@@ -222,3 +226,21 @@ def currently_used_movement_cards(db: Session, player_id: str):
         cards += deserialize(p_cards.movement_cards)
 
     return cards
+
+
+def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
+    player = get_player(player_id=player_id, db=db)
+    if player is None:
+        return 1
+
+    game = crud_game.get_game(db=db, player_id=player_id)
+    if game is None:
+        return 2
+
+    player_cards = get_player_cards(db=db, player_id=player_id)
+    if player_cards is None:
+        return 3
+
+    player_order = deserialize(game.player_order)
+    if player_order[game.current_turn] != player_id:
+        return 5

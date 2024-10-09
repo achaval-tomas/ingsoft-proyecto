@@ -12,6 +12,7 @@ from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
 from src.routers.handlers.ws_handle_gamestate import ws_handle_gamestate
 from src.routers.handlers.ws_handle_leave_game import ws_handle_leave_game
 from src.routers.handlers.ws_handle_movement_card import ws_handle_movement_card
+from src.routers.handlers.ws_handle_shape_card import ws_handle_shape_card
 from src.schemas import game_schemas, player_schemas
 
 game_router = APIRouter()
@@ -77,6 +78,12 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
                     response = await ws_handle_cancel_movements(
                         player_id=player_id,
                         db=db,
+                    )
+                case 'use-shape-card':
+                    response = ws_handle_shape_card(
+                        player_id=player_id,
+                        db=db,
+                        data=received,
                     )
 
             if response != '':

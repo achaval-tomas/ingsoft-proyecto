@@ -18,3 +18,9 @@ class MovementCardUsedSchema(BaseModel):
     position: tuple[int, int]
     rotation: str
     movement: str
+
+
+class UseShapeCardSchema(BaseModel):
+    type: str
+    position: tuple[int, int]
+    targetPlayerId: str
