@@ -64,7 +64,11 @@ def hand_initial_cards(
 
 def refill_cards(db: Session, player_id: str):
     """
-    Refill cards for player_id
+    Refill cards for player_id, returns the
+    new cards in hand for the player.
+
+    Return format:
+        rc, player_mov_cards, player_shape_cards
 
     Return codes:
         0 -> Player succesfully got cards refilled
@@ -74,11 +78,11 @@ def refill_cards(db: Session, player_id: str):
     """
     player = get_player(db=db, player_id=player_id)
     if player is None:
-        return 1
+        return 1, None, None
 
     player_cards = get_player_cards(db=db, player_id=player_id)
     if player_cards is None:
-        return 2
+        return 2, None, None
 
     mov_cards = deserialize(player_cards.movement_cards)
     new_mov_cards = MovCardDealer.deal_movement_cards(player_id, 3 - len(mov_cards))
@@ -92,7 +96,7 @@ def refill_cards(db: Session, player_id: str):
     if any(
         ShapeCardSchema.model_validate_json(c).isBlocked for c in shape_cards_hand
     ):  # There is a blocked card, shape refill not allowed.
-        return 0
+        return 0, None, None
 
     shape_cards_deck = deserialize(player_cards.shape_cards_deck)
 
@@ -101,7 +105,7 @@ def refill_cards(db: Session, player_id: str):
 
     if (to_hand == 3) and (available == 0):
         # case winner
-        return 3
+        return 3, None, None
 
     new_shape_cards = shape_cards_deck[0:to_hand]
     shape_cards_hand += new_shape_cards
@@ -111,7 +115,7 @@ def refill_cards(db: Session, player_id: str):
     player_cards.shape_cards_deck = serialize(shape_cards_deck)
     db.commit()
 
-    return 0
+    return 0, mov_cards, shape_cards_hand
 
 
 def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):

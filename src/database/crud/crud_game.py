@@ -194,21 +194,21 @@ def delete_player_cards(db: Session, player_id: str):
 def end_game_turn(db: Session, player_id: str):
     game = get_game(db=db, player_id=player_id)
     if not game:
-        return 1
+        return 1, None, None
 
     player_order = deserialize(game.player_order)
     if player_id != player_order[game.current_turn]:
-        return 2
+        return 2, None, None
 
     rc = crud_cards.cancel_movements(db=db, player_id=player_id)
     if rc == 1:
-        return 3
+        return 3, None, None
 
-    rc = crud_cards.refill_cards(db=db, player_id=player_id)
+    rc, mov_cards, shape_cards = crud_cards.refill_cards(db=db, player_id=player_id)
     if rc == 3:
-        return 4
+        return 4, None, None
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
 
-    return 0
+    return 0, mov_cards, shape_cards
