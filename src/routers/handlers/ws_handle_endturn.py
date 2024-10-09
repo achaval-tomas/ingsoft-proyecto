@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.constants import errors
-from src.database.crud.crud_game import end_game_turn, get_game_players
+from src.database.crud.crud_game import delete_game, end_game_turn, get_game_players
 from src.database.crud.crud_player import get_player
 from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
@@ -25,6 +25,8 @@ async def ws_handle_endturn(player_id: str, db: Session):
             return error_message(detail=errors.INTERNAL_SERVER_ERROR)
         case 4:
             await ws_handle_announce_winner(db=db, winner_id=player_id)
+            delete_game(db=db, game_id=player.game_id)
+            return ''
 
     msg = TurnEndedMessageSchema(
         playerId=player_id,
