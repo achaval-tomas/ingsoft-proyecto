@@ -2,13 +2,13 @@ from fastapi.testclient import TestClient
 
 from src.database.crud.crud_cards import cancel_movements, get_player_cards
 from src.database.crud.crud_game import get_game
-from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.session import get_db
 from src.main import app
 from src.schemas.card_schemas import MovementCardUsedSchema, UseMovementCardSchema
 from src.schemas.game_schemas import GameCreate
 from src.schemas.lobby_schemas import LobbyCreateSchema
 from src.schemas.player_schemas import PlayerCreateSchema
+from src.tools.jsonify import deserialize, serialize
 
 client = TestClient(app)
 

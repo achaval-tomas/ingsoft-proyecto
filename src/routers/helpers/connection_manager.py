@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.database.crud import crud_game
 from src.database.crud.crud_lobby import get_lobby
-from src.database.crud.tools.jsonify import deserialize
+from src.tools.jsonify import deserialize
 
 
 class ConnectionManager:

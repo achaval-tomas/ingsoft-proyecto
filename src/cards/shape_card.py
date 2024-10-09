@@ -35,3 +35,12 @@ def rotate_shape(data: list[tuple[int, int]], r_amount: int):
     for _ in range(r_amount):
         data = rotate_shape_data_90(data=data)
     return data
+
+
+def normalize_shape(shape: list[tuple[int, int]]):
+    min_x = min(s[0] for s in shape)
+    min_y = min(s[1] for s in shape)
+
+    new_shape = [[s[0] - min_x, s[1] - min_y] for s in shape]
+
+    return new_shape

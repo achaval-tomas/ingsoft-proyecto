@@ -3,9 +3,9 @@ from uuid import uuid4
 from sqlalchemy.orm import Session
 
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
+from src.tools.jsonify import deserialize, serialize
 
 
 def create_lobby(db: Session, lobby: LobbyCreateSchema):

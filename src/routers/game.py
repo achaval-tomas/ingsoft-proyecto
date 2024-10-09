@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 import src.routers.helpers.connection_manager as cm
 from src.constants import errors
 from src.database.crud import crud_game, crud_lobby
-from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
 from src.routers.handlers.ws_handle_cancel_movements import ws_handle_cancel_movements
 from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
@@ -14,6 +13,7 @@ from src.routers.handlers.ws_handle_leave_game import ws_handle_leave_game
 from src.routers.handlers.ws_handle_movement_card import ws_handle_movement_card
 from src.routers.handlers.ws_handle_shape_card import ws_handle_shape_card
 from src.schemas import game_schemas, player_schemas
+from src.tools.jsonify import deserialize
 
 game_router = APIRouter()
 

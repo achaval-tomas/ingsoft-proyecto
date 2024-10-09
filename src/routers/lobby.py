@@ -5,7 +5,6 @@ from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
 from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
@@ -18,6 +17,7 @@ from src.schemas.lobby_schemas import (
     LobbyLeaveSchema,
     LobbySchema,
 )
+from src.tools.jsonify import deserialize
 
 
 def lobby_decoder(lobby: models.Lobby):

@@ -1,17 +1,21 @@
 from sqlalchemy.orm import Session
 
 import src.database.crud.crud_game as crud_game
-from src.database.cards.card_dealer import MovCardDealer, ShapeCardDealer
-from src.database.cards.movement_card import movement_data, rotate_movement
-from src.database.cards.shape_card import rotate_shape, shape_data
+from src.cards.card_dealer import MovCardDealer, ShapeCardDealer
+from src.cards.card_utils import (
+    find_connected_tiles,
+    get_board_index_from_coords,
+    match_shape_to_player_card,
+)
+from src.cards.movement_card import movement_data, rotate_movement
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import PlayerCards
 from src.schemas.card_schemas import (
     ShapeCardSchema,
     UseMovementCardSchema,
     UseShapeCardSchema,
 )
+from src.tools.jsonify import deserialize, serialize
 
 
 def get_player_cards(db: Session, player_id: str):
@@ -287,80 +291,3 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
         return 3
 
     return 0
-
-
-def find_connected_tiles(board: list[str], start_index: int):
-    target_color = board[start_index]
-
-    visited = [False] * 36
-    queue = [start_index]
-    selected: list[int] = []
-
-    while len(queue) != 0:
-        tile_index = queue.pop(0)
-
-        if visited[tile_index]:
-            continue
-        visited[tile_index] = True
-
-        tile_color = board[tile_index]
-
-        if tile_color != target_color:
-            continue
-        selected.append(tile_index)
-
-        [x, y] = get_coord_from_board_index(tile_index)
-
-        if x > 0:
-            queue.append(get_board_index_from_coords([x - 1, y]))
-        if x < 5:
-            queue.append(get_board_index_from_coords([x + 1, y]))
-        if y > 0:
-            queue.append(get_board_index_from_coords([x, y - 1]))
-        if x < 5:
-            queue.append(get_board_index_from_coords([x, y + 1]))
-
-    return list(map(get_coord_from_board_index, selected))
-
-
-def normalize_shape(shape: list[tuple[int, int]]):
-    min_x = min(s[0] for s in shape)
-    min_y = min(s[1] for s in shape)
-
-    new_shape = [[s[0] - min_x, s[1] - min_y] for s in shape]
-
-    return new_shape
-
-
-def get_coord_from_board_index(index: int):
-    return [index % 6, index // 6]
-
-
-def get_board_index_from_coords(position: tuple[int, int]):
-    return position[1] * 6 + position[0]
-
-
-def match_shape_to_player_card(
-    shape_cards: list[ShapeCardSchema],
-    target_shape: list[tuple[int, int]],
-):
-    """
-    Matches 'shape' to any rotation of a card
-    in shape_cards according to shape_data.
-
-    Returns ShapeCardSchema that matched if any, else None.
-    """
-    normalized_shape = normalize_shape(target_shape)
-
-    for s in shape_cards:
-        rotations = [
-            normalize_shape(
-                rotate_shape(shape_data[s.shape], i),
-            )
-            for i in range(4)
-        ]
-
-        if any(set(normalized_shape) == set(rot) for rot in rotations):
-            return s
-
-    return None

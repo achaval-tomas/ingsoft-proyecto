@@ -5,7 +5,6 @@ from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize
 from src.database.models import Game, PlayerCards
 from src.schemas.card_schemas import ShapeCardSchema
 from src.schemas.game_schemas import (
@@ -16,6 +15,7 @@ from src.schemas.game_schemas import (
     SelfPlayerStateSchema,
 )
 from src.schemas.message_schema import error_message
+from src.tools.jsonify import deserialize
 
 
 def list_shape_cards(cards: PlayerCards):
