@@ -35,8 +35,14 @@ function Game() {
     const formedShapes = useFormedShapes(gameState?.boardState ?? null);
 
     const tilesData = useMemo(
-        () => gameState?.boardState?.tiles?.map((color, i) => ({ color, isHighlighted: formedShapes![i] != null })),
-        [gameState?.boardState?.tiles, formedShapes],
+        () => (gameState && formedShapes) && gameState.boardState.tiles.map((color, i) => (
+            {
+                color,
+                isHighlighted: formedShapes[i] != null
+                    && gameState.boardState.tiles[i] !== gameState.boardState.blockedColor,
+            }
+        )),
+        [gameState, formedShapes],
     );
 
     const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
