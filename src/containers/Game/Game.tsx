@@ -92,14 +92,6 @@ function Game() {
                 movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCard],
             });
 
-            const newGameState = { ...gameState };
-            newGameState.selfPlayerState.movementCardsInHand.splice(selectedMovementCard, 1);
-
-            dispatch({
-                type: "game-state",
-                gameState: newGameState,
-            });
-
             setSelectedMovementCard(null);
             setSelectedTile(null);
         }

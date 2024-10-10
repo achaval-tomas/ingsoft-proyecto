@@ -1,6 +1,6 @@
 import AppState from "../domain/AppState";
 import { GameState, getAllPlayers } from "../domain/GameState";
-import { getTargetFromPositionClamped } from "../domain/Movement";
+import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
 import { positionToBoardIndex } from "../domain/Position";
 import Action from "./Action";
 
@@ -53,18 +53,37 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             return newGameState;
         }
         case "movement-card-used": {
-            const newGameState = { ...gameState };
+            const { movement, position, rotation } = action;
 
-            const swp1 = positionToBoardIndex(action.position);
-            const swp2 = positionToBoardIndex(getTargetFromPositionClamped(action.movement, action.rotation, action.position));
+            const swp1 = positionToBoardIndex(position);
+            const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
 
-            const tmp = newGameState.boardState.tiles[swp1];
-            newGameState.boardState.tiles[swp1] = newGameState.boardState.tiles[swp2];
-            newGameState.boardState.tiles[swp2] = tmp;
+            const newGameState: GameState = {
+                ...gameState,
+                selfPlayerState: {
+                    ...gameState.selfPlayerState,
+                    movementCardsInHand: filterFirstMovement(gameState.selfPlayerState.movementCardsInHand, movement),
+                },
+                boardState: {
+                    ...gameState.boardState,
+                    tiles: gameState.boardState.tiles.map((c, i) => {
+                        switch (i) {
+                            case swp1: return gameState.boardState.tiles[swp2];
+                            case swp2: return gameState.boardState.tiles[swp1];
+                            default: return c;
+                        }
+                    }),
+                },
+            };
 
             return newGameState;
         }
     }
+}
+
+function filterFirstMovement(movements: readonly Movement[], movement: Movement): Movement[] {
+    const movementIndex = movements.findIndex(m => m === movement);
+    return movements.filter((_, i) => i !== movementIndex);
 }
 
 function rootReducer(state: AppState | undefined, action: Action): AppState {
