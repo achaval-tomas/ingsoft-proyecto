@@ -1,8 +1,7 @@
-from uuid import uuid4
-
 from sqlalchemy.orm import Session
 
 from src.database.crud.crud_player import get_player
+from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
 from src.tools.jsonify import deserialize, serialize
@@ -14,7 +13,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
         return None
     player_list = [lobby.lobby_owner]
     db_lobby = Lobby(
-        lobby_id=str(uuid4()),
+        lobby_id=create_uuid(),
         lobby_name=lobby.lobby_name,
         lobby_owner=lobby.lobby_owner,
         min_players=lobby.min_players,
