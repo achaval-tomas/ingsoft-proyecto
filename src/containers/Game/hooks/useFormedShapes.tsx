@@ -3,12 +3,8 @@ import { BoardState } from "../../../domain/GameState";
 import { BoardTileShapeData, findFormedShapes } from "../../../domain/Board";
 import { Shape } from "../../../domain/Shape";
 
-function useFormedShapes(boardState: BoardState | null, shapeWhitelist: Shape[]): (BoardTileShapeData | null)[] | null {
+function useFormedShapes(boardState: BoardState, shapeWhitelist: Shape[]): (BoardTileShapeData | null)[] {
     return useMemo(() => {
-        if (boardState == null) {
-            return null;
-        }
-
         const formedShapes = findFormedShapes(boardState.tiles);
         const filteredFormedShapes = formedShapes.map(fs => {
             if (fs == null) {

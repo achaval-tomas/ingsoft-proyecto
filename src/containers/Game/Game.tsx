@@ -1,13 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import { useDispatch, useSelector } from "react-redux";
-import AppState from "../../domain/AppState";
-import { Dispatch } from "redux";
-import Action from "../../reducers/Action";
-import useGameWebSocket from "./hooks/useGameWebSocket";
-import useWinnerSelector from "./hooks/useWinnerSelector";
+import useWinner from "./hooks/useWinner";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
@@ -15,32 +10,31 @@ import useFormedShapes from "./hooks/useFormedShapes";
 import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
 import { Position, positionsEqual } from "../../domain/Position";
 import { RotationSchema } from "../../domain/Rotation";
+import { GameState } from "../../domain/GameState";
+import { GameMessageOut } from "../../domain/GameMessage";
 
-function Game() {
+type GameProps = {
+    playerId: string;
+    gameState: GameState;
+    sendMessage: (message: GameMessageOut) => void;
+}
+
+function Game({ playerId, gameState, sendMessage }: GameProps) {
     const navigate = useNavigate();
-    const dispatch = useDispatch<Dispatch<Action>>();
 
-    const [searchParams] = useSearchParams();
-    const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
-
-    const gameState = useSelector((state: AppState) => state.gameState);
-    const winner = useWinnerSelector();
-
-    const sendMessage = useGameWebSocket(playerId, dispatch);
-    // clear game state when exiting
-    useEffect(() => (() => { dispatch({ type: "clear-game-state" }); }), [dispatch]);
+    const winner = useWinner(gameState);
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    const shapeWhitelist = (gameState && (
+    const shapeWhitelist = (
         gameState.selfPlayerState.shapeCardsInHand
             .concat(gameState.otherPlayersState.map(p => p.shapeCardsInHand).flat())
             .map(s => s.shape)
-    )) ?? [];
-    const formedShapes = useFormedShapes(gameState?.boardState ?? null, shapeWhitelist);
+    );
+    const formedShapes = useFormedShapes(gameState.boardState, shapeWhitelist);
 
     const tilesData = useMemo(
-        () => (gameState && formedShapes) && gameState.boardState.tiles.map((color, i) => (
+        () => gameState.boardState.tiles.map((color, i) => (
             {
                 color,
                 isHighlighted: formedShapes[i] != null
@@ -53,9 +47,9 @@ function Game() {
     const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
     const [selectedTile, setSelectedTile] = useState<Position | null>(null);
 
-    const selectableTiles: PossibleTargetsInBoard = useMemo(() => (gameState != null && selectedMovementCard != null && selectedTile != null)
+    const selectableTiles: PossibleTargetsInBoard = useMemo(() => (selectedMovementCard != null && selectedTile != null)
         ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[selectedMovementCard], selectedTile)
-        : { }, [gameState, selectedMovementCard, selectedTile]);
+        : {}, [gameState, selectedMovementCard, selectedTile]);
 
 
     const handleEndTurn = () => {
@@ -68,11 +62,7 @@ function Game() {
     };
 
     const handleClickMovementCard = (i: number) => {
-        if (gameState?.selfPlayerState.roundOrder !== gameState?.currentRoundPlayer) {
-            return;
-        }
-
-        if (gameState == null) {
+        if (gameState.selfPlayerState.roundOrder !== gameState.currentRoundPlayer) {
             return;
         }
 
@@ -94,35 +84,25 @@ function Game() {
             return;
         }
 
-        if (gameState != null) {
-            const rotation = (Object.values(RotationSchema.enum)).find(r =>
-                selectableTiles[r] != null && positionsEqual(selectableTiles[r], pos),
-            );
-
-            if (rotation == null) {
-                setSelectedTile(pos);
-                return;
-            }
-
-            sendMessage({
-                type: "use-movement-card",
-                position: selectedTile,
-                rotation: rotation,
-                movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCard],
-            });
-
-            setSelectedMovementCard(null);
-            setSelectedTile(null);
-        }
-    };
-
-    if (gameState === null) {
-        return (
-            <div className="flex w-screen h-screen justify-center items-center">
-                <p className="animate-pulse text-2xl">Loading...</p>
-            </div>
+        const rotation = (Object.values(RotationSchema.enum)).find(r =>
+            selectableTiles[r] != null && positionsEqual(selectableTiles[r], pos),
         );
-    }
+
+        if (rotation == null) {
+            setSelectedTile(pos);
+            return;
+        }
+
+        sendMessage({
+            type: "use-movement-card",
+            position: selectedTile,
+            rotation: rotation,
+            movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCard],
+        });
+
+        setSelectedMovementCard(null);
+        setSelectedTile(null);
+    };
 
     const activeSide = playerIndexToActiveSide(
         [gameState.selfPlayerState, ...gameState.otherPlayersState]
@@ -132,7 +112,7 @@ function Game() {
     return (
         <>
             <GameLayout
-                tiles={tilesData!}
+                tiles={tilesData}
                 selfPlayerState={gameState.selfPlayerState}
                 otherPlayersState={gameState.otherPlayersState}
                 activeSide={activeSide}

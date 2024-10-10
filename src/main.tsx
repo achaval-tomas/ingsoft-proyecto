@@ -6,7 +6,7 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
-import Game from "./containers/Game/Game.tsx";
+import GamePage from "./containers/Game/GamePage.tsx";
 import InitialPage from "./containers/InitialPage/InitialPage.tsx";
 import MainPage from "./containers/MainPage/MainPage.tsx";
 import Lobby from "./containers/Lobby/Lobby.tsx";
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/play",
-        element: <Game />,
+        element: <GamePage />,
     },
 ]);
 
