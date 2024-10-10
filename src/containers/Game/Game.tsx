@@ -32,7 +32,12 @@ function Game() {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    const formedShapes = useFormedShapes(gameState?.boardState ?? null);
+    const shapeWhitelist = (gameState && (
+        gameState.selfPlayerState.shapeCardsInHand
+            .concat(gameState.otherPlayersState.map(p => p.shapeCardsInHand).flat())
+            .map(s => s.shape)
+    )) ?? [];
+    const formedShapes = useFormedShapes(gameState?.boardState ?? null, shapeWhitelist);
 
     const tilesData = useMemo(
         () => (gameState && formedShapes) && gameState.boardState.tiles.map((color, i) => (
