@@ -18,13 +18,13 @@ export type BoardTileProps = {
 
 function BoardTile({ rowStart, color, isHighlighted, selected, selectable, onClick }: BoardTileProps) {
     const highlightClassName = isHighlighted ? "animate-highlight" : "";
-    const shadowClassName = isHighlighted ? "shadow-md shadow-black" : "shadow-md shadow-black";
-
-    const borderStyle = selected ? { boxShadow: "0 0 2px 4px white" } : (selectable ? { boxShadow: "0 0 2px 4px lightgreen" } : {});
+    const selectableClassName = selectable ? "animate-selectable" : "";
+    const shadowClassName = selected ? "shadow-[0_0_4px_1px_white,inset_0_0_4px_2px_white] " : "shadow-md shadow-black";
+    const borderClassName = (selected || selectable) ? "border-[3px] border-white" : "border border-transparent";
 
     return (
         <div className={`${colorToBackgroundClassName(color)} ${shadowClassName} rounded`} onClick={onClick} style={{ gridRowStart: rowStart }}>
-            <div className={`w-full h-full rounded border border-transparent hover:border-white ${highlightClassName}`} style={borderStyle}>
+            <div className={`w-full h-full rounded ${borderClassName} hover:border-white ${highlightClassName} ${selectableClassName}`}>
             </div>
         </div>
     );
