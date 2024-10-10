@@ -38,7 +38,7 @@ def find_connected_tiles(board: list[str], start_index: int):
             queue.append(get_board_index_from_coords((x + 1, y)))
         if y > 0:
             queue.append(get_board_index_from_coords((x, y - 1)))
-        if x < 5:
+        if y < 5:
             queue.append(get_board_index_from_coords((x, y + 1)))
 
     return list(map(get_coord_from_board_index, selected))

@@ -269,7 +269,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     player_usable_shapes = [s for s in player_shape_cards if not s.isBlocked]
 
     matched_shape = match_shape_to_player_card(
-        player_cards=player_usable_shapes,
+        shape_cards=player_usable_shapes,
         target_shape=shape,
     )
     if not matched_shape:
