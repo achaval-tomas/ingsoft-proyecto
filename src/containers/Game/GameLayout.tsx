@@ -13,8 +13,8 @@ type GameLayoutProps = {
     selfPlayerState: SelfPlayerState;
     otherPlayersState: OtherPlayerState[];
     activeSide: "b" | "r" | "t" | "l";
-    movementCardSelected: number | null;
-    tileSelected: Position | null;
+    selectedMovementCard: number | null;
+    selectedTile: Position | null;
     selectableTiles: Position[];
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
@@ -22,7 +22,7 @@ type GameLayoutProps = {
     onClickTile: (i: Position) => void;
 };
 
-function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, movementCardSelected, tileSelected, selectableTiles, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile }: GameLayoutProps) {
+function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, selectedMovementCard, selectedTile, selectableTiles, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile }: GameLayoutProps) {
     return (
         <div
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
@@ -32,7 +32,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, mov
                 <div className="flex flex-row w-full h-full ">
                     <div className="grid w-full h-full" style={{ gridTemplateRows: "1fr 4.5fr 1fr", gridTemplateColumns: "1fr 4.5fr 1fr" }}>
                         <div className="row-start-2 col-start-2">
-                            <Board tiles={tiles} activeSide={activeSide} tileSelected={tileSelected} selectableTiles={selectableTiles} onClickTile={onClickTile} />
+                            <Board tiles={tiles} activeSide={activeSide} selectedTile={selectedTile} selectableTiles={selectableTiles} onClickTile={onClickTile} />
                         </div>
                         <ShapeCardHand
                             shapeCards={selfPlayerState.shapeCardsInHand}
@@ -65,7 +65,7 @@ function GameLayout({ tiles, selfPlayerState, otherPlayersState, activeSide, mov
             <MovementCardHand
                 movements={selfPlayerState.movementCardsInHand}
                 className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[2.5%] pb-[0.5%] w-0 h-full"
-                movementCardSelected={movementCardSelected}
+                selectedMovementCard={selectedMovementCard}
                 onClickMovementCard={onClickMovementCard}
             />
             <div className="row-start-2 col-start-1 justify-self-end self-end">

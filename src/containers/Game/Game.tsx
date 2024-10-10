@@ -31,12 +31,12 @@ function Game() {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    const [movementCardSelected, setMovementCardSelected] = useState<number | null>(null);
-    const [tileSelected, setTileSelected] = useState<Position | null>(null);
+    const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
+    const [selectedTile, setSelectedTile] = useState<Position | null>(null);
 
-    const selectableTiles: PossibleTargetsInBoard = useMemo(() => (gameState != null && movementCardSelected != null && tileSelected != null)
-        ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[movementCardSelected], tileSelected)
-        : { }, [gameState, movementCardSelected, tileSelected]);
+    const selectableTiles: PossibleTargetsInBoard = useMemo(() => (gameState != null && selectedMovementCard != null && selectedTile != null)
+        ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[selectedMovementCard], selectedTile)
+        : { }, [gameState, selectedMovementCard, selectedTile]);
 
 
     const handleEndTurn = () => {
@@ -61,17 +61,17 @@ function Game() {
             return;
         }
 
-        setMovementCardSelected(movementCardSelected === i ? null : i);
-        setTileSelected(null);
+        setSelectedMovementCard(selectedMovementCard === i ? null : i);
+        setSelectedTile(null);
     };
 
     const handleClickTile = (pos: Position) => {
-        if (movementCardSelected == null) {
+        if (selectedMovementCard == null) {
             return;
         }
 
-        if (tileSelected == null) {
-            setTileSelected(pos);
+        if (selectedTile == null) {
+            setSelectedTile(pos);
             return;
         }
 
@@ -81,27 +81,27 @@ function Game() {
             );
 
             if (rotation == null) {
-                setTileSelected(pos);
+                setSelectedTile(pos);
                 return;
             }
 
             sendMessage({
                 type: "use-movement-card",
-                position: tileSelected,
+                position: selectedTile,
                 rotation: rotation,
-                movement: gameState.selfPlayerState.movementCardsInHand[movementCardSelected],
+                movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCard],
             });
 
             const newGameState = { ...gameState };
-            newGameState.selfPlayerState.movementCardsInHand.splice(movementCardSelected, 1);
+            newGameState.selfPlayerState.movementCardsInHand.splice(selectedMovementCard, 1);
 
             dispatch({
                 type: "game-state",
                 gameState: newGameState,
             });
 
-            setMovementCardSelected(null);
-            setTileSelected(null);
+            setSelectedMovementCard(null);
+            setSelectedTile(null);
         }
     };
 
@@ -125,8 +125,8 @@ function Game() {
                 selfPlayerState={gameState.selfPlayerState}
                 otherPlayersState={gameState.otherPlayersState}
                 activeSide={activeSide}
-                movementCardSelected={movementCardSelected}
-                tileSelected={tileSelected}
+                selectedMovementCard={selectedMovementCard}
+                selectedTile={selectedTile}
                 selectableTiles={Object.values(selectableTiles)}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}

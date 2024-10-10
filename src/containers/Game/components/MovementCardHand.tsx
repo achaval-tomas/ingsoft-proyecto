@@ -4,18 +4,18 @@ import MovementCard from "./MovementCard";
 type MovementCardHandProps = {
     movements: Movement[];
     className: string;
-    movementCardSelected: number | null;
+    selectedMovementCard: number | null;
     onClickMovementCard: (i: number) => void;
 }
 
-function MovementCardHand({ movements, className, movementCardSelected, onClickMovementCard }: MovementCardHandProps) {
+function MovementCardHand({ movements, className, selectedMovementCard, onClickMovementCard }: MovementCardHandProps) {
     const sharedClassNames =
         "relative h-full overflow-hidden rounded-xl group-hover:z-20 transition-movement-card " +
         "shadow-lg shadow-black group-hover:shadow-xl group-hover:shadow-black";
 
     // make card be higher and above the ohters if it is the one currently selected
     const selectedStyle = (i: number) => {
-        if (i === movementCardSelected) {
+        if (i === selectedMovementCard) {
             const bottomPercentage = i === 1 ? 30 : 20;
             return {
                 zIndex: "13",

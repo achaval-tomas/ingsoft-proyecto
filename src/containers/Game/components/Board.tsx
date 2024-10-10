@@ -7,14 +7,14 @@ type BoardTileProps = {
     color: Color;
     selected: boolean;
     selectable: boolean;
-    onClickTile: () => void;
+    onClick: () => void;
 }
 
-function BoardTile({ rowStart, color, selected, selectable, onClickTile }: BoardTileProps) {
+function BoardTile({ rowStart, color, selected, selectable, onClick }: BoardTileProps) {
     const borderStyle = selected ? { boxShadow: "0 0 2px 4px white" } : (selectable ? { boxShadow: "0 0 2px 4px lightgreen" } : {});
 
     return (
-        <div className={colorToBackgroundClassName(color) + " rounded shadow-md shadow-black"} onClick={onClickTile} style={{ gridRowStart: rowStart }}>
+        <div className={colorToBackgroundClassName(color) + " rounded shadow-md shadow-black"} onClick={onClick} style={{ gridRowStart: rowStart }}>
             <div className="w-full h-full rounded border border-transparent hover:border-white" style={borderStyle}>
             </div>
         </div>
@@ -24,7 +24,7 @@ function BoardTile({ rowStart, color, selected, selectable, onClickTile }: Board
 type BoardProps = {
     tiles: Color[]; // length must be 36
     activeSide: "b" | "r" | "t" | "l";
-    tileSelected: Position | null;
+    selectedTile: Position | null;
     selectableTiles: Position[];
     onClickTile: (i: Position) => void;
 }
@@ -38,7 +38,7 @@ function borderColorFromActiveSide(activeSide: "b" | "r" | "t" | "l"): string {
     }
 }
 
-function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }: BoardProps) {
+function Board({ tiles, activeSide, selectedTile, selectableTiles, onClickTile }: BoardProps) {
     const boardTiles = tiles.map((t, i) => {
         const coords: Position = boardIndexToPosition(i);
 
@@ -47,9 +47,9 @@ function Board({ tiles, activeSide, tileSelected, selectableTiles, onClickTile }
                 rowStart={6 - coords[1]}
                 key={i}
                 color={t}
-                selected={tileSelected != null && positionsEqual(tileSelected, coords)}
+                selected={selectedTile != null && positionsEqual(selectedTile, coords)}
                 selectable={selectableTiles.some(e => positionsEqual(e, coords))}
-                onClickTile={() => onClickTile(coords)}
+                onClick={() => onClickTile(coords)}
             />
         );
     });
