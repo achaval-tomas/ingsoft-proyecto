@@ -15,7 +15,7 @@ from src.schemas.card_schemas import (
 from src.schemas.game_schemas import GameCreate
 from src.schemas.lobby_schemas import LobbyCreateSchema
 from src.schemas.message_schema import ErrorMessageSchema
-from src.schemas.player_schemas import PlayerCreateSchema
+from src.schemas.player_schemas import PlayerCreateSchema, WinnerMessageSchema
 from src.tools.jsonify import deserialize, serialize
 
 client = TestClient(app)
@@ -333,7 +333,7 @@ def test_card_ws_shape():
     player_id = player_test_json['player_id']
 
     data_joiner = {
-        'player_name': 'cage joiner',
+        'player_name': 'TestGame',
     }
     joiner = client.post('/player', json=data_joiner)
     joiner_json = joiner.json()
@@ -368,9 +368,9 @@ def test_card_ws_shape():
         to_board_tiles(
             [
                 'rrrggg',
-                'yrggrr',
-                'ygbrrr',
-                'gyyrgg',
+                'yrggbb',
+                'ygrbbr',
+                'gyybgg',
                 'rrrggr',
                 'rgbgrr',
             ],
@@ -386,6 +386,7 @@ def test_card_ws_shape():
     ]
     forced_cards.pop(0)
     cards.shape_cards_in_hand = serialize(shape_cards)
+    cards.shape_cards_deck = serialize([])
 
     db.commit()
     db.refresh(cards)
@@ -478,6 +479,23 @@ def test_card_ws_shape():
             data_received
             == ErrorMessageSchema(
                 message=errors.INVALID_COLOR,
+            ).model_dump_json()
+        )
+
+        data = UseShapeCardSchema(
+            type='use-shape-card',
+            position=(4, 1),
+            targetPlayerId=current_turn,
+        ).model_dump_json()
+
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == WinnerMessageSchema(
+                playerId=current_turn,
+                playerName='TestGame',
             ).model_dump_json()
         )
 
