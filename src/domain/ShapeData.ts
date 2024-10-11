@@ -1,5 +1,5 @@
 import { allShapes, Shape } from "./Shape";
-import { Position, sortPositions } from "./Position";
+import { Position, rotatePositions90, sortPositions } from "./Position";
 import { Rotation } from "./Rotation";
 
 export type ShapeData = readonly Position[];
@@ -34,20 +34,6 @@ export function getShapeData(shape: Shape): ShapeData {
     }
 }
 
-export function rotateShapeData90(shapeData: ShapeData): ShapeData {
-    return shapeData.map(([x, y]) => [-y, x]);
-}
-
-// TODO: remove if unused
-// export function rotateShapeData(shapeData: ShapeData, rotation: Rotation): ShapeData {
-//     switch (rotation) {
-//         case "r0": return shapeData;
-//         case "r90": return rotateShapeData90(shapeData);
-//         case "r180": return rotateShapeData90(rotateShapeData90(shapeData));
-//         case "r270": return rotateShapeData90(rotateShapeData90(rotateShapeData90(shapeData)));
-//     }
-// }
-
 export function normalizeShapeData(shapeData: ShapeData): ShapeData {
     const [minX, minY] = shapeData.reduce(([lhsX, lhsY], [rhsX, rhsY]) => [
         Math.min(lhsX, rhsX),
@@ -70,9 +56,9 @@ const validShapeDataDict: { [normalizedShapeDataJson: string]: ShapeWithData } =
     allShapes
         .map<ShapeWithData[]>(shape => {
             const rotated0 = normalizeShapeData(getShapeData(shape));
-            const rotated90 = normalizeShapeData(rotateShapeData90(rotated0));
-            const rotated180 = normalizeShapeData(rotateShapeData90(rotated90));
-            const rotated270 = normalizeShapeData(rotateShapeData90(rotated180));
+            const rotated90 = normalizeShapeData(rotatePositions90(rotated0));
+            const rotated180 = normalizeShapeData(rotatePositions90(rotated90));
+            const rotated270 = normalizeShapeData(rotatePositions90(rotated180));
 
             return [
                 { shape, rotation: "r0", shapeData: rotated0 },
