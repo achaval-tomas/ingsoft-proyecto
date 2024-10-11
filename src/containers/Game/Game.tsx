@@ -7,7 +7,7 @@ import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
 import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
 import { Position, positionsEqual } from "../../domain/Position";
-import { RotationSchema } from "../../domain/Rotation";
+import { allRotations } from "../../domain/Rotation";
 import { GameState } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
 import useGameUiState from "./hooks/useGameUiState";
@@ -64,7 +64,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
-        const rotation = (Object.values(RotationSchema.enum)).find(r =>
+        const rotation = allRotations.find(r =>
             selectableTiles[r] != null && positionsEqual(selectableTiles[r], pos),
         );
 
