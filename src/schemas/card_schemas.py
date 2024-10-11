@@ -12,7 +12,7 @@ def dump_shape_cards(cards: list[ShapeCardSchema]):
     return serialize([s.model_dump_json() for s in cards])
 
 
-def validate_shape_cards(cards: list[str]):
+def validate_shape_cards(cards: str):
     return [ShapeCardSchema.model_validate_json(s) for s in deserialize(cards)]
 
 
