@@ -3,8 +3,11 @@ import { BoardState } from "../../../domain/GameState";
 import { BoardTileShapeData, findFormedShapes } from "../../../domain/Board";
 import { BoardTileStatus, BoardTileUiState, BoardUiState } from "../GameUiState";
 import { Direction } from "../../../domain/Direction";
+import { Position, positionToBoardIndex } from "../../../domain/Position";
 
-function useBoardUiState(boardState: BoardState, selectedTileIndex: number | null): BoardUiState {
+function useBoardUiState(boardState: BoardState, selectedTile: Position | null): BoardUiState {
+    const selectedTileIndex = (selectedTile != null) ? positionToBoardIndex(selectedTile) : null;
+
     const tiles = useMemo<BoardTileUiState[]>(() => {
         const formedShapes = findFormedShapes(boardState.tiles);
 
