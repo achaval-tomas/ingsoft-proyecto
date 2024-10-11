@@ -65,13 +65,18 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     return 0
 
 
-def swap_tiles(
+def switch_tiles(
     db: Session,
     game: Game,
     origin: tuple[int, int],
     target: tuple[int, int],
     clamp: bool,
 ):
+    """
+    Switches the tile at origin with the tile at target-position from origin.
+
+    Returns 0 on success, 1 if the switch is not allowed.
+    """
     board_origin = get_board_index_from_coords(origin)
     if not 0 <= board_origin < 36:
         return 1

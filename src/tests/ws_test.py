@@ -323,7 +323,7 @@ def test_card_ws_movement():
 
         cards = get_player_cards(db=next(get_db()), player_id=current_turn)
         assert set(deserialize(cards.movement_cards)) == set(initial_cards)
-        assert deserialize(cards.temp_swaps_performed) == []
+        assert deserialize(cards.temp_switches) == []
 
 
 def test_card_ws_shape():

@@ -56,7 +56,7 @@ def hand_initial_cards(
         movement_cards=serialize(mov_cards),
         shape_cards_in_hand=dump_shape_cards(shape_cards_deck[0:3]),
         shape_cards_deck=dump_shape_cards(shape_cards_deck[3:]),
-        temp_swaps_performed=serialize([]),
+        temp_switches=serialize([]),
     )
 
     db.add(db_cards)
@@ -143,16 +143,16 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     movement = movement_data[req.movement]
     target = rotate_movement(movement.target, req.rotation)
 
-    rc = crud_game.swap_tiles(db, game, req.position, target, clamp=movement.clamps)
+    rc = crud_game.switch_tiles(db, game, req.position, target, clamp=movement.clamps)
     if rc == 1:
         return 6
 
     player_movement_cards.remove(req.movement)
     player_cards.movement_cards = serialize(player_movement_cards)
 
-    temp_moves = deserialize(player_cards.temp_swaps_performed)
-    temp_moves.append((req.movement, req.position, target, movement.clamps))
-    player_cards.temp_swaps_performed = serialize(temp_moves)
+    temp_switches = deserialize(player_cards.temp_switches)
+    temp_switches.append((req.movement, req.position, target, movement.clamps))
+    player_cards.temp_switches = serialize(temp_switches)
 
     db.commit()
 
@@ -168,7 +168,7 @@ def confirm_movements(db: Session, player_id: str):
     if player_cards is None:
         return 1
 
-    player_cards.temp_swaps_performed = serialize([])
+    player_cards.temp_switches = serialize([])
     db.commit()
 
     return 0
@@ -189,13 +189,13 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
 
     mov_cards = deserialize(player_cards.movement_cards)
 
-    used_movements = deserialize(player_cards.temp_swaps_performed)
+    used_movements = deserialize(player_cards.temp_switches)
     used_mov_count = len(used_movements)
 
     for m in range(min(nmovs, used_mov_count)):
         movement_data = used_movements[used_mov_count - m - 1]
 
-        rc = crud_game.swap_tiles(
+        rc = crud_game.switch_tiles(
             db=db,
             game=game,
             origin=movement_data[1],
@@ -210,7 +210,7 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
         player_cards.movement_cards = serialize(mov_cards)
 
         used_movements.pop(used_mov_count - m - 1)
-        player_cards.temp_swaps_performed = serialize(used_movements)
+        player_cards.temp_switches = serialize(used_movements)
 
         db.commit()
 
