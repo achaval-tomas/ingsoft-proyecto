@@ -51,30 +51,16 @@ function MovementCardHand({ movements, className, selectedMovementCard, onClickM
 
     return (
         <div className={`${className} flex flex-row`}>
-            {movements.length >= 1 && <div className="group h-full aspect-[1/1.5] max-w-min">
-                <div
-                    className={`${sharedClassNames} ${individualClassNamesFor(0)} ${rotationFor(0)}`}
-                    onClick={() => onClickMovementCard(0)}
-                >
-                    <MovementCard movement={movements[0]} />
+            {movements.map((m, i) => (
+                <div key={i} className="group h-full aspect-[1/1.5] max-w-min">
+                    <div
+                        className={`${sharedClassNames} ${individualClassNamesFor(i)} ${rotationFor(i)}`}
+                        onClick={() => onClickMovementCard(i)}
+                    >
+                        <MovementCard movement={m} />
+                    </div>
                 </div>
-            </div>}
-            {movements.length >= 2 && <div className="group h-full aspect-[1/1.5] max-w-min">
-                <div
-                    className={`${sharedClassNames} ${individualClassNamesFor(1)} ${rotationFor(1)}`}
-                    onClick={() => onClickMovementCard(1)}
-                >
-                    <MovementCard movement={movements[1]} />
-                </div>
-            </div>}
-            {movements.length >= 3 && <div className="group h-full aspect-[1/1.5] max-w-min">
-                <div
-                    className={`${sharedClassNames} ${individualClassNamesFor(2)} ${rotationFor(2)}`}
-                    onClick={() => onClickMovementCard(2)}
-                >
-                    <MovementCard movement={movements[2]} />
-                </div>
-            </div>}
+            ))}
         </div>
     );
 }
