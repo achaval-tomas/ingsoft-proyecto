@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from src.constants import errors
 from src.database.crud.crud_cards import use_shape_card
 from src.database.crud.crud_player import get_player
+from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import ShapeCardUsedSchema, UseShapeCardSchema
 from src.schemas.message_schema import error_message
@@ -27,6 +28,9 @@ async def ws_handle_shape_card(player_id: str, db: Session, data: dict):
             return error_message(detail=errors.INVALID_COLOR)
         case 6:
             return error_message(detail=errors.INVALID_CARD)
+        case 7:
+            await ws_handle_announce_winner(winner_id=player_id, db=db)
+            return ''
 
     msg = ShapeCardUsedSchema(
         position=req.position,

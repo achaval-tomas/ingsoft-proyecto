@@ -280,4 +280,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     if confirm_movements(db=db, player_id=player_id) == 1:
         return 3
 
+    if not player_shape_cards and not deserialize(player_cards.shape_cards_deck):
+        return 7
+
     return 0
