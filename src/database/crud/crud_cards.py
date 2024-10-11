@@ -11,9 +11,10 @@ from src.cards.movement_card import movement_data, rotate_movement
 from src.database.crud.crud_player import get_player
 from src.database.models import PlayerCards
 from src.schemas.card_schemas import (
-    ShapeCardSchema,
     UseMovementCardSchema,
     UseShapeCardSchema,
+    dump_shape_cards,
+    validate_shape_cards,
 )
 from src.tools.jsonify import deserialize, serialize
 
@@ -50,14 +51,11 @@ def hand_initial_cards(
 
     shape_cards_deck = shape_card_dealer.deal_shape_cards()
 
-    shape_cards_hand = [c.model_dump_json() for c in shape_cards_deck[0:3]]
-    shape_cards_deck = [c.model_dump_json() for c in shape_cards_deck[3:]]
-
     db_cards = PlayerCards(
         player_id=player_id,
         movement_cards=serialize(mov_cards),
-        shape_cards_in_hand=serialize(shape_cards_hand),
-        shape_cards_deck=serialize(shape_cards_deck),
+        shape_cards_in_hand=dump_shape_cards(shape_cards_deck[0:3]),
+        shape_cards_deck=dump_shape_cards(shape_cards_deck[3:]),
         temp_swaps_performed=serialize([]),
     )
 
@@ -94,14 +92,14 @@ def refill_cards(db: Session, player_id: str):
     player_cards.movement_cards = serialize(mov_cards)
     db.commit()
 
-    shape_cards_hand = deserialize(player_cards.shape_cards_in_hand)
+    shape_cards_hand = validate_shape_cards(player_cards.shape_cards_in_hand)
 
     if any(
-        ShapeCardSchema.model_validate_json(c).isBlocked for c in shape_cards_hand
+        c.isBlocked for c in shape_cards_hand
     ):  # There is a blocked card, shape refill not allowed.
         return 0, mov_cards, shape_cards_hand
 
-    shape_cards_deck = deserialize(player_cards.shape_cards_deck)
+    shape_cards_deck = validate_shape_cards(player_cards.shape_cards_deck)
 
     to_hand = 3 - len(shape_cards_hand)
     available = len(shape_cards_deck)
@@ -114,8 +112,8 @@ def refill_cards(db: Session, player_id: str):
     shape_cards_hand += new_shape_cards
     shape_cards_deck = shape_cards_deck[to_hand:]
 
-    player_cards.shape_cards_in_hand = serialize(shape_cards_hand)
-    player_cards.shape_cards_deck = serialize(shape_cards_deck)
+    player_cards.shape_cards_in_hand = dump_shape_cards(shape_cards_hand)
+    player_cards.shape_cards_deck = dump_shape_cards(shape_cards_deck)
     db.commit()
 
     return 0, mov_cards, shape_cards_hand
@@ -262,10 +260,8 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
 
     shape = find_connected_tiles(board, start_index)
 
-    player_shape_cards = deserialize(player_cards.shape_cards_in_hand)
-    player_shape_cards = [
-        ShapeCardSchema.model_validate_json(s) for s in player_shape_cards
-    ]
+    player_shape_cards = validate_shape_cards(player_cards.shape_cards_in_hand)
+
     player_usable_shapes = [s for s in player_shape_cards if not s.isBlocked]
 
     matched_shape = match_shape_to_player_card(
@@ -276,9 +272,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
         return 6
 
     player_shape_cards.remove(matched_shape)
-    player_cards.shape_cards_in_hand = serialize(
-        [s.model_dump_json() for s in player_shape_cards],
-    )
+    player_cards.shape_cards_in_hand = dump_shape_cards(player_shape_cards)
 
     game.blocked_color = shape_color
     db.commit()

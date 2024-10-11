@@ -5,7 +5,6 @@ from src.database.crud.crud_game import delete_game, end_game_turn, get_game_pla
 from src.database.crud.crud_player import get_player
 from src.routers.handlers.ws_handle_announce_winner import ws_handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
-from src.schemas.card_schemas import ShapeCardSchema
 from src.schemas.game_schemas import TurnEndedMessageSchema
 from src.schemas.message_schema import error_message
 
@@ -28,8 +27,6 @@ async def ws_handle_endturn(player_id: str, db: Session):
             await ws_handle_announce_winner(db=db, winner_id=player_id)
             delete_game(db=db, game_id=player.game_id)
             return ''
-
-    shape_cards = [ShapeCardSchema.model_validate_json(c) for c in shape_cards]
 
     msg = TurnEndedMessageSchema(
         playerId=player_id,
