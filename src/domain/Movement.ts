@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Position } from "./Position";
+import { Position, positionAdd, positionRotate, positionsEqual } from "./Position";
 import { allRotations, Rotation } from "./Rotation";
 
 export const MovementSchema = z.enum([
@@ -43,45 +43,38 @@ export type PossibleTargetsInBoard = {
     [key in Rotation]?: Position;
 };
 
-export function getPossibleTargetsInBoard(movement: Movement, position: Position): PossibleTargetsInBoard {
+export function getPossibleTargetsInBoard(movement: Movement, source: Position): PossibleTargetsInBoard {
     const movementData = getMovementData(movement);
 
     const possibleTargets: PossibleTargetsInBoard = {};
 
-    allRotations.forEach(r => {
-        const [targetX, targetY] = getTarget(movement, r);
+    for (const r of allRotations) {
+        const offset = positionRotate(movementData.target, r);
+        const target = positionAdd(source, offset);
 
-        if (movementData.clamps || (5 - position[0] >= targetX && position[0] >= -targetX
-                                   && 5 - position[1] >= targetY && position[1] >= -targetY)) {
-            const possibleTargetX = clamp(position[0] + targetX, 0, 5);
-            const possibleTargetY = clamp(position[1] + targetY, 0, 5);
-
-            if (possibleTargetX !== position[0] || possibleTargetY !== position[1]) {
-                possibleTargets[r] = [possibleTargetX, possibleTargetY];
-            }
+        if (movementData.clamps) {
+            target[0] = clamp(target[0], 0, 5);
+            target[1] = clamp(target[1], 0, 5);
+        } else if (target[0] < 0 || target[0] > 5 || target[1] < 0 || target[1] > 5) {
+            continue;
         }
-    });
+
+        if (positionsEqual(source, target)) {
+            continue;
+        }
+
+        possibleTargets[r] = target;
+    }
 
     return possibleTargets;
 }
 
-export function getTarget(movement: Movement, rotation: Rotation): Position {
-    const movementTarget = getMovementData(movement).target;
-
-    switch (rotation) {
-        case "r0":
-            return [movementTarget[0], movementTarget[1]];
-        case "r90":
-            return [-movementTarget[1], movementTarget[0]];
-        case "r180":
-            return [-movementTarget[0], -movementTarget[1]];
-        case "r270":
-            return [movementTarget[1], -movementTarget[0]];
-    }
+export function getRotatedTarget(movement: Movement, rotation: Rotation): Position {
+    return positionRotate(getMovementData(movement).target, rotation);
 }
 
 export function getTargetFromPositionClamped(movement: Movement, rotation: Rotation, position: Position): Position {
-    const target = getTarget(movement, rotation);
+    const target = getRotatedTarget(movement, rotation);
 
     return [clamp(position[0] + target[0], 0, 5), clamp(position[1] + target[1], 0, 5)];
 
