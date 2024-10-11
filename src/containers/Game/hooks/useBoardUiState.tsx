@@ -5,7 +5,11 @@ import { BoardTileStatus, BoardTileUiState, BoardUiState } from "../GameUiState"
 import { Direction } from "../../../domain/Direction";
 import { Position, positionToBoardIndex } from "../../../domain/Position";
 
-function useBoardUiState(boardState: BoardState, selectedTile: Position | null): BoardUiState {
+function useBoardUiState(
+    boardState: BoardState,
+    currentTurnPlayerIndex: number,
+    selectedTile: Position | null,
+): BoardUiState {
     const selectedTileIndex = (selectedTile != null) ? positionToBoardIndex(selectedTile) : null;
 
     const tiles = useMemo<BoardTileUiState[]>(() => {
@@ -16,8 +20,6 @@ function useBoardUiState(boardState: BoardState, selectedTile: Position | null):
             status: computeBoardTileStatus(i, selectedTileIndex, formedShapes),
         }));;
     }, [boardState, selectedTileIndex]);
-
-    const currentTurnPlayerIndex = 2;
 
     const boardUiState = useMemo<BoardUiState>(
         () => ({

@@ -33,10 +33,10 @@ function useGameUiState(
         [otherPlayersState],
     );
 
-    // const currentTurnPlayerIndex = [gameState.selfPlayerState, ...gameState.otherPlayersState]
-    //     .findIndex(p => p.roundOrder === gameState.currentRoundPlayer);
+    const currentTurnPlayerIndex = [gameState.selfPlayerState, ...gameState.otherPlayersState]
+        .findIndex(p => p.roundOrder === gameState.currentRoundPlayer);
 
-    const boardUiState = useBoardUiState(boardState, selectedTile);
+    const boardUiState = useBoardUiState(boardState, currentTurnPlayerIndex, selectedTile);
 
     const winner = useWinner(gameState);
     const winnerName = winner?.name;
