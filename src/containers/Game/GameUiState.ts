@@ -1,6 +1,5 @@
 import { Color } from "../../domain/Color";
 import { Direction } from "../../domain/Direction";
-import { CommonPlayerState } from "../../domain/GameState";
 import { Movement } from "../../domain/Movement";
 import { Shape } from "../../domain/Shape";
 
@@ -48,5 +47,5 @@ export type GameUiState = {
     selfPlayerUiState: SelfPlayerUiState;
     otherPlayersUiState: OtherPlayerUiState[];
     boardUiState: BoardUiState;
-    winner: CommonPlayerState | undefined;
+    winnerName: string | undefined;
 }
