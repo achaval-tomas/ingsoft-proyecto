@@ -4,11 +4,13 @@ import { CommonPlayerUiState, GameUiState, OtherPlayerUiState, SelfPlayerUiState
 import useBoardUiState from "./useBoardUiState";
 import { Position } from "../../../domain/Position";
 import useWinner from "./useWinner";
+import { MovementTarget } from "../../../domain/Movement";
 
 function useGameUiState(
     gameState: GameState,
     selectedMovementCard: number | null,
     selectedTile: Position | null,
+    movementTargets: MovementTarget[],
 ): GameUiState {
     const { selfPlayerState, otherPlayersState, boardState } = gameState;
 
@@ -43,7 +45,13 @@ function useGameUiState(
     const currentTurnPlayerIndex = [gameState.selfPlayerState, ...gameState.otherPlayersState]
         .findIndex(p => p.roundOrder === gameState.currentRoundPlayer);
 
-    const boardUiState = useBoardUiState(boardState, shapeWhitelist, currentTurnPlayerIndex, selectedTile);
+    const boardUiState = useBoardUiState(
+        boardState,
+        shapeWhitelist,
+        currentTurnPlayerIndex,
+        selectedTile,
+        movementTargets,
+    );
 
     const winner = useWinner(gameState);
     const winnerName = winner?.name;

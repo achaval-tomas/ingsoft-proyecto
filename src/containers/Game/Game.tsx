@@ -36,7 +36,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         [selectedMovementCard, selectedTile],
     );
 
-    const uiState = useGameUiState(gameState, selectedMovementCardIndex, selectedTile);
+    const uiState = useGameUiState(gameState, selectedMovementCardIndex, selectedTile, movementTargets);
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });

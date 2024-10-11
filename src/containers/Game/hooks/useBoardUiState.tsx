@@ -5,12 +5,14 @@ import { BoardTileStatus, BoardTileUiState, BoardUiState } from "../GameUiState"
 import { Direction } from "../../../domain/Direction";
 import { Position, positionToBoardIndex } from "../../../domain/Position";
 import { Shape } from "../../../domain/Shape";
+import { MovementTarget } from "../../../domain/Movement";
 
 function useBoardUiState(
     boardState: BoardState,
     shapeWhitelist: Shape[],
     currentTurnPlayerIndex: number,
     selectedTile: Position | null,
+    movementTargets: MovementTarget[],
 ): BoardUiState {
     const selectedTileIndex = (selectedTile != null) ? positionToBoardIndex(selectedTile) : null;
 
@@ -31,9 +33,9 @@ function useBoardUiState(
 
         return boardState.tiles.map((color, i) => ({
             color,
-            status: computeBoardTileStatus(i, selectedTileIndex, filteredFormedShapes),
+            status: computeBoardTileStatus(i, selectedTileIndex, filteredFormedShapes, movementTargets),
         }));;
-    }, [boardState, shapeWhitelist, selectedTileIndex]);
+    }, [boardState, shapeWhitelist, selectedTileIndex, movementTargets]);
 
     const boardUiState = useMemo<BoardUiState>(
         () => ({
@@ -50,9 +52,16 @@ function computeBoardTileStatus(
     tileIndex: number,
     selectedTileIndex: number | null,
     formedShapes: (BoardTileShapeData | null)[],
+    movementTargets: MovementTarget[],
 ): BoardTileStatus {
     if (selectedTileIndex != null) {
-        return (tileIndex === selectedTileIndex) ? "selected" : "normal";
+        if (tileIndex === selectedTileIndex) {
+            return "selected";
+        } else if (movementTargets.find(mt => positionToBoardIndex(mt.position) === tileIndex) != null) {
+            return "selectable";
+        } else {
+            return "normal";
+        }
     } else {
         return (formedShapes[tileIndex] != null) ? "highlighted" : "normal";
     }
