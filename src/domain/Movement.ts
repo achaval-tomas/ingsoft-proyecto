@@ -39,34 +39,38 @@ export function getMovementData(movement: Movement): MovementData {
     }
 }
 
-export type PossibleTargetsInBoard = {
-    [key in Rotation]?: Position;
+export type MovementTarget = {
+    position: Position;
+    movementRotation: Rotation;
 };
 
-export function getPossibleTargetsInBoard(movement: Movement, source: Position): PossibleTargetsInBoard {
+export function getPossibleTargetsInBoard(movement: Movement, source: Position): MovementTarget[] {
     const movementData = getMovementData(movement);
 
-    const possibleTargets: PossibleTargetsInBoard = {};
+    return allRotations
+        .map<MovementTarget | null>(r => {
+            const offset = positionRotate(movementData.target, r);
+            const target = positionAdd(source, offset);
 
-    for (const r of allRotations) {
-        const offset = positionRotate(movementData.target, r);
-        const target = positionAdd(source, offset);
+            if (movementData.clamps) {
+                target[0] = clamp(target[0], 0, 5);
+                target[1] = clamp(target[1], 0, 5);
+            }
 
-        if (movementData.clamps) {
-            target[0] = clamp(target[0], 0, 5);
-            target[1] = clamp(target[1], 0, 5);
-        } else if (target[0] < 0 || target[0] > 5 || target[1] < 0 || target[1] > 5) {
-            continue;
-        }
+            if (target[0] < 0 || target[0] > 5 || target[1] < 0 || target[1] > 5) {
+                return null;
+            }
 
-        if (positionsEqual(source, target)) {
-            continue;
-        }
+            if (positionsEqual(source, target)) {
+                return null;
+            }
 
-        possibleTargets[r] = target;
-    }
-
-    return possibleTargets;
+            return {
+                position: target,
+                movementRotation: r,
+            };
+        })
+        .filter(mt => mt != null);
 }
 
 export function getRotatedTarget(movement: Movement, rotation: Rotation): Position {

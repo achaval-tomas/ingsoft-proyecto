@@ -5,9 +5,8 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
-import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
+import { getPossibleTargetsInBoard, MovementTarget } from "../../domain/Movement";
 import { Position, positionsEqual } from "../../domain/Position";
-import { allRotations } from "../../domain/Rotation";
 import { GameState } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
 import useGameUiState from "./hooks/useGameUiState";
@@ -23,14 +22,21 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
+    const [selectedMovementCardIndex, setSelectedMovementCardIndex] = useState<number | null>(null);
     const [selectedTile, setSelectedTile] = useState<Position | null>(null);
 
-    const selectableTiles: PossibleTargetsInBoard = useMemo(() => (selectedMovementCard != null && selectedTile != null)
-        ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[selectedMovementCard], selectedTile)
-        : {}, [gameState, selectedMovementCard, selectedTile]);
+    const selectedMovementCard = (selectedMovementCardIndex != null)
+        ? gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex] ?? null
+        : null;
 
-    const uiState = useGameUiState(gameState, selectedMovementCard, selectedTile);
+    const movementTargets: MovementTarget[] = useMemo(
+        () => (selectedMovementCard != null && selectedTile != null)
+            ? getPossibleTargetsInBoard(selectedMovementCard, selectedTile)
+            : [],
+        [selectedMovementCard, selectedTile],
+    );
+
+    const uiState = useGameUiState(gameState, selectedMovementCardIndex, selectedTile);
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
@@ -50,12 +56,12 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
-        setSelectedMovementCard(selectedMovementCard === i ? null : i);
+        setSelectedMovementCardIndex(selectedMovementCardIndex === i ? null : i);
         setSelectedTile(null);
     };
 
     const handleClickTile = (pos: Position) => {
-        if (selectedMovementCard == null) {
+        if (selectedMovementCardIndex == null) {
             return;
         }
 
@@ -64,11 +70,8 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
-        const rotation = allRotations.find(r =>
-            selectableTiles[r] != null && positionsEqual(selectableTiles[r], pos),
-        );
-
-        if (rotation == null) {
+        const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, pos));
+        if (movementTarget == null) {
             setSelectedTile(pos);
             return;
         }
@@ -76,11 +79,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         sendMessage({
             type: "use-movement-card",
             position: selectedTile,
-            rotation: rotation,
-            movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCard],
+            rotation: movementTarget.movementRotation,
+            movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex],
         });
 
-        setSelectedMovementCard(null);
+        setSelectedMovementCardIndex(null);
         setSelectedTile(null);
     };
 
