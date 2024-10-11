@@ -18,6 +18,10 @@ export function positionsEqual(a: Position, b: Position): boolean {
     return a[0] === b[0] && a[1] === b[1];
 };
 
+export function positionAdd([lhsX, lhsY]: Position, [rhsX, rhsY]: Position): Position {
+    return [lhsX + rhsX, lhsY + rhsY];
+}
+
 function positionRotate0([x, y]: Position): Position { return [x, y]; }
 function positionRotate90([x, y]: Position): Position { return [-y, x]; }
 function positionRotate180([x, y]: Position): Position { return [-x, -y]; }
