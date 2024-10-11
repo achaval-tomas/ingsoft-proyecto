@@ -1,9 +1,9 @@
-import { ShapeCardState } from "../../../domain/GameState";
 import { Rotation } from "../../../domain/Rotation";
+import { ShapeCardUiState } from "../GameUiState";
 import ShapeCard from "./ShapeCard";
 
 type ShapeCardHandProps = {
-    shapeCards: ShapeCardState[];
+    shapeCards: ShapeCardUiState[];
     rotation: Rotation;
     className: string;
 }
@@ -25,10 +25,10 @@ function ShapeCardHand({ shapeCards, rotation, className }: ShapeCardHandProps) 
 
     return (
         <div className={`${className} flex ${flexDirectionFromRotation(rotation)} gap-[3%]`}>
-            {shapeCards.map(({ shape, isBlocked }, i) => (
+            {shapeCards.map(({ shape, status }, i) => (
                 <div key={i} className="group max-h-full aspect-square">
-                    <div className={sharedClassNames + (isBlocked ? "" : ` ${nonBlockedClassNames}`)}>
-                        <ShapeCard shape={shape} isBlocked={isBlocked} />
+                    <div className={sharedClassNames + (status === "blocked") ? "" : ` ${nonBlockedClassNames}`}>
+                        <ShapeCard shape={shape} isBlocked={status === "blocked"} />
                     </div>
                 </div>
             ))}

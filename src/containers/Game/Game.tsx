@@ -2,16 +2,15 @@ import { useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import useWinner from "./hooks/useWinner";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
-import useFormedShapes from "./hooks/useFormedShapes";
 import { getPossibleTargetsInBoard, PossibleTargetsInBoard } from "../../domain/Movement";
 import { Position, positionsEqual } from "../../domain/Position";
 import { RotationSchema } from "../../domain/Rotation";
 import { GameState } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
+import useGameUiState from "./hooks/useGameUiState";
 
 type GameProps = {
     playerId: string;
@@ -22,35 +21,23 @@ type GameProps = {
 function Game({ playerId, gameState, sendMessage }: GameProps) {
     const navigate = useNavigate();
 
-    const winner = useWinner(gameState);
-
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
     const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
     const [selectedTile, setSelectedTile] = useState<Position | null>(null);
 
-    const shapeWhitelist = (selectedMovementCard == null) ? (
-        gameState.selfPlayerState.shapeCardsInHand
-            .concat(gameState.otherPlayersState.map(p => p.shapeCardsInHand).flat())
-            .map(s => s.shape)
-    ) : [];
-    const formedShapes = useFormedShapes(gameState.boardState, shapeWhitelist);
-
-    const tilesData = useMemo(
-        () => gameState.boardState.tiles.map((color, i) => (
-            {
-                color,
-                isHighlighted: formedShapes[i] != null
-                    && gameState.boardState.tiles[i] !== gameState.boardState.blockedColor,
-            }
-        )),
-        [gameState, formedShapes],
-    );
+    // const shapeWhitelist = (selectedMovementCard == null) ? (
+    //     gameState.selfPlayerState.shapeCardsInHand
+    //         .concat(gameState.otherPlayersState.map(p => p.shapeCardsInHand).flat())
+    //         .map(s => s.shape)
+    // ) : [];
+    // const formedShapes = useFormedShapes(gameState.boardState, shapeWhitelist);
 
     const selectableTiles: PossibleTargetsInBoard = useMemo(() => (selectedMovementCard != null && selectedTile != null)
         ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[selectedMovementCard], selectedTile)
         : {}, [gameState, selectedMovementCard, selectedTile]);
 
+    const uiState = useGameUiState(gameState, selectedMovementCard, selectedTile);
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
@@ -104,21 +91,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         setSelectedTile(null);
     };
 
-    const activeSide = playerIndexToActiveSide(
-        [gameState.selfPlayerState, ...gameState.otherPlayersState]
-            .findIndex(p => p.roundOrder === gameState.currentRoundPlayer),
-    );
 
     return (
         <>
             <GameLayout
-                tiles={tilesData}
-                selfPlayerState={gameState.selfPlayerState}
-                otherPlayersState={gameState.otherPlayersState}
-                activeSide={activeSide}
-                selectedMovementCard={selectedMovementCard}
-                selectedTile={selectedTile}
-                selectableTiles={Object.values(selectableTiles)}
+                uiState={uiState}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickMovementCard={handleClickMovementCard}
@@ -134,21 +111,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
                 onConfirm={handleLeaveGame}
             />
             <WinnerDialog
-                winner={winner}
+                winnerName={uiState.winnerName}
                 onClose={() => navigate(toLobby(playerId))}
             />
         </>
     );
-}
-
-function playerIndexToActiveSide(index: number): "b" | "r" | "t" | "l" {
-    switch (index) {
-        case 0: return "b";
-        case 1: return "r";
-        case 2: return "t";
-        case 3: return "l";
-        default: return "b";
-    }
 }
 
 export default Game;
