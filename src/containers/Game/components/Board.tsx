@@ -32,7 +32,7 @@ function BoardTile({ color, status, style, onClick }: BoardTileProps) {
 function shadowByBoardTileStatus(status: BoardTileStatus): string {
     switch (status) {
         case "selected":
-            return "shadow-[0_0_4px_1px_white,inset_0_0_4px_2px_white]";
+            return "shadow-[0_0_4px_1px_white,inset_0_0_5px_5px_white]";
         default:
             return "shadow-md shadow-black";
     }
@@ -41,8 +41,7 @@ function shadowByBoardTileStatus(status: BoardTileStatus): string {
 function borderByBoardTileStatus(status: BoardTileStatus): string {
     switch (status) {
         case "selected":
-        case "selectable":
-            return "border-[3px] border-white";
+            return "border-[4px] border-white";
         default:
             return "border border-transparent";
     }

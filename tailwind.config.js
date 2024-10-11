@@ -27,9 +27,9 @@ export default {
                     "100%": { backgroundColor: "rgba(255, 255, 255, 0.3)" },
                 },
                 selectable: {
-                    "0%": {  border: "2.5px solid rgba(255, 255, 255, 1.0)" },
-                    "50%": {  border: "2.5px solid rgba(255, 255, 255, 0.4)" },
-                    "100%": {  border: "2.5px solid rgba(255, 255, 255, 1.0)" },
+                    "0%": {  border: "4px solid rgba(255, 255, 255, 1.0)" },
+                    "50%": {  border: "4px solid rgba(255, 255, 255, 0.4)" },
+                    "100%": {  border: "4px solid rgba(255, 255, 255, 1.0)" },
                 },
             },
         },
