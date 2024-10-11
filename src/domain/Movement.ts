@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Position } from "./Position";
-import { Rotation, RotationSchema } from "./Rotation";
+import { allRotations, Rotation } from "./Rotation";
 
 export const MovementSchema = z.enum([
     "straight-adjacent",
@@ -48,7 +48,7 @@ export function getPossibleTargetsInBoard(movement: Movement, position: Position
 
     const possibleTargets: PossibleTargetsInBoard = {};
 
-    (Object.values(RotationSchema.enum)).forEach(r => {
+    allRotations.forEach(r => {
         const [targetX, targetY] = getTarget(movement, r);
 
         if (movementData.clamps || (5 - position[0] >= targetX && position[0] >= -targetX
