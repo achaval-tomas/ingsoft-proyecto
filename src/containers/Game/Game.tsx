@@ -26,13 +26,6 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
     const [selectedMovementCard, setSelectedMovementCard] = useState<number | null>(null);
     const [selectedTile, setSelectedTile] = useState<Position | null>(null);
 
-    // const shapeWhitelist = (selectedMovementCard == null) ? (
-    //     gameState.selfPlayerState.shapeCardsInHand
-    //         .concat(gameState.otherPlayersState.map(p => p.shapeCardsInHand).flat())
-    //         .map(s => s.shape)
-    // ) : [];
-    // const formedShapes = useFormedShapes(gameState.boardState, shapeWhitelist);
-
     const selectableTiles: PossibleTargetsInBoard = useMemo(() => (selectedMovementCard != null && selectedTile != null)
         ? getPossibleTargetsInBoard(gameState.selfPlayerState.movementCardsInHand[selectedMovementCard], selectedTile)
         : {}, [gameState, selectedMovementCard, selectedTile]);

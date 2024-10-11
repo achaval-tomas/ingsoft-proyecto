@@ -33,10 +33,17 @@ function useGameUiState(
         [otherPlayersState],
     );
 
+    const shapeWhitelist = useMemo(
+        () => selfPlayerState.shapeCardsInHand
+            .concat(otherPlayersState.map(p => p.shapeCardsInHand).flat())
+            .map(s => s.shape),
+        [selfPlayerState, otherPlayersState],
+    );
+
     const currentTurnPlayerIndex = [gameState.selfPlayerState, ...gameState.otherPlayersState]
         .findIndex(p => p.roundOrder === gameState.currentRoundPlayer);
 
-    const boardUiState = useBoardUiState(boardState, currentTurnPlayerIndex, selectedTile);
+    const boardUiState = useBoardUiState(boardState, shapeWhitelist, currentTurnPlayerIndex, selectedTile);
 
     const winner = useWinner(gameState);
     const winnerName = winner?.name;
