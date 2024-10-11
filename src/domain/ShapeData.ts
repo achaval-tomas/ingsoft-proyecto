@@ -1,5 +1,5 @@
 import { allShapes, Shape } from "./Shape";
-import { Position, rotatePositions90, sortPositions } from "./Position";
+import { Position, rotatePositions, sortPositions } from "./Position";
 import { Rotation } from "./Rotation";
 
 export type ShapeData = readonly Position[];
@@ -55,10 +55,12 @@ export type ShapeWithData = {
 const validShapeDataDict: { [normalizedShapeDataJson: string]: ShapeWithData } = Object.fromEntries(
     allShapes
         .map<ShapeWithData[]>(shape => {
-            const rotated0 = normalizeShapeData(getShapeData(shape));
-            const rotated90 = normalizeShapeData(rotatePositions90(rotated0));
-            const rotated180 = normalizeShapeData(rotatePositions90(rotated90));
-            const rotated270 = normalizeShapeData(rotatePositions90(rotated180));
+            const shapeData = getShapeData(shape);
+
+            const rotated0 = normalizeShapeData(shapeData);
+            const rotated90 = normalizeShapeData(rotatePositions(shapeData, "r90"));
+            const rotated180 = normalizeShapeData(rotatePositions(shapeData, "r180"));
+            const rotated270 = normalizeShapeData(rotatePositions(shapeData, "r270"));
 
             return [
                 { shape, rotation: "r0", shapeData: rotated0 },
