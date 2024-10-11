@@ -10,19 +10,27 @@ type MovementCardHandProps = {
 
 function MovementCardHand({ movements, className, selectedMovementCard, onClickMovementCard }: MovementCardHandProps) {
     const sharedClassNames =
-        "relative h-full overflow-hidden rounded-xl group-hover:z-20 transition-movement-card " +
-        "shadow-lg shadow-black group-hover:shadow-xl group-hover:shadow-black";
+        "relative h-full overflow-hidden rounded-xl group-hover:z-[13] transition-movement-card";
 
-    // make card be higher and above the ohters if it is the one currently selected
-    const selectedStyle = (i: number) => {
+    const individualClassNamesFor = (i: number) => {
         if (i === selectedMovementCard) {
-            const bottomPercentage = i === 1 ? 30 : 20;
-            return {
-                zIndex: "13",
-                bottom: `${bottomPercentage}%`,
-            };
+            const offset = (i === 1)
+                ? "bottom-[30%]"
+                : "bottom-[20%]";
+
+            return `${offset} shadow-lg shadow-white z-[14]`;
         } else {
-            return {};
+            const offset = (i === 1)
+                ? "bottom-[10%] group-hover:bottom-[20%]"
+                : "bottom-[0%] group-hover:bottom-[10%]";
+
+            const zIndex = (i === 0)
+                ? "z-[10]"
+                : (i === 1)
+                    ? "z-[11]"
+                    : "z-[12]";
+
+            return `${offset} ${zIndex} shadow-lg shadow-black group-hover:shadow-xl group-hover:shadow-black`;
         }
     };
 
@@ -30,8 +38,7 @@ function MovementCardHand({ movements, className, selectedMovementCard, onClickM
         <div className={`${className} flex flex-row`}>
             {movements.length >= 1 && <div className="group h-full aspect-[1/1.5] max-w-min">
                 <div
-                    className={sharedClassNames + " bottom-[0%] group-hover:bottom-[10%] z-[10] -rotate-[15deg]"}
-                    style={selectedStyle(0)}
+                    className={`${sharedClassNames} ${individualClassNamesFor(0)} -rotate-[15deg]`}
                     onClick={() => onClickMovementCard(0)}
                 >
                     <MovementCard movement={movements[0]} />
@@ -39,8 +46,7 @@ function MovementCardHand({ movements, className, selectedMovementCard, onClickM
             </div>}
             {movements.length >= 2 && <div className="group h-full aspect-[1/1.5] max-w-min">
                 <div
-                    className={sharedClassNames + " bottom-[10%] group-hover:bottom-[20%] z-[11]"}
-                    style={selectedStyle(1)}
+                    className={`${sharedClassNames} ${individualClassNamesFor(1)}`}
                     onClick={() => onClickMovementCard(1)}
                 >
                     <MovementCard movement={movements[1]} />
@@ -48,8 +54,7 @@ function MovementCardHand({ movements, className, selectedMovementCard, onClickM
             </div>}
             {movements.length >= 3 && <div className="group h-full aspect-[1/1.5] max-w-min">
                 <div
-                    className={sharedClassNames + " bottom-[0%] group-hover:bottom-[10%] z-[12] rotate-[15deg]"}
-                    style={selectedStyle(2)}
+                    className={`${sharedClassNames} ${individualClassNamesFor(2)} rotate-[15deg]`}
                     onClick={() => onClickMovementCard(2)}
                 >
                     <MovementCard movement={movements[2]} />
