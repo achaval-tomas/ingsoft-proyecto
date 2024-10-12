@@ -252,13 +252,12 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
         return 4
 
     board = deserialize(game.board)
-    start_index = get_board_index_from_coords(req.position)
-    shape_color = board[start_index]
+    shape_color = board[get_board_index_from_coords(req.position)]
 
     if shape_color == game.blocked_color:
         return 5
 
-    shape = find_connected_tiles(board, start_index)
+    shape = find_connected_tiles(board=board, start_coords=req.position)
 
     player_shape_cards = validate_shape_cards(player_cards.shape_cards_in_hand)
 

@@ -98,7 +98,7 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
         )
 
         while True:
-            response = ''
+            response = None
             received = await ws.receive_text()
             request = deserialize(received)
 
@@ -106,7 +106,7 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
                 case 'get-lobby-state':
                     response = await ws_handle_lobbystate(player_id, db)
 
-            if response != '':
+            if response is not None:
                 await lobby_manager.send_personal_message(response, player_id)
 
     except WebSocketDisconnect:

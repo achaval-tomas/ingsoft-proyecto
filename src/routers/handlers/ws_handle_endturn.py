@@ -25,7 +25,7 @@ async def ws_handle_endturn(player_id: str, db: Session):
             return error_message(detail=errors.INTERNAL_SERVER_ERROR)
         case 4:
             await ws_handle_announce_winner(db=db, winner_id=player_id)
-            return ''
+            return None
 
     msg = TurnEndedMessageSchema(
         playerId=player_id,

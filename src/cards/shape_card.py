@@ -1,3 +1,5 @@
+from src.schemas.card_schemas import Coordinate
+
 shape_data = {
     'c-0': [(0, 0), (0, 1), (0, 2), (1, 1), (2, 1)],
     'c-1': [(0, 1), (1, 1), (1, 0), (2, 0), (3, 0)],
@@ -27,17 +29,17 @@ shape_data = {
 }
 
 
-def rotate_shape_data_90(data: list[tuple[int, int]]):
+def rotate_shape_data_90(data: list[Coordinate]):
     return [(-c[1], c[0]) for c in data]
 
 
-def rotate_shape(data: list[tuple[int, int]], r_amount: int):
+def rotate_shape(data: list[Coordinate], r_amount: int):
     for _ in range(r_amount):
         data = rotate_shape_data_90(data=data)
     return data
 
 
-def normalize_shape(shape: list[tuple[int, int]]):
+def normalize_shape(shape: list[Coordinate]):
     min_x = min(s[0] for s in shape)
     min_y = min(s[1] for s in shape)
 

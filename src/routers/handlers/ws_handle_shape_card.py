@@ -30,7 +30,7 @@ async def ws_handle_shape_card(player_id: str, db: Session, data: dict):
             return error_message(detail=errors.INVALID_CARD)
         case 7:
             await ws_handle_announce_winner(winner_id=player_id, db=db)
-            return ''
+            return None
 
     msg = ShapeCardUsedSchema(
         position=req.position,
@@ -44,4 +44,4 @@ async def ws_handle_shape_card(player_id: str, db: Session, data: dict):
         message=msg,
     )
 
-    return ''
+    return None

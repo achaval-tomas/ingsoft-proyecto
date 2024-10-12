@@ -2,6 +2,8 @@ from pydantic import BaseModel
 
 from src.tools.jsonify import deserialize, serialize
 
+Coordinate = tuple[int, int]
+
 
 class ShapeCardSchema(BaseModel):
     shape: str
@@ -18,25 +20,25 @@ def validate_shape_cards(cards: str):
 
 class UseMovementCardSchema(BaseModel):
     type: str
-    position: tuple[int, int]
+    position: Coordinate
     rotation: str
     movement: str
 
 
 class MovementCardUsedSchema(BaseModel):
     type: str = 'movement-card-used'
-    position: tuple[int, int]
+    position: Coordinate
     rotation: str
     movement: str
 
 
 class UseShapeCardSchema(BaseModel):
     type: str
-    position: tuple[int, int]
+    position: Coordinate
     targetPlayerId: str
 
 
 class ShapeCardUsedSchema(BaseModel):
     type: str = 'shape-card-used'
-    position: tuple[int, int]
+    position: Coordinate
     targetPlayerId: str

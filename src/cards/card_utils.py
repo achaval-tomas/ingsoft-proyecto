@@ -1,24 +1,41 @@
 from src.cards.shape_card import normalize_shape, rotate_shape, shape_data
-from src.schemas.card_schemas import ShapeCardSchema
+from src.schemas.card_schemas import Coordinate, ShapeCardSchema
 
 
 def get_coord_from_board_index(index: int):
     return (index % 6, index // 6)
 
 
-def get_board_index_from_coords(coords: tuple[int, int]):
+def get_board_index_from_coords(coords: Coordinate):
     return coords[1] * 6 + coords[0]
 
 
-def find_connected_tiles(board: list[str], start_index: int):
-    target_color = board[start_index]
+def get_board_neighbors(coord: Coordinate):
+    (x, y) = coord
+    neighbors: list[Coordinate] = []
+
+    if x > 0:
+        neighbors.append((x - 1, y))
+    if x < 5:
+        neighbors.append((x + 1, y))
+    if y > 0:
+        neighbors.append((x, y - 1))
+    if y < 5:
+        neighbors.append((x, y + 1))
+
+    return neighbors
+
+
+def find_connected_tiles(board: list[str], start_coords: Coordinate):
+    target_color = board[get_board_index_from_coords(start_coords)]
 
     visited = [False] * 36
-    queue = [start_index]
-    selected: list[int] = []
+    queue: list[Coordinate] = [start_coords]
+    selected: list[Coordinate] = []
 
     while len(queue) != 0:
-        tile_index = queue.pop(0)
+        tile_coords = queue.pop(0)
+        tile_index = get_board_index_from_coords(tile_coords)
 
         if visited[tile_index]:
             continue
@@ -28,25 +45,16 @@ def find_connected_tiles(board: list[str], start_index: int):
 
         if tile_color != target_color:
             continue
-        selected.append(tile_index)
 
-        (x, y) = get_coord_from_board_index(tile_index)
+        selected.append(tile_coords)
+        queue += get_board_neighbors(tile_coords)
 
-        if x > 0:
-            queue.append(get_board_index_from_coords((x - 1, y)))
-        if x < 5:
-            queue.append(get_board_index_from_coords((x + 1, y)))
-        if y > 0:
-            queue.append(get_board_index_from_coords((x, y - 1)))
-        if y < 5:
-            queue.append(get_board_index_from_coords((x, y + 1)))
-
-    return list(map(get_coord_from_board_index, selected))
+    return selected
 
 
 def match_shape_to_player_card(
     shape_cards: list[ShapeCardSchema],
-    target_shape: list[tuple[int, int]],
+    target_shape: list[Coordinate],
 ):
     """
     Matches 'shape' to any rotation of a card

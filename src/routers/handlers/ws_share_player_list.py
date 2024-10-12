@@ -58,4 +58,4 @@ async def ws_share_player_list(
             player_id=player_id,
             message=players,
         )
-    return ''
+    return None

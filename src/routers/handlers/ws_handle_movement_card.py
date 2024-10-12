@@ -41,4 +41,4 @@ async def ws_handle_movement_card(player_id: str, db: Session, data: dict):
         message=msg,
     )
 
-    return ''
+    return None

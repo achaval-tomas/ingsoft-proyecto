@@ -1,7 +1,10 @@
+from src.schemas.card_schemas import Coordinate
+
+
 class MovementData:
     def __init__(self, clamps, target):
         self.clamps: bool = clamps
-        self.target: tuple[int, int] = target
+        self.target: Coordinate = target
 
 
 movement_data = {
@@ -15,7 +18,7 @@ movement_data = {
 }
 
 
-def rotate_movement(target: tuple[int, int], rot: str):
+def rotate_movement(target: Coordinate, rot: str):
     match rot:
         case 'r0':
             pass

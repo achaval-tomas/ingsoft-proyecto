@@ -109,4 +109,4 @@ async def ws_broadcast_gamestate(player_id: str, db: Session):
             player_id=player,
         )
 
-    return ''
+    return None

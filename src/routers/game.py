@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 
 import src.routers.helpers.connection_manager as cm
 from src.constants import errors
-from src.database.crud import crud_game, crud_lobby
 from src.database.session import get_db
 from src.routers.handlers.ws_handle_cancel_movements import ws_handle_cancel_movements
 from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
@@ -20,7 +19,11 @@ game_router = APIRouter()
 
 @game_router.post('/game', status_code=200)
 async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db)):
-    rc = crud_game.create_game(db=db, lobby_id=body.lobby_id, player_id=body.player_id)
+    rc = await ws_handle_game_start(
+        db=db,
+        player_id=body.player_id,
+        lobby_id=body.lobby_id,
+    )
 
     if rc == 1:
         raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
@@ -33,9 +36,6 @@ async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db
         raise HTTPException(status_code=400, detail=errors.NOT_ENOUGH_PLAYERS)
     elif rc == 4:
         raise HTTPException(status_code=404, detail=errors.PLAYER_IS_MISSING)
-
-    await ws_handle_game_start(db=db, lobby_id=body.lobby_id)
-    crud_lobby.delete_lobby(lobby_id=body.lobby_id, db=db)
 
 
 @game_router.post('/game/leave', status_code=200)
@@ -59,7 +59,7 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
         )
 
         while True:
-            response = ''
+            response = None
             received = await ws.receive_text()
             request = deserialize(received)
 
@@ -86,7 +86,7 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
                         data=received,
                     )
 
-            if response != '':
+            if response is not None:
                 await cm.game_manager.send_personal_message(
                     player_id=player_id,
                     message=response,

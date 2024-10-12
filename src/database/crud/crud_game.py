@@ -7,6 +7,7 @@ from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
 from src.database.models import Game, Lobby, PlayerCards
+from src.schemas.card_schemas import Coordinate
 from src.tools.jsonify import deserialize, serialize
 
 
@@ -68,8 +69,8 @@ def create_game(db: Session, lobby_id: str, player_id: str):
 def switch_tiles(
     db: Session,
     game: Game,
-    origin: tuple[int, int],
-    target: tuple[int, int],
+    origin: Coordinate,
+    target: Coordinate,
     clamp: bool,
 ):
     """
