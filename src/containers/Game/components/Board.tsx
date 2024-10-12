@@ -68,7 +68,7 @@ function Board({ uiState, onClickTile }: BoardProps) {
 
     return (
         <div
-            className={`grid h-full aspect-square gap-[3%] p-[3%] bg-zinc-700 h-fit rounded-lg shadow-md shadow-black border border-transparent ${borderColorFromActiveSide(activeSide)}`}
+            className={`grid h-full aspect-square gap-[3%] p-[3%] bg-zinc-700 h-fit rounded-lg shadow-md shadow-black border-2 border-transparent ${borderColorFromActiveSide(activeSide)}`}
             style={{ grid: "repeat(6, 1fr) / repeat(6, 1fr)" }}
         >
             {tiles.map((t, i) => {
