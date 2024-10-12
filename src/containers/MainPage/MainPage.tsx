@@ -6,6 +6,7 @@ import { LobbyElement } from "./components/LobbyList";
 import { toInitial, toLobby, toPlay } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 
+
 export interface LobbyForm {
     name: string;
 }
@@ -32,6 +33,8 @@ function MainPage() {
     useEffect(() => {
         void fetchAndSaveLobbies();
     }, []);
+
+
 
     async function handleSubmit(state: CreateLobbyFormState) {
 
@@ -101,7 +104,20 @@ function MainPage() {
         return <Navigate to={toInitial()} replace />;
     }
 
+
+    function handleSearch(searchQuery: string) {
+        if (searchQuery === "") {
+            fetchAndSaveLobbies();
+        } else {
+            setLobbies((prevLobbies) =>
+                prevLobbies.filter((lobby) =>
+                    lobby.lobby_name.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+            );
+        }
+    }
     return (
+
         <MainPageLayout
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}

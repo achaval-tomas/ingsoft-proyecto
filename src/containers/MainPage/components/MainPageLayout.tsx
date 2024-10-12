@@ -2,15 +2,12 @@ import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
-import Searcher from "../../../components/Searcher";
-import SearchLobbyByPlayerAmount from "./LobbyByPAmount";
 
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
     joinHandler: (lobbyId: string) => void;
-    handleSearch: (searchQuery: number | "") => void
 }
 
 function MainPageLayout({
@@ -18,7 +15,6 @@ function MainPageLayout({
     lobbies,
     refreshHandler,
     joinHandler,
-    handleSearch
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -40,9 +36,6 @@ function MainPageLayout({
                     </FilledButton>
                 </div>
             </div>
-            <SearchLobbyByPlayerAmount
-                onSearch={handleSearch}
-                 />
             <LobbyList
                 lobbyList={lobbies}
                 joinHandler={joinHandler}
