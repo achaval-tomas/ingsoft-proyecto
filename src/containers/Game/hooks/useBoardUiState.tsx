@@ -3,7 +3,7 @@ import { BoardState } from "../../../domain/GameState";
 import { BoardTileShapeData, findFormedShapes } from "../../../domain/Board";
 import { BoardTileStatus, BoardTileUiState, BoardUiState } from "../GameUiState";
 import { Direction } from "../../../domain/Direction";
-import { Position, positionToBoardIndex } from "../../../domain/Position";
+import { positionToBoardIndex } from "../../../domain/Position";
 import { Shape } from "../../../domain/Shape";
 import { MovementTarget } from "../../../domain/Movement";
 
@@ -11,11 +11,9 @@ function useBoardUiState(
     boardState: BoardState,
     shapeWhitelist: Shape[],
     currentTurnPlayerIndex: number,
-    selectedTile: Position | null,
+    selectedTileIndex: number | null,
     movementTargets: MovementTarget[],
 ): BoardUiState {
-    const selectedTileIndex = (selectedTile != null) ? positionToBoardIndex(selectedTile) : null;
-
     const tiles = useMemo<BoardTileUiState[]>(() => {
         const formedShapes = findFormedShapes(boardState.tiles);
 

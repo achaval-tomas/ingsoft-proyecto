@@ -2,17 +2,19 @@ import { useMemo } from "react";
 import { CommonPlayerState, GameState } from "../../../domain/GameState";
 import { CommonPlayerUiState, GameUiState, OtherPlayerUiState, SelfPlayerUiState } from "../GameUiState";
 import useBoardUiState from "./useBoardUiState";
-import { Position } from "../../../domain/Position";
 import useWinner from "./useWinner";
 import { MovementTarget } from "../../../domain/Movement";
+import { getMovementCardIndexOrNull, getSourceTileIndexOrNull, SelectionState } from "../SelectionState";
 
 function useGameUiState(
     gameState: GameState,
-    selectedMovementCard: number | null,
-    selectedTile: Position | null,
+    selectionState: SelectionState,
     movementTargets: MovementTarget[],
 ): GameUiState {
     const { selfPlayerState, otherPlayersState, boardState, currentRoundPlayer, temporalMovements } = gameState;
+
+    const selectedMovementCardIndexOrNull = getMovementCardIndexOrNull(selectionState);
+    const selectedSourceTileIndexOrNull = getSourceTileIndexOrNull(selectionState);
 
     const selfPlayerUiState = useMemo<SelfPlayerUiState>(
         () => ({
@@ -20,12 +22,12 @@ function useGameUiState(
             movementCardsInHand: selfPlayerState.movementCardsInHand.map(
                 (m, i) => ({
                     movement: m,
-                    status: (i === selectedMovementCard) ? "selected" : "normal",
+                    status: (i === selectedMovementCardIndexOrNull) ? "selected" : "normal",
                 }),
             ),
             canCancelMovement: currentRoundPlayer === selfPlayerState.roundOrder && temporalMovements.length > 0,
         }),
-        [selfPlayerState, selectedMovementCard, currentRoundPlayer, temporalMovements],
+        [selfPlayerState, selectedMovementCardIndexOrNull, currentRoundPlayer, temporalMovements],
     );
 
     const otherPlayersUiState = useMemo<OtherPlayerUiState[]>(
@@ -50,7 +52,7 @@ function useGameUiState(
         boardState,
         shapeWhitelist,
         currentTurnPlayerIndex,
-        selectedTile,
+        selectedSourceTileIndexOrNull,
         movementTargets,
     );
 

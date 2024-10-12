@@ -6,11 +6,12 @@ import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
 import { MovementTarget } from "../../domain/Movement";
-import { Position, positionsEqual } from "../../domain/Position";
+import { boardIndexToPosition, Position, positionsEqual, positionToBoardIndex } from "../../domain/Position";
 import { GameState } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
 import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
+import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 
 type GameProps = {
     playerId: string;
@@ -23,21 +24,18 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
-    const [selectedMovementCardIndex, setSelectedMovementCardIndex] = useState<number | null>(null);
-    const [selectedTile, setSelectedTile] = useState<Position | null>(null);
+    const [selectionState, setSelectionState] = useState<SelectionState>(null);
 
     useEffect(() => {
         if (gameState.currentRoundPlayer !== gameState.selfPlayerState.roundOrder) {
-            setSelectedMovementCardIndex(null);
-            setSelectedTile(null);
+            setSelectionState(null);
         }
     }, [gameState.currentRoundPlayer, gameState.selfPlayerState.roundOrder]);
 
     useEffect(() => {
         const handleKeypress = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
-                setSelectedMovementCardIndex(null);
-                setSelectedTile(null);
+                setSelectionState(null);
             }
         };
 
@@ -45,13 +43,9 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         return () => document.removeEventListener("keyup", handleKeypress);
     }, []);
 
-    const selectedMovement = (selectedMovementCardIndex != null)
-        ? gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex] ?? null
-        : null;
+    const movementTargets: MovementTarget[] = useMovementTargets(gameState, selectionState);
 
-    const movementTargets: MovementTarget[] = useMovementTargets(selectedMovement, selectedTile);
-
-    const uiState = useGameUiState(gameState, selectedMovementCardIndex, selectedTile, movementTargets);
+    const uiState = useGameUiState(gameState, selectionState, movementTargets);
 
     const handleEndTurn = () => {
         sendMessage({ type: "end-turn" });
@@ -62,51 +56,67 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         navigate(toLobby(playerId));
     };
 
-    const handleClickMovementCard = (i: number) => {
+    const handleClickMovementCard = (movementCardIndex: number) => {
         if (gameState.currentRoundPlayer !== gameState.selfPlayerState.roundOrder) {
             return;
         }
 
-        if (i >= gameState.selfPlayerState.movementCardsInHand.length) {
+        if (movementCardIndex >= gameState.selfPlayerState.movementCardsInHand.length) {
             return;
         }
 
-        setSelectedMovementCardIndex(selectedMovementCardIndex === i ? null : i);
-        setSelectedTile(null);
+        if (getMovementCardIndexOrNull(selectionState) === movementCardIndex) {
+            setSelectionState(null);
+        } else {
+            setSelectionState({ type: "movement-card", movementCardIndex });
+        }
     };
 
     const handleClickTile = (pos: Position) => {
-        if (selectedMovement == null) {
+        const tileIndex = positionToBoardIndex(pos);
+
+        switch (selectionState?.type) {
+            case "shape-card": {
             return;
         }
-
-        if (selectedTile == null) {
-            setSelectedTile(pos);
+            case "movement-card": {
+                setSelectionState({
+                    type: "movement-card-with-source-tile",
+                    movementCardIndex: selectionState.movementCardIndex,
+                    sourceTileIndex: tileIndex,
+                });
             return;
         }
-
-        if (positionsEqual(selectedTile, pos)) {
-            setSelectedTile(null);
+            case "movement-card-with-source-tile": {
+                if (tileIndex === selectionState.sourceTileIndex) {
+                    setSelectionState({
+                        type: "movement-card",
+                        movementCardIndex: selectionState.movementCardIndex,
+                    });
             return;
         }
 
         const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, pos));
         if (movementTarget == null) {
-            setSelectedTile(pos);
+                    setSelectionState({
+                        type: "movement-card-with-source-tile",
+                        movementCardIndex: selectionState.movementCardIndex,
+                        sourceTileIndex: tileIndex,
+                    });
             return;
         }
 
         sendMessage({
             type: "use-movement-card",
-            position: selectedTile,
+                    position: boardIndexToPosition(selectionState.sourceTileIndex),
             rotation: movementTarget.movementRotation,
-            movement: selectedMovement,
-        });
-
-        setSelectedMovementCardIndex(null);
-        setSelectedTile(null);
+                    movement: gameState.selfPlayerState.movementCardsInHand[selectionState.movementCardIndex],
+                });
+                setSelectionState(null);
+                return;
+            }
+        }
     };
-
 
     return (
         <>

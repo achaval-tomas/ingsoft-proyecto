@@ -1,15 +1,20 @@
 import { useMemo } from "react";
-import { getPossibleTargetsInBoard, Movement, MovementTarget } from "../../../domain/Movement";
-import { Position } from "../../../domain/Position";
+import { getPossibleTargetsInBoard, MovementTarget } from "../../../domain/Movement";
+import { SelectionState } from "../SelectionState";
+import { GameState } from "../../../domain/GameState";
+import { boardIndexToPosition } from "../../../domain/Position";
 
-function useMovementTargets(movement: Movement | null, sourceTile: Position | null): MovementTarget[] {
+function useMovementTargets(gameState: GameState, selectionState: SelectionState): MovementTarget[] {
     return useMemo(() => {
-        if (movement == null || sourceTile == null) {
+        if (selectionState?.type !== "movement-card-with-source-tile") {
             return [];
         }
 
-        return getPossibleTargetsInBoard(movement, sourceTile);
-    }, [movement, sourceTile]);
+        const movement = gameState.selfPlayerState.movementCardsInHand[selectionState.movementCardIndex];
+        const sourceTilePosition = boardIndexToPosition(selectionState.sourceTileIndex);
+
+        return getPossibleTargetsInBoard(movement, sourceTilePosition);
+    }, [gameState.selfPlayerState.movementCardsInHand, selectionState]);
 }
 
 export default useMovementTargets;
