@@ -72,9 +72,8 @@ function MainPage() {
         if (searchQuery === "") {
             fetchAndSaveLobbies();
         } else {
-            setLobbies((prevLobbies) =>
-                prevLobbies.filter((lobby) =>
-                    lobby.player_amount == searchQuery))
+            const filtered = allLobbies.filter((lobby) => lobby.player_amount == searchQuery)
+            setFilteredLobbies(filtered)
         }
     }
 
