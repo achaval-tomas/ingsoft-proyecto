@@ -64,7 +64,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
     };
 
     const handleClickTile = (pos: Position) => {
-        if (selectedMovementCardIndex == null) {
+        if (selectedMovement == null) {
             return;
         }
 
@@ -83,7 +83,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             type: "use-movement-card",
             position: selectedTile,
             rotation: movementTarget.movementRotation,
-            movement: gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex],
+            movement: selectedMovement,
         });
 
         setSelectedMovementCardIndex(null);
