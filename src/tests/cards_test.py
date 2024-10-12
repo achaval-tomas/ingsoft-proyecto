@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from src.database.crud.crud_cards import get_player_cards, refill_cards
 from src.database.session import get_db
 from src.main import app
+from src.schemas.card_schemas import dump_shape_cards, validate_shape_cards
 from src.schemas.game_schemas import GameCreate
 from src.schemas.lobby_schemas import LobbyCreateSchema
 from src.schemas.player_schemas import PlayerCreateSchema
@@ -92,15 +93,22 @@ def test_refill_cards():
 
     cards = get_player_cards(db=db, player_id=player_id)
 
-    shape_cards_hand = deserialize(cards.shape_cards_in_hand)
-    shape_cards_hand.pop(0)
+    shape_cards = validate_shape_cards(cards.shape_cards_in_hand)
+    shape_cards.pop(0)
 
-    cards.shape_cards_in_hand = serialize(shape_cards_hand)
+    cards.shape_cards_in_hand = dump_shape_cards(shape_cards)
+    cards.movement_cards = serialize([])
     db.commit()
 
-    response_test = refill_cards(db=db, player_id=player_id)
-    cards_test = get_player_cards(db=db, player_id=player_id)
-    shape_cards_hand_test = deserialize(cards_test.shape_cards_in_hand)
+    response_test, mov_cards_res, shape_cards_res = refill_cards(
+        db=db,
+        player_id=player_id,
+    )
+
+    db.refresh(cards)
+    shape_cards = validate_shape_cards(cards.shape_cards_in_hand)
+    movement_cards = deserialize(cards.movement_cards)
 
     assert response_test == 0
-    assert len(shape_cards_hand_test) == 3
+    assert shape_cards == shape_cards_res and len(shape_cards) == 3
+    assert movement_cards == mov_cards_res and len(movement_cards) == 3
