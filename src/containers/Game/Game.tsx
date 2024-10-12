@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GameLayout from "./GameLayout";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -25,6 +25,13 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
     const [selectedMovementCardIndex, setSelectedMovementCardIndex] = useState<number | null>(null);
     const [selectedTile, setSelectedTile] = useState<Position | null>(null);
 
+    useEffect(() => {
+        if (gameState.currentRoundPlayer !== gameState.selfPlayerState.roundOrder) {
+            setSelectedMovementCardIndex(null);
+            setSelectedTile(null);
+        }
+    }, [gameState.currentRoundPlayer, gameState.selfPlayerState.roundOrder]);
+
     const selectedMovementCard = (selectedMovementCardIndex != null)
         ? gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex] ?? null
         : null;
@@ -48,11 +55,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
     };
 
     const handleClickMovementCard = (i: number) => {
-        if (gameState.selfPlayerState.roundOrder !== gameState.currentRoundPlayer) {
+        if (gameState.currentRoundPlayer !== gameState.selfPlayerState.roundOrder) {
             return;
         }
 
-        if (gameState.selfPlayerState.movementCardsInHand.length < i + 1) {
+        if (i >= gameState.selfPlayerState.movementCardsInHand.length) {
             return;
         }
 
