@@ -33,6 +33,18 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         }
     }, [gameState.currentRoundPlayer, gameState.selfPlayerState.roundOrder]);
 
+    useEffect(() => {
+        const handleKeypress = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setSelectedMovementCardIndex(null);
+                setSelectedTile(null);
+            }
+        };
+
+        document.addEventListener("keyup", handleKeypress);
+        return () => document.removeEventListener("keyup", handleKeypress);
+    }, []);
+
     const selectedMovement = (selectedMovementCardIndex != null)
         ? gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex] ?? null
         : null;
