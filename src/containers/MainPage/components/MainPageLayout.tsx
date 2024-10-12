@@ -2,12 +2,15 @@ import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
+import SearchLobbyByName from "./SearchLobbyByName";
 
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
     joinHandler: (lobbyId: string) => void;
+    handleSearch: (searchQuery: string) => void;
+
 }
 
 function MainPageLayout({
@@ -15,6 +18,7 @@ function MainPageLayout({
     lobbies,
     refreshHandler,
     joinHandler,
+    handleSearch,
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -36,6 +40,7 @@ function MainPageLayout({
                     </FilledButton>
                 </div>
             </div>
+            <SearchLobbyByName onSearch={handleSearch} />
             <LobbyList
                 lobbyList={lobbies}
                 joinHandler={joinHandler}
