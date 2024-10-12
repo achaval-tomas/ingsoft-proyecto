@@ -55,7 +55,7 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
     return (
         <div className={`${className} flex flex-row`}>
             {movementCards.map((mc, i) => (
-                <div key={i} className="group h-full aspect-[1/1.5] max-w-min">
+                <div key={i} className="group h-full aspect-[1/1.4865757] max-w-min">
                     <div
                         className={`${sharedClassNames} ${individualClassNamesFor(mc, i)} ${rotationFor(i)}`}
                         onClick={() => onClickMovementCard(i)}

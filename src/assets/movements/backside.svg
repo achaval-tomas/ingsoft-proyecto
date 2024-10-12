@@ -6,11 +6,11 @@
    id="Layer_1"
    x="0px"
    y="0px"
-   viewBox="0 0 243.10001 360.89998"
+   viewBox="0 0 243.10001 357.77217"
    xml:space="preserve"
    sodipodi:docname="backside.svg"
    width="1"
-   height="1.5"
+   height="1.487"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -21,7 +21,7 @@
      inkscape:collect="always"
      xlink:href="#Diamond_Harlequin_Color"
      id="pattern32"
-     patternTransform="translate(-19,-28.7)" /></defs><sodipodi:namedview
+     patternTransform="matrix(0.99999991,0,0,1.001634,-19.000004,-30.60567)" /></defs><sodipodi:namedview
    id="namedview32"
    pagecolor="#ffffff"
    bordercolor="#999999"
@@ -30,11 +30,11 @@
    inkscape:pageopacity="0"
    inkscape:pagecheckerboard="true"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="2"
-   inkscape:cx="88.75"
-   inkscape:cy="155.25"
-   inkscape:window-width="1920"
-   inkscape:window-height="1017"
+   inkscape:zoom="256"
+   inkscape:cx="0.80664062"
+   inkscape:cy="1.1347656"
+   inkscape:window-width="2560"
+   inkscape:window-height="1369"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
@@ -213,16 +213,16 @@
 	</g>
 </pattern>
 <rect
-   style="fill:#f6931e;stroke-width:0.940377"
+   style="display:inline;fill:#f6931e;stroke-width:0.941146"
    id="rect32"
    width="243.10001"
-   height="360.89999"
-   x="-1.7763568e-14"
-   y="5.3290705e-15" /><path
+   height="361.48969"
+   x="0"
+   y="-1.8587711" /><path
    id="XMLID_1_"
    class="st5"
-   d="m 243.10001,0 c 0,0 0,360.89999 0,360.89999 H 0 V 0 Z"
-   style="fill:url(#pattern32);stroke-width:0;stroke-dasharray:none"
+   d="m 243.10001,-1.8587707 c 0,0 0,361.4897107 0,361.4897107 H 0 V -1.8587707 Z"
+   style="display:inline;fill:url(#pattern32);stroke-width:0;stroke-dasharray:none"
    inkscape:label="XMLID_1_"
    sodipodi:nodetypes="ccccc" />
 
