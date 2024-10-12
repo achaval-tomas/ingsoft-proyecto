@@ -26,7 +26,8 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
                         ? "z-[11]"
                         : "z-[12]";
 
-                return `${offset} ${zIndex} shadow-lg shadow-black group-hover:shadow-xl group-hover:shadow-black`;
+                return `${offset} ${zIndex} shadow-[0_10px_15px_-3px_rgb(0,0,0),inset_0_0_8px_8px_rgb(0,0,0)]`
+                    + " group-hover:shadow-[0_20px_25px_-5px_rgb(0,0,0),inset_0_0_8px_8px_rgb(0,0,0)]";
             }
             case "selected": {
                 const offset = isMiddleCard
@@ -37,7 +38,6 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
                 return `${offset} shadow-[0_0_8px_8px_rgb(255,255,255),inset_0_0_8px_8px_rgb(255,255,255)] z-[14]`;
             }
         }
-
     };
 
     const rotationFor = (i: number) => {
