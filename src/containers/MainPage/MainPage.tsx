@@ -19,12 +19,14 @@ async function getLobbies(): Promise<LobbyElement[]> {
 }
 
 function MainPage() {
-    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
+    const [allLobbies, setallLobbies] = useState<LobbyElement[]>([]);
+    const [filteredLobbies, setFilteredLobbies] = useState<LobbyElement[]>([])
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
     async function fetchAndSaveLobbies() {
-        setLobbies(await getLobbies());
+        setallLobbies(await getLobbies());
+        setFilteredLobbies(await getLobbies())
     }
 
     useEffect(() => {
@@ -67,9 +69,8 @@ function MainPage() {
         if (searchQuery === "") {
             fetchAndSaveLobbies();
         } else {
-            setLobbies((prevLobbies) =>
-                prevLobbies.filter((lobby) =>
-                    lobby.player_amount == searchQuery))
+            const filtered = allLobbies.filter((lobby) => lobby.player_amount == searchQuery)
+            setFilteredLobbies(filtered)
         }
     }
 
@@ -103,7 +104,7 @@ function MainPage() {
     return (
         <MainPageLayout
             onSubmitLobbyForm={s => void handleSubmit(s)}
-            lobbies={lobbies}
+            lobbies={filteredLobbies}
             refreshHandler={() => {
                 void fetchAndSaveLobbies();
             }}
