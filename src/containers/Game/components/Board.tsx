@@ -22,7 +22,16 @@ function BoardTile({ color, status, style, onClick }: BoardTileProps) {
     const childDynamicClassNames = `${borderByBoardTileStatus(status)} ${animationByBoardTileStatus(status)}`;
 
     return (
-        <div className={`rounded ${parentDynamicClassNames}`} onClick={onClick} style={style}>
+        <div
+            className={`rounded ${parentDynamicClassNames}`}
+            onClick={onClick}
+            style={{
+                transitionProperty: "background-color",
+                transitionTimingFunction: "ease",
+                transitionDuration: "250ms",
+                ...style,
+            }}
+        >
             <div className={`w-full h-full rounded hover:border-white ${childDynamicClassNames}`}>
             </div>
         </div>
