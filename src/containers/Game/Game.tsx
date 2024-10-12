@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import GameLayout from "./GameLayout";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
-import { getPossibleTargetsInBoard, MovementTarget } from "../../domain/Movement";
+import { MovementTarget } from "../../domain/Movement";
 import { Position, positionsEqual } from "../../domain/Position";
 import { GameState } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
 import useGameUiState from "./hooks/useGameUiState";
+import useMovementTargets from "./hooks/useMovementTargets";
 
 type GameProps = {
     playerId: string;
@@ -32,16 +33,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         }
     }, [gameState.currentRoundPlayer, gameState.selfPlayerState.roundOrder]);
 
-    const selectedMovementCard = (selectedMovementCardIndex != null)
+    const selectedMovement = (selectedMovementCardIndex != null)
         ? gameState.selfPlayerState.movementCardsInHand[selectedMovementCardIndex] ?? null
         : null;
 
-    const movementTargets: MovementTarget[] = useMemo(
-        () => (selectedMovementCard != null && selectedTile != null)
-            ? getPossibleTargetsInBoard(selectedMovementCard, selectedTile)
-            : [],
-        [selectedMovementCard, selectedTile],
-    );
+    const movementTargets: MovementTarget[] = useMovementTargets(selectedMovement, selectedTile);
 
     const uiState = useGameUiState(gameState, selectedMovementCardIndex, selectedTile, movementTargets);
 
