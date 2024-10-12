@@ -2,8 +2,7 @@ import { z } from "zod";
 import { Rotation } from "./Rotation";
 
 export const PositionSchema = z.tuple([z.number(), z.number()]);
-
-export type Position = z.infer<typeof PositionSchema>;
+export type Position = [number, number];
 
 export function sortPositions(positions: readonly Position[]): Position[] {
     return positions.toSorted((lhs, rhs) => positionToBoardIndex(lhs) - positionToBoardIndex(rhs));

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { GameStateSchema, PlayerIdSchema, ShapeCardStateSchema } from "./GameState";
 import { RotationSchema } from "./Rotation";
 import { MovementSchema } from "./Movement";
+import { PositionSchema } from "./Position";
 
 // Messages received from the backend
 export const GameMessageInSchema = z.discriminatedUnion("type", [
@@ -56,15 +57,18 @@ export const GameMessageOutSchema = z.discriminatedUnion("type", [
         type: z.literal("end-turn"), // Manually end the current turn.
     }),
     z.object({
-        // use a movement card
-        type: z.literal("use-movement-card"),
-        position: z.tuple([z.number().min(0).max(5), z.number().min(0).max(5)]),
+        type: z.literal("use-movement-card"), // Use a movement card
+        position: PositionSchema,
         rotation: RotationSchema,
         movement: MovementSchema,
     }),
     z.object({
-        // cancel a temporal movement
-        type: z.literal("cancel-movement"),
+        type: z.literal("use-shape-card"), // Use a shape card
+        position: PositionSchema,
+        targetPlayerId: PlayerIdSchema,
+    }),
+    z.object({
+        type: z.literal("cancel-movement"), // Cancel the last temporal movement
     }),
 ]);
 
