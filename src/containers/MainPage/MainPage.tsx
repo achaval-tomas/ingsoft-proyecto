@@ -54,6 +54,16 @@ function MainPage() {
         }
     }
 
+    function handleSearch(searchQuery: number | "") {
+        if (searchQuery === "") {
+            fetchAndSaveLobbies();
+        } else {
+            setLobbies((prevLobbies) =>
+                prevLobbies.filter((lobby) =>
+                    lobby.player_amount == searchQuery))
+        }
+    }
+
     async function joinHandler(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
         const res = await lobbyService.joinLobby(playerId, lobbyId);
@@ -83,6 +93,7 @@ function MainPage() {
                 void fetchAndSaveLobbies();
             }}
             joinHandler={lobbyId => void joinHandler(lobbyId)}
+            handleSearch={handleSearch}
         />
     );
 }

@@ -1,7 +1,7 @@
 import { Field as HUiField, Input, Label } from "@headlessui/react";
 import { HTMLInputTypeAttribute } from "react";
 
-interface FieldProps {
+export interface FieldProps {
     value: string | number;
     onChange : (value: string) => void;
     label: string;
