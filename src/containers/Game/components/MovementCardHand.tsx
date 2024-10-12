@@ -33,7 +33,8 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
                     ? "bottom-[30%]"
                     : "bottom-[20%]";
 
-                return `${offset} shadow-lg shadow-white z-[14]`;
+                // The inset shadow is just for fixing some artifacting.
+                return `${offset} shadow-[0_0_8px_8px_rgb(255,255,255),inset_0_0_8px_8px_rgb(255,255,255)] z-[14]`;
             }
         }
 
