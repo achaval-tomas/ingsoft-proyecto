@@ -5,7 +5,6 @@ from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize
 from src.database.session import get_db
 from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
@@ -18,6 +17,7 @@ from src.schemas.lobby_schemas import (
     LobbyLeaveSchema,
     LobbySchema,
 )
+from src.tools.jsonify import deserialize
 
 
 def lobby_decoder(lobby: models.Lobby):
@@ -98,7 +98,7 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
         )
 
         while True:
-            response = ''
+            response = None
             received = await ws.receive_text()
             request = deserialize(received)
 
@@ -106,7 +106,7 @@ async def lobby_websocket(player_id: str, ws: WebSocket, db: Session = Depends(g
                 case 'get-lobby-state':
                     response = await ws_handle_lobbystate(player_id, db)
 
-            if response != '':
+            if response is not None:
                 await lobby_manager.send_personal_message(response, player_id)
 
     except WebSocketDisconnect:

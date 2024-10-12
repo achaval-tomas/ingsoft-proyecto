@@ -2,11 +2,13 @@ import random
 
 from sqlalchemy.orm import Session
 
+from src.cards.card_utils import get_board_index_from_coords
 from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize, serialize
 from src.database.models import Game, Lobby, PlayerCards
+from src.schemas.card_schemas import Coordinate
+from src.tools.jsonify import deserialize, serialize
 
 
 def create_game(db: Session, lobby_id: str, player_id: str):
@@ -64,14 +66,19 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     return 0
 
 
-def swap_tiles(
+def switch_tiles(
     db: Session,
     game: Game,
-    origin: tuple[int, int],
-    target: tuple[int, int],
+    origin: Coordinate,
+    target: Coordinate,
     clamp: bool,
 ):
-    board_origin = origin[1] * 6 + origin[0]
+    """
+    Switches the tile at origin with the tile at target-position from origin.
+
+    Returns 0 on success, 1 if the switch is not allowed.
+    """
+    board_origin = get_board_index_from_coords(origin)
     if not 0 <= board_origin < 36:
         return 1
 
@@ -82,7 +89,7 @@ def swap_tiles(
         target_x = clamp_val(target_x)
         target_y = clamp_val(target_y)
 
-    board_target = target_y * 6 + target_x
+    board_target = get_board_index_from_coords((target_x, target_y))
 
     if not 0 <= board_target < 36 or board_origin == board_target:
         return 1
@@ -194,21 +201,21 @@ def delete_player_cards(db: Session, player_id: str):
 def end_game_turn(db: Session, player_id: str):
     game = get_game(db=db, player_id=player_id)
     if not game:
-        return 1
+        return 1, None, None
 
     player_order = deserialize(game.player_order)
     if player_id != player_order[game.current_turn]:
-        return 2
+        return 2, None, None
 
-    rc = crud_cards.confirm_movements(db=db, player_id=player_id)
+    rc = crud_cards.cancel_movements(db=db, player_id=player_id)
     if rc == 1:
-        return 3
+        return 3, None, None
 
-    rc = crud_cards.refill_cards(db=db, player_id=player_id)
+    rc, mov_cards, shape_cards = crud_cards.refill_cards(db=db, player_id=player_id)
     if rc == 3:
-        return 4
+        return 4, None, None
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
 
-    return 0
+    return 0, mov_cards, shape_cards

@@ -5,9 +5,8 @@ from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game
 from src.database.crud.crud_player import get_player
-from src.database.crud.tools.jsonify import deserialize
-from src.database.models import Game, PlayerCards
-from src.schemas.card_schemas import ShapeCardSchema
+from src.database.models import Game
+from src.schemas.card_schemas import validate_shape_cards
 from src.schemas.game_schemas import (
     BoardStateSchema,
     GameStateMessageSchema,
@@ -16,17 +15,7 @@ from src.schemas.game_schemas import (
     SelfPlayerStateSchema,
 )
 from src.schemas.message_schema import error_message
-
-
-def list_shape_cards(cards: PlayerCards):
-    return [
-        ShapeCardSchema.model_validate_json(card)
-        for card in deserialize(cards.shape_cards_in_hand)
-    ]
-
-
-def list_movement_cards(cards: PlayerCards):
-    return deserialize(cards.movement_cards)
+from src.tools.jsonify import deserialize
 
 
 def extract_own_cards(db: Session, player: SelfPlayerStateSchema):
@@ -34,9 +23,9 @@ def extract_own_cards(db: Session, player: SelfPlayerStateSchema):
 
     player.shapeCardsInDeckCount = len(deserialize(player_cards.shape_cards_deck))
 
-    player.shapeCardsInHand = list_shape_cards(player_cards)
+    player.shapeCardsInHand = validate_shape_cards(player_cards.shape_cards_in_hand)
 
-    player.movementCardsInHand = list_movement_cards(player_cards)
+    player.movementCardsInHand = deserialize(player_cards.movement_cards)
 
 
 def extract_other_player_cards(db: Session, player: OtherPlayersStateSchema):
@@ -44,9 +33,9 @@ def extract_other_player_cards(db: Session, player: OtherPlayersStateSchema):
 
     player.shapeCardsInDeckCount = len(deserialize(player_cards.shape_cards_deck))
 
-    player.shapeCardsInHand = list_shape_cards(player_cards)
+    player.shapeCardsInHand = validate_shape_cards(player_cards.shape_cards_in_hand)
 
-    player.movementCardsInHandCount = len(list_movement_cards(player_cards))
+    player.movementCardsInHandCount = len(deserialize(player_cards.movement_cards))
 
 
 def extract_other_player_states(db: Session, game_data: Game, player_id: str):
@@ -120,4 +109,4 @@ async def ws_broadcast_gamestate(player_id: str, db: Session):
             player_id=player,
         )
 
-    return ''
+    return None

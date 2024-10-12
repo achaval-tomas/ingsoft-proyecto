@@ -23,3 +23,5 @@ INVALID_CARD = 'No puedes utilizar esta carta!'
 MOVEMENT_OUT_OF_BOUNDS = 'No es posible realizar este movimiento'
 
 INTERNAL_SERVER_ERROR = 'Hubo un problema en el servidor.'
+
+INVALID_COLOR = 'No puedes formar una figura del color bloqueado!'

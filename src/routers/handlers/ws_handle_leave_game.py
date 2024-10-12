@@ -26,6 +26,5 @@ async def ws_handle_leave_game(player_id: str, db: Session):
         )
     elif res == 3:
         await ws_handle_announce_winner(db=db, winner_id=winner_id)
-        crud_game.delete_game(db=db, game_id=game_id)
 
     return res

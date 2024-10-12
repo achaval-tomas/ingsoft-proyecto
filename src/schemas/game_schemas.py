@@ -56,3 +56,10 @@ class GameStateSchema(BaseModel):
 
 class GameStateMessageSchema(MessageSchema):
     gameState: GameStateSchema
+
+
+class TurnEndedMessageSchema(MessageSchema):
+    type: str = 'turn-ended'
+    playerId: str
+    newShapeCards: list[card_schemas.ShapeCardSchema]
+    newMovementCards: Optional[list[str]] = []
