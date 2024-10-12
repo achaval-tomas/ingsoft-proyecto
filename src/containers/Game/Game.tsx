@@ -73,6 +73,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
+        if (positionsEqual(selectedTile, pos)) {
+            setSelectedTile(null);
+            return;
+        }
+
         const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, pos));
         if (movementTarget == null) {
             setSelectedTile(pos);
