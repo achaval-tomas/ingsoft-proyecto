@@ -1,5 +1,5 @@
 import { Rotation } from "../../../domain/Rotation";
-import { ShapeCardUiState } from "../GameUiState";
+import { ShapeCardStatus, ShapeCardUiState } from "../GameUiState";
 import ShapeCard from "./ShapeCard";
 
 type ShapeCardHandProps = {
@@ -18,16 +18,26 @@ function flexDirectionFromRotation(rotation: Rotation): string {
 }
 
 function ShapeCardHand({ shapeCards, rotation, className }: ShapeCardHandProps) {
-    const sharedClassNames = "relative overflow-hidden [border-radius:7.5%] top-[0em] " +
-        "shadow-sm shadow-black transition-movement-card z-0";
+    const sharedClassNames = "relative overflow-hidden rounded-[7.5%] bottom-[0%]"
+        + " shadow-sm shadow-black transition-movement-card z-0";
 
-    const nonBlockedClassNames = " group-hover:top-[-0.5em] group-hover:shadow-md group-hover:shadow-black group-hover:z-10";
+    const individualClassNamesFor = (status: ShapeCardStatus) => {
+        switch (status) {
+            case "blocked":
+                return "";
+            case "selected":
+                return "";
+            case "normal":
+                return "group-hover:bottom-[10%] group-hover:shadow-md group-hover:shadow-black group-hover:z-10";
+        }
+
+    };
 
     return (
         <div className={`${className} flex ${flexDirectionFromRotation(rotation)} gap-[3%]`}>
             {shapeCards.map(({ shape, status }, i) => (
                 <div key={i} className="group max-h-full aspect-square">
-                    <div className={sharedClassNames + (status === "blocked") ? "" : ` ${nonBlockedClassNames}`}>
+                    <div className={`${sharedClassNames} ${individualClassNamesFor(status)}`}>
                         <ShapeCard shape={shape} isBlocked={status === "blocked"} />
                     </div>
                 </div>
