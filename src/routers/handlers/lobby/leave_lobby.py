@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-import src.routers.helpers.connection_manager as cm
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
 from src.routers.handlers.lobby.player_list import share_player_list
+from src.routers.helpers.connection_manager import lobby_manager
 from src.schemas.message_schema import simple_message
 
 
@@ -22,7 +22,7 @@ async def handle_leave_lobby(player_id: str, lobby_id: str, db: Session):
             broadcast=True,
         )
     elif res == 3:  # Lobby owner left
-        await cm.lobby_manager.broadcast_in_lobby(
+        await lobby_manager.broadcast_in_lobby(
             db=db,
             lobby_id=lobby_id,
             message=simple_message('destroy-lobby'),

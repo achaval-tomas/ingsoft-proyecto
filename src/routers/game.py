@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
-import src.routers.helpers.connection_manager as cm
 from src.constants import errors
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movements import handle_cancel_movements
@@ -10,6 +9,7 @@ from src.routers.handlers.game.leave_game import handle_leave_game
 from src.routers.handlers.game.movement_card import handle_movement_card
 from src.routers.handlers.game.shape_card import handle_shape_card
 from src.routers.handlers.lobby.game_start import handle_game_start
+from src.routers.helpers.connection_manager import game_manager
 from src.schemas import game_schemas, player_schemas
 from src.tools.jsonify import deserialize
 
@@ -53,10 +53,10 @@ async def game_websocket(
     ws: WebSocket,
     db: SessionDep,
 ):
-    await cm.game_manager.connect(ws, player_id)
+    await game_manager.connect(ws, player_id)
 
     try:
-        await cm.game_manager.send_personal_message(
+        await game_manager.send_personal_message(
             player_id=player_id,
             message=handle_gamestate(player_id=player_id, db=db),
         )
@@ -91,11 +91,11 @@ async def game_websocket(
                     )
 
             if response is not None:
-                await cm.game_manager.send_personal_message(
+                await game_manager.send_personal_message(
                     player_id=player_id,
                     message=response,
                 )
 
     except WebSocketDisconnect:
-        cm.game_manager.disconnect(player_id=player_id)
+        game_manager.disconnect(player_id=player_id)
         return

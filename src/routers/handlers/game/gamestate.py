@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 
-import src.routers.helpers.connection_manager as cm
 from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game
 from src.database.crud.crud_player import get_player
 from src.database.models import Game
+from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import validate_shape_cards
 from src.schemas.game_schemas import (
     BoardStateSchema,
@@ -104,7 +104,7 @@ async def broadcast_gamestate(player_id: str, db: Session):
     players = deserialize(game.player_order)
 
     for player in players:
-        await cm.game_manager.send_personal_message(
+        await game_manager.send_personal_message(
             message=handle_gamestate(player_id=player, db=db),
             player_id=player,
         )

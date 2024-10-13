@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-import src.routers.helpers.connection_manager as cm
 from src.database.crud import crud_game
 from src.database.crud.crud_player import get_player
+from src.routers.helpers.connection_manager import game_manager
 from src.schemas.player_schemas import WinnerMessageSchema
 
 
@@ -11,7 +11,7 @@ async def handle_announce_winner(winner_id: str, db: Session):
     if not player:
         return
 
-    await cm.game_manager.broadcast_in_game(
+    await game_manager.broadcast_in_game(
         db=db,
         game_id=player.game_id,
         message=WinnerMessageSchema(

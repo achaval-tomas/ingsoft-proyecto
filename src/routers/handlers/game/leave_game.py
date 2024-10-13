@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-import src.routers.helpers.connection_manager as cm
 from src.database.crud import crud_game
 from src.database.crud.crud_player import get_player
 from src.routers.handlers.game.announce_winner import handle_announce_winner
+from src.routers.helpers.connection_manager import game_manager
 from src.schemas.player_schemas import PlayerMessageSchema
 
 
@@ -16,7 +16,7 @@ async def handle_leave_game(player_id: str, db: Session):
     res, winner_id = crud_game.leave_game(db=db, player_id=player_id)
 
     if res == 0:
-        await cm.game_manager.broadcast_in_game(
+        await game_manager.broadcast_in_game(
             db=db,
             game_id=game_id,
             message=PlayerMessageSchema(
