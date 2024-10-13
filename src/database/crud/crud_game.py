@@ -2,7 +2,7 @@ import random
 
 from sqlalchemy.orm import Session
 
-from src.cards.card_utils import get_board_index_from_coords
+from src.cards.card_utils import coord_to_index
 from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
@@ -78,7 +78,7 @@ def switch_tiles(
 
     Returns 0 on success, 1 if the switch is not allowed.
     """
-    board_origin = get_board_index_from_coords(origin)
+    board_origin = coord_to_index(origin)
     if not 0 <= board_origin < 36:
         return 1
 
@@ -89,7 +89,7 @@ def switch_tiles(
         target_x = clamp_val(target_x)
         target_y = clamp_val(target_y)
 
-    board_target = get_board_index_from_coords((target_x, target_y))
+    board_target = coord_to_index((target_x, target_y))
 
     if not 0 <= board_target < 36 or board_origin == board_target:
         return 1

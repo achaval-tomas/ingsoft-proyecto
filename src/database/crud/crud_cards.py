@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 import src.database.crud.crud_game as crud_game
 from src.cards.card_dealer import MovCardDealer, ShapeCardDealer
 from src.cards.card_utils import (
+    coord_to_index,
     find_connected_tiles,
-    get_board_index_from_coords,
     match_shape_to_player_card,
 )
 from src.cards.movement_card import movement_data, rotate_movement
@@ -151,7 +151,7 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     player_cards.movement_cards = serialize(player_movement_cards)
 
     temp_switches = deserialize(player_cards.temp_switches)
-    temp_switches.append((req.movement, req.position, target, movement.clamps))
+    temp_switches.append((req.movement, req.position, target))
     player_cards.temp_switches = serialize(temp_switches)
 
     db.commit()
@@ -201,20 +201,20 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     cancelled = False
 
     for m in range(min(nmovs, used_mov_count)):
-        movement_data = used_movements[used_mov_count - m - 1]
+        mov_name, origin, target = used_movements[used_mov_count - m - 1]
 
         rc = crud_game.switch_tiles(
             db=db,
             game=game,
-            origin=movement_data[1],
-            target=movement_data[2],
-            clamp=movement_data[3],
+            origin=origin,
+            target=target,
+            clamp=movement_data[mov_name].clamps,
         )
 
         if rc == 1:
             return 3
 
-        mov_cards.append(movement_data[0])
+        mov_cards.append(mov_name)
         player_cards.movement_cards = serialize(mov_cards)
 
         used_movements.pop(used_mov_count - m - 1)
@@ -265,7 +265,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
         return 4
 
     board = deserialize(game.board)
-    shape_color = board[get_board_index_from_coords(req.position)]
+    shape_color = board[coord_to_index(req.position)]
 
     if shape_color == game.blocked_color:
         return 5

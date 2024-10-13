@@ -34,9 +34,10 @@ def rotate_shape_data_90(data: list[Coordinate]):
 
 
 def rotate_shape(data: list[Coordinate], r_amount: int):
+    """Returns normalized data after r_amount of ccw rotations"""
     for _ in range(r_amount):
         data = rotate_shape_data_90(data=data)
-    return data
+    return normalize_shape(data)
 
 
 def normalize_shape(shape: list[Coordinate]):
