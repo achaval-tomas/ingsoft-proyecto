@@ -93,7 +93,7 @@ function Board({ uiState, onClickTile }: BoardProps) {
                     />
                 );
             })}
-            {(uiState.blockedColor != null) && <div className="row-start-3 col-start-1">
+            {(uiState.blockedColor != null) && <div className="row-start-3 col-start-1 pointer-events-none">
                 <div
                     className={"relative overflow-hidden right-[500%] top-[60.588%] w-full h-full rounded shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] "
                         + colorToBackgroundClassName(uiState.blockedColor)}
