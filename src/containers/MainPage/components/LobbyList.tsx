@@ -32,19 +32,15 @@ export default function LobbyList({ lobbyList, joinHandler }: LobbyListProps) {
         </tr>,
     );
 
-    return (
-        <div>
-            <table className="w-screen">
-                <thead>
-                    <tr>
-                        <th>Nombre de la sala</th>
-                        <th>Cantidad de jugadores</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items}
-                </tbody>
-            </table>
-        </div>
-    );
+    return <table className="w-screen">
+        <thead>
+            <tr>
+                <th>Nombre de la sala</th>
+                <th>Cantidad de jugadores</th>
+            </tr>
+        </thead>
+        <tbody>
+            {items}
+        </tbody>
+    </table>;
 }
