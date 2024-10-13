@@ -7,6 +7,7 @@ type ShapeCardHandProps = {
     shapeCards: ShapeCardUiState[];
     rotation: Rotation;
     className: string;
+    onClickShapeCard: (i: number) => void;
 }
 
 function flexDirectionFromRotation(rotation: Rotation): string {
@@ -36,20 +37,20 @@ function writingModeFromRotation(rotation: Rotation): string {
     }
 }
 
-function ShapeCardHand({ playerName, shapeCards, rotation, className }: ShapeCardHandProps) {
-    const sharedClassNames = "relative overflow-hidden rounded-[7.5%] bottom-[0%]"
-        + " shadow-sm shadow-black transition-movement-card z-0";
+function ShapeCardHand({ playerName, shapeCards, rotation, className, onClickShapeCard }: ShapeCardHandProps) {
+    const sharedClassNames = "relative overflow-hidden rounded-[7.5%] transition-movement-card";
 
     const individualClassNamesFor = (status: ShapeCardStatus) => {
-        switch (status) {
-            case "blocked":
-                return "";
-            case "selected":
-                return "";
-            case "normal":
-                return "group-hover:bottom-[10%] group-hover:shadow-md group-hover:shadow-black group-hover:z-10";
-        }
+        const nonSelectedClassNames = "bottom-[0%] z-0 shadow-sm shadow-black";
 
+        switch (status) {
+            case "selected":
+                return "bottom-[20%] z-20 shadow-[0_0_4px_4px_rgb(255,255,255),inset_0_0_4px_4px_rgb(255,255,255)]";
+            case "blocked":
+                return nonSelectedClassNames;
+            case "normal":
+                return `${nonSelectedClassNames} group-hover:bottom-[10%] group-hover:shadow-md group-hover:shadow-black group-hover:z-10`;
+        }
     };
 
     return (
@@ -57,7 +58,10 @@ function ShapeCardHand({ playerName, shapeCards, rotation, className }: ShapeCar
             <div className={`w-full h-full justify-center flex ${flexDirectionFromRotation(rotation)} gap-[3%]`}>
                 {shapeCards.map(({ shape, status }, i) => (
                     <div key={i} className="group max-h-full aspect-square">
-                        <div className={`${sharedClassNames} ${individualClassNamesFor(status)}`}>
+                        <div
+                            className={`${sharedClassNames} ${individualClassNamesFor(status)}`}
+                            onClick={() => onClickShapeCard(i)}
+                        >
                             <ShapeCard shape={shape} isBlocked={status === "blocked"} />
                         </div>
                     </div>

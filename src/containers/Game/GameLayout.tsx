@@ -1,5 +1,6 @@
 import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
+import { PlayerId } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
 import Board from "./components/Board";
 import MovementCardDeck from "./components/MovementCardDeck";
@@ -11,12 +12,13 @@ type GameLayoutProps = {
     uiState: GameUiState;
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
+    onClickShapeCard: (playerId: PlayerId, shapeCardIndex: number) => void;
     onClickMovementCard: (i: number) => void;
     onClickTile: (i: Position) => void;
     onClickCancelMovement: () => void;
 };
 
-function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
+function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCard, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
     const { selfPlayerUiState, otherPlayersUiState, boardUiState } = uiState;
     const canCancel = selfPlayerUiState.movementCardsInHand.length < 3;
 
@@ -36,24 +38,28 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickMovement
                             shapeCards={selfPlayerUiState.shapeCardsInHand}
                             rotation="r0"
                             className="row-start-3 col-start-2 h-full w-full justify-center pt-[3%]"
+                            onClickShapeCard={(i) => onClickShapeCard(selfPlayerUiState.id, i)}
                         />
                         {otherPlayersUiState[0] && <ShapeCardHand
                             playerName={otherPlayersUiState[0].name}
                             shapeCards={otherPlayersUiState[0].shapeCardsInHand}
                             rotation="r90"
                             className="row-start-2 col-start-3 h-full w-full justify-center pl-[15%]"
+                            onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[0].id, i)}
                         />}
                         {otherPlayersUiState[1] && <ShapeCardHand
                             playerName={otherPlayersUiState[1].name}
                             shapeCards={otherPlayersUiState[1].shapeCardsInHand}
                             rotation="r180"
                             className="row-start-1 col-start-2 h-full w-full justify-center pb-[3%]"
+                            onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[1].id, i)}
                         />}
                         {otherPlayersUiState[2] && <ShapeCardHand
                             playerName={otherPlayersUiState[2].name}
                             shapeCards={otherPlayersUiState[2].shapeCardsInHand}
                             rotation="r270"
                             className="row-start-2 col-start-1 h-full w-full justify-center pr-[15%]"
+                            onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[2].id, i)}
                         />}
                     </div>
                     <div className="relative w-0 h-[12em] self-center">

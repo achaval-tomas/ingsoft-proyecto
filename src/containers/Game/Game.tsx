@@ -7,7 +7,7 @@ import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
 import { MovementTarget } from "../../domain/Movement";
 import { boardIndexToPosition, Position, positionsEqual, positionToBoardIndex } from "../../domain/Position";
-import { GameState } from "../../domain/GameState";
+import { GameState, PlayerId } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
 import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
@@ -56,6 +56,23 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         navigate(toLobby(playerId));
     };
 
+    const handleClickShapeCard = (playerId: PlayerId, shapeCardIndex: number) => {
+        if (gameState.currentRoundPlayer !== gameState.selfPlayerState.roundOrder) {
+            return;
+        }
+
+        if (selectionState?.type === "shape-card" && selectionState.playerId === playerId && selectionState.shapeCardIndex === shapeCardIndex) {
+            setSelectionState(null);
+            return;
+        }
+
+        setSelectionState({
+            type: "shape-card",
+            playerId,
+            shapeCardIndex,
+        });
+    };
+
     const handleClickMovementCard = (movementCardIndex: number) => {
         if (gameState.currentRoundPlayer !== gameState.selfPlayerState.roundOrder) {
             return;
@@ -77,39 +94,39 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
 
         switch (selectionState?.type) {
             case "shape-card": {
-            return;
-        }
+                return;
+            }
             case "movement-card": {
                 setSelectionState({
                     type: "movement-card-with-source-tile",
                     movementCardIndex: selectionState.movementCardIndex,
                     sourceTileIndex: tileIndex,
                 });
-            return;
-        }
+                return;
+            }
             case "movement-card-with-source-tile": {
                 if (tileIndex === selectionState.sourceTileIndex) {
                     setSelectionState({
                         type: "movement-card",
                         movementCardIndex: selectionState.movementCardIndex,
                     });
-            return;
-        }
+                    return;
+                }
 
-        const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, pos));
-        if (movementTarget == null) {
+                const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, pos));
+                if (movementTarget == null) {
                     setSelectionState({
                         type: "movement-card-with-source-tile",
                         movementCardIndex: selectionState.movementCardIndex,
                         sourceTileIndex: tileIndex,
                     });
-            return;
-        }
+                    return;
+                }
 
-        sendMessage({
-            type: "use-movement-card",
+                sendMessage({
+                    type: "use-movement-card",
                     position: boardIndexToPosition(selectionState.sourceTileIndex),
-            rotation: movementTarget.movementRotation,
+                    rotation: movementTarget.movementRotation,
                     movement: gameState.selfPlayerState.movementCardsInHand[selectionState.movementCardIndex],
                 });
                 setSelectionState(null);
@@ -124,6 +141,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
                 uiState={uiState}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
+                onClickShapeCard={handleClickShapeCard}
                 onClickMovementCard={handleClickMovementCard}
                 onClickTile={handleClickTile}
                 onClickCancelMovement={() => sendMessage({ type: "cancel-movement" })}

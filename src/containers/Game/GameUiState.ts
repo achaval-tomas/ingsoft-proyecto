@@ -1,5 +1,6 @@
 import { Color } from "../../domain/Color";
 import { Direction } from "../../domain/Direction";
+import { PlayerId } from "../../domain/GameState";
 import { Movement } from "../../domain/Movement";
 import { Shape } from "../../domain/Shape";
 
@@ -23,6 +24,7 @@ export type ShapeCardUiState = {
 }
 
 export type CommonPlayerUiState = {
+    id: PlayerId;
     name: string;
     shapeCardsInHand: ShapeCardUiState[];
     shapeCardsInDeckCount: number;

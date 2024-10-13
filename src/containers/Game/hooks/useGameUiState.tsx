@@ -13,29 +13,26 @@ function useGameUiState(
 ): GameUiState {
     const { selfPlayerState, otherPlayersState, boardState, currentRoundPlayer, temporalMovements } = gameState;
 
-    const selectedMovementCardIndexOrNull = getMovementCardIndexOrNull(selectionState);
-    const selectedSourceTileIndexOrNull = getSourceTileIndexOrNull(selectionState);
-
     const selfPlayerUiState = useMemo<SelfPlayerUiState>(
         () => ({
-            ...commonPlayerStateToUiState(selfPlayerState),
+            ...commonPlayerStateToUiState(selfPlayerState, selectionState),
             movementCardsInHand: selfPlayerState.movementCardsInHand.map(
                 (m, i) => ({
                     movement: m,
-                    status: (i === selectedMovementCardIndexOrNull) ? "selected" : "normal",
+                    status: (i === getMovementCardIndexOrNull(selectionState)) ? "selected" : "normal",
                 }),
             ),
             canCancelMovement: currentRoundPlayer === selfPlayerState.roundOrder && temporalMovements.length > 0,
         }),
-        [selfPlayerState, selectedMovementCardIndexOrNull, currentRoundPlayer, temporalMovements],
+        [selfPlayerState, selectionState, currentRoundPlayer, temporalMovements],
     );
 
     const otherPlayersUiState = useMemo<OtherPlayerUiState[]>(
         () => otherPlayersState.map<OtherPlayerUiState>(otherPlayerState => ({
-            ...commonPlayerStateToUiState(otherPlayerState),
+            ...commonPlayerStateToUiState(otherPlayerState, selectionState),
             movementCardsInHandCount: otherPlayerState.movementCardsInHandCount,
         })),
-        [otherPlayersState],
+        [otherPlayersState, selectionState],
     );
 
     const shapeWhitelist = useMemo(
@@ -52,7 +49,7 @@ function useGameUiState(
         boardState,
         shapeWhitelist,
         currentTurnPlayerIndex,
-        selectedSourceTileIndexOrNull,
+        getSourceTileIndexOrNull(selectionState),
         movementTargets,
     );
 
@@ -72,12 +69,21 @@ function useGameUiState(
     return uiState;
 }
 
-function commonPlayerStateToUiState(state: CommonPlayerState): CommonPlayerUiState {
+function commonPlayerStateToUiState(state: CommonPlayerState, selectionState: SelectionState): CommonPlayerUiState {
+    const selectedShapeCardIndex = (selectionState?.type === "shape-card" && selectionState.playerId === state.id)
+        ? selectionState.shapeCardIndex
+        : null;
+
     return {
+        id: state.id,
         name: state.name,
-        shapeCardsInHand: state.shapeCardsInHand.map(sc => ({
+        shapeCardsInHand: state.shapeCardsInHand.map((sc, i) => ({
             shape: sc.shape,
-            status: sc.isBlocked ? "blocked" : "normal",
+            status: (i === selectedShapeCardIndex)
+                ? "selected"
+                : sc.isBlocked
+                    ? "blocked"
+                    : "normal",
         })),
         shapeCardsInDeckCount: state.shapeCardsInDeckCount,
     };
