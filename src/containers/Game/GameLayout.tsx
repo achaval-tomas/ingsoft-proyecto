@@ -1,5 +1,6 @@
 import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
+import { colorToBackgroundClassName } from "../../domain/Color";
 import { PlayerId } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
 import Board from "./components/Board";
@@ -96,6 +97,21 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
             <div className="row-start-1 col-start-1 justify-self-end self-start">
                 <TextButton className="text-xl" padding="px-8 py-4" onClick={onClickLeaveGame}>Abandonar partida</TextButton>
             </div>
+            {(boardUiState.blockedColor != null) && <div className="row-start-1 col-start-1 justify-self-start self-center w-16 h-16">
+                <div
+                    className={"rounded overflow-hidden w-full h-full shadow-[inset_0_0_0px_2px_black] "
+                        + colorToBackgroundClassName(boardUiState.blockedColor)}
+                    style={{
+                        transitionProperty: "background-color",
+                        transitionTimingFunction: "ease",
+                        transitionDuration: "250ms",
+                    }}
+                >
+                    <div className={"w-full h-full rounded"}>
+                        <img src="/src/assets/blocked-color.svg" className="w-full h-full" />
+                    </div>
+                </div>
+            </div>}
         </div>
     );
 }
