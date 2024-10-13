@@ -4,7 +4,7 @@ from src.constants import errors
 from src.database.crud.crud_game import delete_game, get_game
 from src.database.crud.crud_lobby import delete_lobby
 from src.database.crud.crud_player import delete_player
-from src.database.session import get_db
+from src.database.db import get_session
 from src.main import app
 from src.schemas.game_schemas import GameCreate
 from src.schemas.lobby_schemas import (
@@ -92,9 +92,9 @@ def test_start_game_error_lobby_not_found():
     lobby_test_json = lobby_response.json()
     lobby_id = lobby_test_json['lobby_id']
 
-    db = next(get_db())
-    delete_lobby(db = db, lobby_id = lobby_id)
-    
+    db = next(get_session())
+    delete_lobby(db=db, lobby_id=lobby_id)
+
     game_test = GameCreate(lobby_id=lobby_id, player_id=player_id)
     response = client.post('/game', json=game_test.model_dump())
 
@@ -232,7 +232,7 @@ def test_start_game_error_player_is_missing():
     client.post('lobby/join', json=data_player_1)
     client.post('lobby/join', json=data_player_2)
 
-    db = next(get_db())
+    db = next(get_session())
     delete_player(db=db, player_id=player_id_2)
 
     game_test = GameCreate(lobby_id=lobby_id, player_id=player_id_1)
@@ -321,7 +321,7 @@ def test_leave_game_error_game_not_found():
     game_test = GameCreate(lobby_id=lobby_id, player_id=player_id_1)
     client.post('/game', json=game_test.model_dump())
 
-    db = next(get_db())
+    db = next(get_session())
     game = get_game(db=db, player_id=player_id_1)
     if game:
         delete_game(db=db, game_id=str(game.game_id))
@@ -360,7 +360,7 @@ def test_leave_game_error_player_not_found():
     game_test = GameCreate(lobby_id=lobby_id, player_id=player_id_1)
     client.post('/game', json=game_test.model_dump())
 
-    db = next(get_db())
+    db = next(get_session())
     delete_player(db=db, player_id=player_id_1)
 
     response = client.post('/game/leave', json={'playerId': player_id_1})
@@ -375,6 +375,7 @@ def test_leave_game_error_player_not_found():
 
 """ LOBBY TESTS """
 
+
 def test_create_lobby():
     player_test = PlayerCreateSchema(player_name='Cage')
     player_test_id = client.post('/player', json=player_test.model_dump())
@@ -385,11 +386,11 @@ def test_create_lobby():
     player_id = player_test_json['player_id']
 
     data_lobby = LobbyCreateSchema(
-        lobby_name="cage's room", 
+        lobby_name="cage's room",
         lobby_owner=player_id,
         min_players=2,
         max_players=4,
-        )
+    )
     response = client.post('/lobby', json=data_lobby.model_dump())
 
     assert response.status_code == 200, "Lobby wasn't correctly created."
@@ -398,7 +399,6 @@ def test_create_lobby():
 
 
 def test_get_all_lobbies():
-    
     player_test_1 = PlayerCreateSchema(player_name='Cage')
     player_test_1_id = client.post('/player', json=player_test_1.model_dump())
     player_test_1_json = player_test_1_id.json()
@@ -409,36 +409,36 @@ def test_get_all_lobbies():
     player_test_2_json = player_test_2_id.json()
     player_2_id = player_test_2_json['player_id']
 
-    player_test_3 = PlayerCreateSchema(player_name="Santino")
+    player_test_3 = PlayerCreateSchema(player_name='Santino')
     player_test_3_id = client.post('/player', json=player_test_3.model_dump())
     player_test_3_json = player_test_3_id.json()
     player_3_id = player_test_3_json['player_id']
-    
+
     test_lobby_1 = LobbyCreateSchema(
-        lobby_name = 'room 1',
-        lobby_owner = player_1_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 1',
+        lobby_owner=player_1_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby_1_id = client.post('/lobby', json=test_lobby_1.model_dump())
     test_lobby_1_json = test_lobby_1_id.json()
     test_lobby_1_id = test_lobby_1_json['lobby_id']
 
     test_lobby_2 = LobbyCreateSchema(
-        lobby_name = 'room 2',
-        lobby_owner = player_2_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 2',
+        lobby_owner=player_2_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby_2_id = client.post('/lobby', json=test_lobby_2.model_dump())
     test_lobby_2_json = test_lobby_2_id.json()
     test_lobby_2_id = test_lobby_2_json['lobby_id']
 
     test_lobby_3 = LobbyCreateSchema(
-        lobby_name = 'room 3',
-        lobby_owner = player_3_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 3',
+        lobby_owner=player_3_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby_3_id = client.post('/lobby', json=test_lobby_3.model_dump())
     test_lobby_3_json = test_lobby_3_id.json()
@@ -446,14 +446,15 @@ def test_get_all_lobbies():
 
     response = client.get('/lobby')
     assert response.status_code == 200
-    created_lobbys = [test_lobby_1.lobby_name, 
-                      test_lobby_2.lobby_name, 
-                      test_lobby_3.lobby_name,
-                    ]
+    created_lobbys = [
+        test_lobby_1.lobby_name,
+        test_lobby_2.lobby_name,
+        test_lobby_3.lobby_name,
+    ]
     all_lobbys = response.json()
     lobby_names = [lobby['lobby_name'] for lobby in all_lobbys]
     for lobby in created_lobbys:
-        assert lobby in lobby_names, f"{lobby} is not in the database."
+        assert lobby in lobby_names, f'{lobby} is not in the database.'
 
 
 def test_join_lobby():
@@ -466,21 +467,20 @@ def test_join_lobby():
     player_test_2_id = client.post('/player', json=player_test_2.model_dump())
     player_test_2_json = player_test_2_id.json()
     player_2_id = player_test_2_json['player_id']
-    
 
     data_lobby = LobbyCreateSchema(
-        lobby_name = "cage's room",
-        lobby_owner = player_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name="cage's room",
+        lobby_owner=player_id,
+        min_players=2,
+        max_players=4,
     )
     lobby = client.post('/lobby', json=data_lobby.model_dump())
     lobby_json = lobby.json()
     lobby_id = lobby_json['lobby_id']
 
     player_join = LobbyJoinSchema(
-        player_id = player_2_id,
-        lobby_id = lobby_id,
+        player_id=player_2_id,
+        lobby_id=lobby_id,
     )
 
     response = client.post('/lobby/join', json=player_join.model_dump())
@@ -489,17 +489,16 @@ def test_join_lobby():
 
 
 def test_join_lobby_error_player_not_found():
-    
     player_test_1 = PlayerCreateSchema(player_name='Cage')
     player_test_1_id = client.post('/player', json=player_test_1.model_dump())
     player_test_1_json = player_test_1_id.json()
     player_1_id = player_test_1_json['player_id']
 
     test_lobby = LobbyCreateSchema(
-        lobby_name = 'room 1',
-        lobby_owner = player_1_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 1',
+        lobby_owner=player_1_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby = client.post('/lobby', json=test_lobby.model_dump())
     test_lobby_json = test_lobby.json()
@@ -509,13 +508,13 @@ def test_join_lobby_error_player_not_found():
     player_test_2_id = client.post('/player', json=player_test_2.model_dump())
     player_test_2_json = player_test_2_id.json()
     player_2_id = player_test_2_json['player_id']
-    
+
     joiner_test = LobbyJoinSchema(
-        player_id = player_2_id, 
-        lobby_id = test_lobby_id,
+        player_id=player_2_id,
+        lobby_id=test_lobby_id,
     )
 
-    db = next(get_db())
+    db = next(get_session())
     delete_player(db, player_id=player_2_id)
 
     response = client.post('/lobby/join', json=joiner_test.model_dump())
@@ -526,20 +525,19 @@ def test_join_lobby_error_player_not_found():
     assert (
         response.json()['detail'] == errors.PLAYER_NOT_FOUND
     ), f"Mensaje de error incorrecto: {response.json()['detail']}"
-   
-    
+
+
 def test_join_lobby_error_lobby_not_found():
-    
     player_test_1 = PlayerCreateSchema(player_name='Cage')
     player_test_1_id = client.post('/player', json=player_test_1.model_dump())
     player_test_1_json = player_test_1_id.json()
     player_1_id = player_test_1_json['player_id']
 
     test_lobby = LobbyCreateSchema(
-        lobby_name = 'room 1',
-        lobby_owner = player_1_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 1',
+        lobby_owner=player_1_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby = client.post('/lobby', json=test_lobby.model_dump())
     test_lobby_json = test_lobby.json()
@@ -549,13 +547,13 @@ def test_join_lobby_error_lobby_not_found():
     player_test_2_id = client.post('/player', json=player_test_2.model_dump())
     player_test_2_json = player_test_2_id.json()
     player_2_id = player_test_2_json['player_id']
-    
+
     joiner_test = LobbyJoinSchema(
-        player_id = player_2_id, 
-        lobby_id = test_lobby_id,
+        player_id=player_2_id,
+        lobby_id=test_lobby_id,
     )
 
-    db = next(get_db())
+    db = next(get_session())
     delete_lobby(db, lobby_id=test_lobby_id)
 
     response = client.post('/lobby/join', json=joiner_test.model_dump())
@@ -567,9 +565,8 @@ def test_join_lobby_error_lobby_not_found():
         response.json()['detail'] == errors.LOBBY_NOT_FOUND
     ), f"Mensaje de error incorrecto: {response.json()['detail']}"
 
-    
-def test_join_lobby_error_lobby_full():
 
+def test_join_lobby_error_lobby_full():
     player_test = PlayerCreateSchema(player_name='Cage')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
@@ -579,31 +576,30 @@ def test_join_lobby_error_lobby_full():
     player_test_2_id = client.post('/player', json=player_test_2.model_dump())
     player_test_2_json = player_test_2_id.json()
     player_2_id = player_test_2_json['player_id']
-    
+
     player_test_3 = PlayerCreateSchema(player_name='Santino')
     player_test_3_id = client.post('/player', json=player_test_3.model_dump())
     player_test_3_json = player_test_3_id.json()
     player_3_id = player_test_3_json['player_id']
-        
 
     data_lobby = LobbyCreateSchema(
-        lobby_name = "cage's room",
-        lobby_owner = player_1_id,
-        min_players = 2,
-        max_players = 2,
+        lobby_name="cage's room",
+        lobby_owner=player_1_id,
+        min_players=2,
+        max_players=2,
     )
     lobby = client.post('/lobby', json=data_lobby.model_dump())
     lobby_json = lobby.json()
     lobby_id = lobby_json['lobby_id']
 
     player_2_join = LobbyJoinSchema(
-        player_id = player_2_id,
-        lobby_id = lobby_id,
+        player_id=player_2_id,
+        lobby_id=lobby_id,
     )
 
     player_3_join = LobbyJoinSchema(
-        player_id = player_3_id,
-        lobby_id = lobby_id,
+        player_id=player_3_id,
+        lobby_id=lobby_id,
     )
 
     client.post('/lobby/join', json=player_2_join.model_dump())
@@ -618,25 +614,24 @@ def test_join_lobby_error_lobby_full():
 
 
 def test_join_lobby_error_already_joined():
-
     player_test = PlayerCreateSchema(player_name='Cage')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
     player_id = player_test_json['player_id']
 
     data_lobby = LobbyCreateSchema(
-        lobby_name = "cage's room",
-        lobby_owner = player_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name="cage's room",
+        lobby_owner=player_id,
+        min_players=2,
+        max_players=4,
     )
     lobby = client.post('/lobby', json=data_lobby.model_dump())
     lobby_json = lobby.json()
     lobby_id = lobby_json['lobby_id']
 
     player_join = LobbyJoinSchema(
-        player_id = player_id,
-        lobby_id = lobby_id,
+        player_id=player_id,
+        lobby_id=lobby_id,
     )
 
     response = client.post('/lobby/join', json=player_join.model_dump())
@@ -650,17 +645,16 @@ def test_join_lobby_error_already_joined():
 
 
 def test_leave_lobby():
-    
     player_test = PlayerCreateSchema(player_name='Cage')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
     player_id = player_test_json['player_id']
 
     data_lobby = LobbyCreateSchema(
-        lobby_name = "cage's room",
-        lobby_owner = player_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name="cage's room",
+        lobby_owner=player_id,
+        min_players=2,
+        max_players=4,
     )
     lobby = client.post('/lobby', json=data_lobby.model_dump())
     lobby_json = lobby.json()
@@ -675,8 +669,8 @@ def test_leave_lobby():
 
     assert response_leave.status_code == 200
 
+
 def test_leave_lobby_error_player_not_found():
-    
     player_test = PlayerCreateSchema(player_name='Cage')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
@@ -687,12 +681,11 @@ def test_leave_lobby_error_player_not_found():
     player_test_2_json = player_test_2_id.json()
     player_2_id = player_test_2_json['player_id']
 
-
     test_lobby = LobbyCreateSchema(
-        lobby_name = 'room 1',
-        lobby_owner = player_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 1',
+        lobby_owner=player_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby = client.post('/lobby', json=test_lobby.model_dump())
     test_lobby_json = test_lobby.json()
@@ -703,12 +696,12 @@ def test_leave_lobby_error_player_not_found():
         lobby_id=test_lobby_id,
     )
     client.post('/lobby/join', json=test_joiner.model_dump())
-    
+
     test_leaver = LobbyLeaveSchema(
         player_id=player_2_id,
         lobby_id=test_lobby_id,
     )
-    db = next(get_db())
+    db = next(get_session())
     delete_player(db, player_id=player_2_id)
     response = client.post('/lobby/leave', json=test_leaver.model_dump())
 
@@ -720,8 +713,6 @@ def test_leave_lobby_error_player_not_found():
     ), f"Mensaje de error incorrecto: {response.json()['detail']}"
 
 
-
-
 def test_leave_lobby_error_lobby_not_found():
     player_test = PlayerCreateSchema(player_name='Cage')
     player_test_id = client.post('/player', json=player_test.model_dump())
@@ -729,10 +720,10 @@ def test_leave_lobby_error_lobby_not_found():
     player_id = player_test_json['player_id']
 
     test_lobby = LobbyCreateSchema(
-        lobby_name = 'room 1',
-        lobby_owner = player_id,
-        min_players = 2,
-        max_players = 4,
+        lobby_name='room 1',
+        lobby_owner=player_id,
+        min_players=2,
+        max_players=4,
     )
     test_lobby = client.post('/lobby', json=test_lobby.model_dump())
     test_lobby_json = test_lobby.json()
@@ -743,7 +734,7 @@ def test_leave_lobby_error_lobby_not_found():
         lobby_id=test_lobby_id,
     )
 
-    db = next(get_db())
+    db = next(get_session())
     delete_lobby(db, lobby_id=test_lobby_id)
 
     response = client.post('/lobby/leave', json=test_leaver.model_dump())

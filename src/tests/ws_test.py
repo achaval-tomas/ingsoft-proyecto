@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from src.constants import errors
 from src.database.crud.crud_cards import cancel_movements, get_player_cards
 from src.database.crud.crud_game import get_game
-from src.database.session import get_db
+from src.database.db import get_session
 from src.main import app
 from src.schemas.card_schemas import (
     MovementCardUsedSchema,
@@ -212,7 +212,7 @@ def test_card_ws_movement():
     response = client.post('/game', json=game_test.model_dump())
     assert response.status_code == 200
 
-    db = next(get_db())
+    db = next(get_session())
 
     game = get_game(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]
@@ -314,14 +314,14 @@ def test_card_ws_movement():
         assert pos0 == board[31]
         assert pos1 == board[7]
 
-        cancel_movements(db=next(get_db()), player_id=current_turn)
+        cancel_movements(db=next(get_session()), player_id=current_turn)
 
         game = get_game(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
         assert original_board == board
 
-        cards = get_player_cards(db=next(get_db()), player_id=current_turn)
+        cards = get_player_cards(db=next(get_session()), player_id=current_turn)
         assert set(deserialize(cards.movement_cards)) == set(initial_cards)
         assert deserialize(cards.temp_switches) == []
 
@@ -359,7 +359,7 @@ def test_card_ws_shape():
     response = client.post('/game', json=game_test.model_dump())
     assert response.status_code == 200
 
-    db = next(get_db())
+    db = next(get_session())
 
     game = get_game(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]

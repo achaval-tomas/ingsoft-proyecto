@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 import src.routers.helpers.connection_manager as cm
 from src.constants import errors
-from src.database.session import get_db
+from src.database.db import get_session
 from src.routers.handlers.ws_handle_cancel_movements import ws_handle_cancel_movements
 from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
 from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
@@ -18,7 +18,7 @@ game_router = APIRouter()
 
 
 @game_router.post('/game', status_code=200)
-async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db)):
+async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_session)):
     rc = await ws_handle_game_start(
         db=db,
         player_id=body.player_id,
@@ -39,7 +39,7 @@ async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_db
 
 
 @game_router.post('/game/leave', status_code=200)
-async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_db)):
+async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_session)):
     res = await ws_handle_leave_game(player_id=body.playerId, db=db)
 
     if res == 1:
@@ -49,7 +49,11 @@ async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_db
 
 
 @game_router.websocket('/game/{player_id}')
-async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(get_db)):
+async def game_websocket(
+    player_id: str,
+    ws: WebSocket,
+    db: Session = Depends(get_session),
+):
     await cm.game_manager.connect(ws, player_id)
 
     try:

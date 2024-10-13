@@ -4,7 +4,7 @@ from random import shuffle
 from src.cards.movement_card import movement_data
 from src.cards.shape_card import shape_data
 from src.database.crud import crud_cards
-from src.database.session import get_db
+from src.database.db import get_session
 from src.schemas.card_schemas import ShapeCardSchema
 
 
@@ -54,7 +54,7 @@ class MovCardDealer:
         shuffle(cards)
 
         for c in crud_cards.currently_used_movement_cards(
-            db=next(get_db()),
+            db=next(get_session()),
             player_id=player_id,
         ):
             with suppress(ValueError):
