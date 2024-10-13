@@ -41,6 +41,23 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
 
             newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
 
+            if (gameState.temportalMovements != null && gameState.temportalMovements.length > 0) {
+                const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
+
+                gameState.temportalMovements.forEach(({ movement, position, rotation }) => {
+                    const swp1 = positionToBoardIndex(position);
+                    const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
+                    const tmp = newBoardState.tiles[swp1];
+
+                    newBoardState.tiles[swp1] = newBoardState.tiles[swp2];
+                    newBoardState.tiles[swp2] = tmp;
+                });
+
+                newGameState.boardState = newBoardState;
+            }
+
+            newGameState.temportalMovements = [];
+
             return newGameState;
         }
         case "player-won": {
