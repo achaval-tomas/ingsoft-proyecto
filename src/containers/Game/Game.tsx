@@ -61,6 +61,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
+        // For now, only allow selecting self shape cards
+        if (playerId !== gameState.selfPlayerState.id) {
+            return;
+        }
+
         if (selectionState?.type === "shape-card" && selectionState.playerId === playerId && selectionState.shapeCardIndex === shapeCardIndex) {
             setSelectionState(null);
             return;
