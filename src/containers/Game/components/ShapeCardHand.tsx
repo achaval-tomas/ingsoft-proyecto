@@ -68,16 +68,8 @@ function ShapeCardHand({ playerName, shapeCards, shapeCardsInDeckCount, rotation
                         </div>
                     </div>
                 ))}
-                {shapeCardsInDeckCount > 0 && <div className="group max-h-full aspect-square grid">
-                    <div className={"row-start-1 col-start-1 h-full w-full"}>
-                        <ShapeCardDeck count={shapeCardsInDeckCount} />
-                    </div>
-                    <div
-                        className={"row-start-1 col-start-1 justify-self-end self-start relative z-[9999]"
-                        + " rounded-md bg-black/70 text-xl p-[0px_6px_3px_6px] m-2"}
-                    >
-                        {shapeCardsInDeckCount}
-                    </div>
+                {shapeCardsInDeckCount > 0 && <div className="max-h-full aspect-square">
+                    <ShapeCardDeck count={shapeCardsInDeckCount} />
                 </div>}
             </div>
             <div className={`${writingModeFromRotation(rotation)}`}>{playerName}</div>
