@@ -2,6 +2,8 @@ import { z } from "zod";
 import { ColorSchema } from "./Color";
 import { ShapeSchema } from "./Shape";
 import { MovementSchema } from "./Movement";
+import { PositionSchema } from "./Position";
+import { RotationSchema } from "./Rotation";
 
 export const PlayerIdSchema = z.string();
 export type PlayerId = z.infer<typeof PlayerIdSchema>;
@@ -48,6 +50,14 @@ export const BoardStateSchema = z.object({
 
 export type BoardState = z.infer<typeof BoardStateSchema>;
 
+export const TemporalMovementSchema = z.object({
+    movement: MovementSchema,
+    position: PositionSchema,
+    rotation: RotationSchema,
+});
+
+export type TemporalMovement = z.infer<typeof TemporalMovementSchema>;
+
 export const GameStateSchema = z.object({
     selfPlayerState: SelfPlayerStateSchema,
     otherPlayersState: OtherPlayerStateSchema.array().max(3),
@@ -55,6 +65,7 @@ export const GameStateSchema = z.object({
     // turnStart: z.string().datetime(),
     currentRoundPlayer: z.number().int().max(3),
     winner: PlayerIdSchema.optional(),
+    temportalMovements: TemporalMovementSchema.array().max(3).optional(),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
