@@ -6,6 +6,7 @@ import { LobbyElement } from "./components/LobbyList";
 import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 
+
 export interface LobbyForm {
     name: string;
 }
@@ -19,13 +20,13 @@ async function getLobbies(): Promise<LobbyElement[]> {
 }
 
 function MainPage() {
-    const [allLobbies, setallLobbies] = useState<LobbyElement[]>([]);
+    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
     const [filteredLobbies, setFilteredLobbies] = useState<LobbyElement[]>([])
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
     async function fetchAndSaveLobbies() {
-        setallLobbies(await getLobbies());
+        setLobbies(await getLobbies());
         setFilteredLobbies(await getLobbies())
     }
 
@@ -33,6 +34,16 @@ function MainPage() {
         void fetchAndSaveLobbies();
     }, []);
 
+    const handleSearch = (searchQuery: string) => {
+        if (searchQuery === "") {
+            fetchAndSaveLobbies();
+        } else {
+            let filtered = lobbies.filter((lobby) =>
+                lobby.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
+            setFilteredLobbies(filtered)
+        }
+    }
+ 
     async function handleSubmit(state: CreateLobbyFormState) {
 
         try {
@@ -53,15 +64,6 @@ function MainPage() {
             navigate(toLobby(playerId));
         } catch {
             alert("Error al comunicarse con el servidor, intente de nuevo más tarde.");
-        }
-    }
-
-    function handleSearch(searchQuery: number | "") {
-        if (searchQuery === "") {
-            fetchAndSaveLobbies();
-        } else {
-            const filtered = allLobbies.filter((lobby) => lobby.player_amount == searchQuery)
-            setFilteredLobbies(filtered)
         }
     }
 
@@ -98,5 +100,6 @@ function MainPage() {
         />
     );
 }
+
 
 export default MainPage;
