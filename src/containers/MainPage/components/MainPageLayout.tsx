@@ -4,19 +4,21 @@ import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
 
 interface MainPageLayoutProps {
+    searchQuery: string;
+    onSearchQueryChange: (searchQuery: string) => void;
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
     joinHandler: (lobbyId: string) => void;
-    handleSearch: (searchQuery: string) => void;
 }
 
 function MainPageLayout({
+    searchQuery,
+    onSearchQueryChange,
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
     joinHandler,
-    handleSearch,
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -38,10 +40,16 @@ function MainPageLayout({
                     </FilledButton>
                 </div>
             </div>
+            <input
+                className="mr-2 p-2 border rounded-md w-80"
+                type="text"
+                placeholder="Buscar sala"
+                value={searchQuery}
+                onChange={(e) => onSearchQueryChange(e.target.value)}
+            />
             <LobbyList
                 lobbyList={lobbies}
                 joinHandler={joinHandler}
-                onSearch={handleSearch}
             />
         </div>
     );
