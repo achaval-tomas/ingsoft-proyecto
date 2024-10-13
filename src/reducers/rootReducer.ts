@@ -86,7 +86,10 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             const newSelfPlayerState: SelfPlayerState = { ...gameState.selfPlayerState };
 
             if (gameState.currentRoundPlayer === gameState.selfPlayerState.roundOrder) {
-                newSelfPlayerState.movementCardsInHand = filterFirstMovement(gameState.selfPlayerState.movementCardsInHand, movement);
+                newSelfPlayerState.movementCardsInHand = filterFirst(
+                    gameState.selfPlayerState.movementCardsInHand,
+                    m => m === movement,
+                );
             }
 
             const newOtherPlayerState = changeOtherPlayerState(
@@ -182,9 +185,9 @@ function getTilesWithMovementDone(movement: Movement, position: Position, rotati
     });
 }
 
-function filterFirstMovement(movements: readonly Movement[], movement: Movement): Movement[] {
-    const movementIndex = movements.findIndex(m => m === movement);
-    return movements.filter((_, i) => i !== movementIndex);
+function filterFirst<T>(arr: readonly T[], p: (t: T) => boolean): T[] {
+    const firstIndex = arr.findIndex(a => p(a));
+    return arr.filter((_, i) => i !== firstIndex);
 }
 
 function rootReducer(state: AppState | undefined, action: Action): AppState {
