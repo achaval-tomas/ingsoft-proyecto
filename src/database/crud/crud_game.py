@@ -1,4 +1,4 @@
-import random
+from random import shuffle
 
 from sqlalchemy.orm import Session
 
@@ -27,7 +27,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     player_order = deserialize(lobby.players)
     if len(player_order) < lobby.min_players:
         return 3
-    random.shuffle(player_order)
+    shuffle(player_order)
 
     # the first turn will go to the first player in the shuffled list
     current_turn = 0
@@ -37,7 +37,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     board = colors * 9
 
     # randomize the board
-    random.shuffle(board)
+    shuffle(board)
 
     # create game
     db_game = Game(

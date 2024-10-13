@@ -11,7 +11,9 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     db_player = get_player(db=db, player_id=lobby.lobby_owner)
     if not db_player:
         return None
+
     player_list = [lobby.lobby_owner]
+
     db_lobby = Lobby(
         lobby_id=create_uuid(),
         lobby_name=lobby.lobby_name,
@@ -21,10 +23,13 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
         players=serialize(player_list),
         player_amount=1,
     )
+
     db_player.lobby_id = db_lobby.lobby_id
+
     db.add(db_lobby)
     db.commit()
     db.refresh(db_lobby)
+
     return db_lobby.lobby_id
 
 
@@ -32,21 +37,28 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
     player = get_player(db, player_id)
     if not player:
         return 1
+
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
         return 2
     elif lobby.player_amount == lobby.max_players:
         return 3
+
     players = deserialize(lobby.players)
     if player_id in players:
         return 4
+
     assert not player.game_id
     assert not player.lobby_id
+
     player.lobby_id = lobby.lobby_id
+
     players.append(player_id)
     lobby.players = serialize(players)
     lobby.player_amount += 1
+
     db.commit()
+
     return 0
 
 
@@ -54,17 +66,24 @@ def leave_lobby(db: Session, player_id: str):
     player = get_player(db, player_id)
     if not player:
         return 1
+
     lobby = get_lobby(db=db, lobby_id=player.lobby_id)
     if not lobby:
         return 2
-    player.lobby_id = None
-    players = deserialize(lobby.players)
+
     if player_id == lobby.lobby_owner:
         return 3
+
+    player.lobby_id = None
+
+    players = deserialize(lobby.players)
     players.remove(player_id)
     lobby.players = serialize(players)
+
     lobby.player_amount -= 1
+
     db.commit()
+
     return 0
 
 
@@ -88,11 +107,13 @@ def delete_lobby(db: Session, lobby_id: str):
     lobby = query.one_or_none()
     if not lobby:
         return
+
     for player_id in deserialize(lobby.players):
         db_player = get_player(db=db, player_id=player_id)
         if not db_player:
             continue
         db_player.lobby_id = None
         db.commit()
+
     query.delete()
     db.commit()
