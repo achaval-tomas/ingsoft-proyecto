@@ -1,6 +1,7 @@
 import { Rotation } from "../../../domain/Rotation";
 import { ShapeCardStatus, ShapeCardUiState } from "../GameUiState";
 import ShapeCard from "./ShapeCard";
+import ShapeCardDeck from "./ShapeCardDeck";
 
 type ShapeCardHandProps = {
     playerName: string;
@@ -68,11 +69,11 @@ function ShapeCardHand({ playerName, shapeCards, shapeCardsInDeckCount, rotation
                     </div>
                 ))}
                 {shapeCardsInDeckCount > 0 && <div className="group max-h-full aspect-square grid">
-                    <div className={`row-start-1 col-start-1 h-full w-full ${sharedClassNames}`}>
-                        <ShapeCard shape={"b-0"} isBlocked={true} />
+                    <div className={"row-start-1 col-start-1 h-full w-full"}>
+                        <ShapeCardDeck count={shapeCardsInDeckCount} />
                     </div>
                     <div
-                        className={"row-start-1 col-start-1 justify-self-center self-center relative"
+                        className={"row-start-1 col-start-1 justify-self-end self-start relative z-[9999]"
                         + " rounded-md bg-black/70 text-xl p-[0px_6px_3px_6px] m-2"}
                     >
                         {shapeCardsInDeckCount}
