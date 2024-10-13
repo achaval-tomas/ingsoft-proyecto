@@ -3,13 +3,13 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 import src.routers.helpers.connection_manager as cm
 from src.constants import errors
 from src.database.db import SessionDep
-from src.routers.handlers.ws_handle_cancel_movements import ws_handle_cancel_movements
-from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
-from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
-from src.routers.handlers.ws_handle_gamestate import ws_handle_gamestate
-from src.routers.handlers.ws_handle_leave_game import ws_handle_leave_game
-from src.routers.handlers.ws_handle_movement_card import ws_handle_movement_card
-from src.routers.handlers.ws_handle_shape_card import ws_handle_shape_card
+from src.routers.handlers.game.cancel_movements import handle_cancel_movements
+from src.routers.handlers.game.end_turn import handle_endturn
+from src.routers.handlers.game.gamestate import handle_gamestate
+from src.routers.handlers.game.leave_game import handle_leave_game
+from src.routers.handlers.game.movement_card import handle_movement_card
+from src.routers.handlers.game.shape_card import handle_shape_card
+from src.routers.handlers.lobby.game_start import handle_game_start
 from src.schemas import game_schemas, player_schemas
 from src.tools.jsonify import deserialize
 
@@ -18,7 +18,7 @@ game_router = APIRouter()
 
 @game_router.post('/game', status_code=200)
 async def start_game(body: game_schemas.GameCreate, db: SessionDep):
-    rc = await ws_handle_game_start(
+    rc = await handle_game_start(
         db=db,
         player_id=body.player_id,
         lobby_id=body.lobby_id,
@@ -39,7 +39,7 @@ async def start_game(body: game_schemas.GameCreate, db: SessionDep):
 
 @game_router.post('/game/leave', status_code=200)
 async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
-    res = await ws_handle_leave_game(player_id=body.playerId, db=db)
+    res = await handle_leave_game(player_id=body.playerId, db=db)
 
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
@@ -58,7 +58,7 @@ async def game_websocket(
     try:
         await cm.game_manager.send_personal_message(
             player_id=player_id,
-            message=ws_handle_gamestate(player_id=player_id, db=db),
+            message=handle_gamestate(player_id=player_id, db=db),
         )
 
         while True:
@@ -68,23 +68,23 @@ async def game_websocket(
 
             match request['type']:
                 case 'get-game-state':
-                    response = ws_handle_gamestate(player_id=player_id, db=db)
+                    response = handle_gamestate(player_id=player_id, db=db)
                 case 'end-turn':
-                    response = await ws_handle_endturn(player_id=player_id, db=db)
+                    response = await handle_endturn(player_id=player_id, db=db)
                 case 'use-movement-card':
-                    response = await ws_handle_movement_card(
+                    response = await handle_movement_card(
                         player_id=player_id,
                         db=db,
                         data=received,
                     )
                 case 'cancel-movements':
-                    response = await ws_handle_cancel_movements(
+                    response = await handle_cancel_movements(
                         player_id=player_id,
                         db=db,
                         data=received,
                     )
                 case 'use-shape-card':
-                    response = await ws_handle_shape_card(
+                    response = await handle_shape_card(
                         player_id=player_id,
                         db=db,
                         data=received,

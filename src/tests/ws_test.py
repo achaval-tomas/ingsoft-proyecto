@@ -21,7 +21,7 @@ from src.tools.jsonify import deserialize, serialize
 client = TestClient(app)
 
 
-# def test_game_ws_end_turn():
+# def test_game_end_turn():
 #     data_owner = {
 #         'player_name': 'cage owner',
 #     }
@@ -92,7 +92,7 @@ client = TestClient(app)
 #                 }
 
 
-def test_game_ws_gamestate():
+def test_game_gamestate():
     data_owner = {
         'player_name': 'cage owner',
     }
@@ -122,7 +122,7 @@ def test_game_ws_gamestate():
         assert data_received['type'] == 'game-state'
 
 
-def test_game_ws_gamestate_br():
+def test_game_gamestate_br():
     data_owner = {'player_name': 'cage owner'}
     owner = client.post('/player', json=data_owner)
     owner_json = owner.json()
@@ -146,7 +146,7 @@ def test_game_ws_gamestate_br():
         assert data_received['type'] == 'error'
 
 
-def test_lobby_ws_lobbystate():
+def test_lobby_lobbystate():
     data_owner = {'player_name': 'cage owner'}
     owner = client.post('/player', json=data_owner)
     owner_json = owner.json()
@@ -179,7 +179,7 @@ def test_lobby_ws_lobbystate():
         }
 
 
-def test_card_ws_movement():
+def test_card_movement():
     player_test = PlayerCreateSchema(player_name='TestGame')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
@@ -326,7 +326,7 @@ def test_card_ws_movement():
         assert deserialize(cards.temp_switches) == []
 
 
-def test_card_ws_shape():
+def test_card_shape():
     player_test = PlayerCreateSchema(player_name='TestGame')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()

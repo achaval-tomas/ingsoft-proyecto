@@ -57,7 +57,7 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
     return other_players_state
 
 
-def ws_handle_gamestate(player_id: str, db: Session):
+def handle_gamestate(player_id: str, db: Session):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
@@ -96,7 +96,7 @@ def ws_handle_gamestate(player_id: str, db: Session):
     return response.model_dump_json()
 
 
-async def ws_broadcast_gamestate(player_id: str, db: Session):
+async def broadcast_gamestate(player_id: str, db: Session):
     game = get_game(db=db, player_id=player_id)
     if game is None:
         return error_message(detail=errors.GAME_NOT_FOUND)
@@ -105,7 +105,7 @@ async def ws_broadcast_gamestate(player_id: str, db: Session):
 
     for player in players:
         await cm.game_manager.send_personal_message(
-            message=ws_handle_gamestate(player_id=player, db=db),
+            message=handle_gamestate(player_id=player, db=db),
             player_id=player,
         )
 
