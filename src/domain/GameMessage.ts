@@ -39,8 +39,12 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         movement: MovementSchema,
     }),
     z.object({
-        // Received when a user cancels a movement
-        type: z.literal("movement-cancelled"),
+        type: z.literal("movement-cancelled"), // Received when the current turn player has cancelled a temporal movement.
+    }),
+    z.object({
+        type: z.literal("shape-card-used"), // Received when the current turn player has formed a shape.
+        position: PositionSchema,
+        targetPlayerId: PlayerIdSchema,
     }),
     z.object({
         type: z.literal("error"), // Received when the server has detected an error.
@@ -57,18 +61,18 @@ export const GameMessageOutSchema = z.discriminatedUnion("type", [
         type: z.literal("end-turn"), // Manually end the current turn.
     }),
     z.object({
-        type: z.literal("use-movement-card"), // Use a movement card
+        type: z.literal("use-movement-card"), // Use a movement card.
         position: PositionSchema,
         rotation: RotationSchema,
         movement: MovementSchema,
     }),
     z.object({
-        type: z.literal("use-shape-card"), // Use a shape card
+        type: z.literal("use-shape-card"), // Use a shape card.
         position: PositionSchema,
         targetPlayerId: PlayerIdSchema,
     }),
     z.object({
-        type: z.literal("cancel-movement"), // Cancel the last temporal movement
+        type: z.literal("cancel-movement"), // Cancel the last temporal movement.
     }),
 ]);
 
