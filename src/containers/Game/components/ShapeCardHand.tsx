@@ -5,6 +5,7 @@ import ShapeCard from "./ShapeCard";
 type ShapeCardHandProps = {
     playerName: string;
     shapeCards: ShapeCardUiState[];
+    shapeCardsInDeckCount: number;
     rotation: Rotation;
     className: string;
     onClickShapeCard: (i: number) => void;
@@ -37,7 +38,7 @@ function writingModeFromRotation(rotation: Rotation): string {
     }
 }
 
-function ShapeCardHand({ playerName, shapeCards, rotation, className, onClickShapeCard }: ShapeCardHandProps) {
+function ShapeCardHand({ playerName, shapeCards, shapeCardsInDeckCount, rotation, className, onClickShapeCard }: ShapeCardHandProps) {
     const sharedClassNames = "relative overflow-hidden rounded-[7.5%] transition-movement-card";
 
     const individualClassNamesFor = (status: ShapeCardStatus) => {
@@ -66,6 +67,17 @@ function ShapeCardHand({ playerName, shapeCards, rotation, className, onClickSha
                         </div>
                     </div>
                 ))}
+                <div className="group max-h-full aspect-square grid">
+                    <div className={`row-start-1 col-start-1 h-full w-full ${sharedClassNames}`}>
+                        <ShapeCard shape={"b-0"} isBlocked={true} />
+                    </div>
+                    <div
+                        className={"row-start-1 col-start-1 justify-self-center self-center relative"
+                            + " rounded-md bg-black/70 text-xl p-[0px_6px_3px_6px] m-2"}
+                    >
+                        {shapeCardsInDeckCount}
+                    </div>
+                </div>
             </div>
             <div className={`${writingModeFromRotation(rotation)}`}>{playerName}</div>
         </div>

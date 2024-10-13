@@ -36,6 +36,7 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
                         <ShapeCardHand
                             playerName={selfPlayerUiState.name}
                             shapeCards={selfPlayerUiState.shapeCardsInHand}
+                            shapeCardsInDeckCount={selfPlayerUiState.shapeCardsInDeckCount}
                             rotation="r0"
                             className="row-start-3 col-start-2 h-full w-full justify-center pt-[3%]"
                             onClickShapeCard={(i) => onClickShapeCard(selfPlayerUiState.id, i)}
@@ -43,6 +44,7 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
                         {otherPlayersUiState[0] && <ShapeCardHand
                             playerName={otherPlayersUiState[0].name}
                             shapeCards={otherPlayersUiState[0].shapeCardsInHand}
+                            shapeCardsInDeckCount={otherPlayersUiState[0].shapeCardsInDeckCount}
                             rotation="r90"
                             className="row-start-2 col-start-3 h-full w-full justify-center pl-[15%]"
                             onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[0].id, i)}
@@ -50,6 +52,7 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
                         {otherPlayersUiState[1] && <ShapeCardHand
                             playerName={otherPlayersUiState[1].name}
                             shapeCards={otherPlayersUiState[1].shapeCardsInHand}
+                            shapeCardsInDeckCount={otherPlayersUiState[1].shapeCardsInDeckCount}
                             rotation="r180"
                             className="row-start-1 col-start-2 h-full w-full justify-center pb-[3%]"
                             onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[1].id, i)}
@@ -57,6 +60,7 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
                         {otherPlayersUiState[2] && <ShapeCardHand
                             playerName={otherPlayersUiState[2].name}
                             shapeCards={otherPlayersUiState[2].shapeCardsInHand}
+                            shapeCardsInDeckCount={otherPlayersUiState[2].shapeCardsInDeckCount}
                             rotation="r270"
                             className="row-start-2 col-start-1 h-full w-full justify-center pr-[15%]"
                             onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[2].id, i)}
