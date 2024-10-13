@@ -88,12 +88,12 @@ def leave_lobby(db: Session, player_id: str):
 
 
 def get_lobby(db: Session, lobby_id: str):
-    return db.get(Lobby, lobby_id)
+    return db.get(Lobby, lobby_id) if lobby_id else None
 
 
 def get_lobby_by_player_id(db: Session, player_id: str):
     player = get_player(player_id=player_id, db=db)
-    if not player:
+    if not player or not player.lobby_id:
         return None
     return get_lobby(db=db, lobby_id=player.lobby_id)
 

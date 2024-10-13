@@ -110,7 +110,7 @@ def clamp_val(val: int):
 
 def get_game(db: Session, player_id: str):
     player = get_player(db=db, player_id=player_id)
-    if not player:
+    if not player or not player.game_id:
         return None
     return db.get(Game, player.game_id)
 

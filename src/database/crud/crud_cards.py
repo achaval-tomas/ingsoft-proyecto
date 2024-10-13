@@ -20,7 +20,7 @@ from src.tools.jsonify import deserialize, serialize
 
 
 def get_player_cards(db: Session, player_id: str):
-    return db.get(PlayerCards, player_id)
+    return db.get(PlayerCards, player_id) if player_id else None
 
 
 def hand_all_initial_cards(db: Session, players: list[str]):

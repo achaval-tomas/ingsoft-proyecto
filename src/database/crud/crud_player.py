@@ -14,11 +14,11 @@ def create_player(db: Session, player: PlayerCreateSchema):
 
 
 def get_player(db: Session, player_id: str):
-    return db.get(Player, player_id)
+    return db.get(Player, player_id) if player_id else None
 
 
 def delete_player(db: Session, player_id: str):
-    player = db.get(Player, player_id)
+    player = get_player(db, player_id)
     if player:
         db.delete(player)
         db.commit()
