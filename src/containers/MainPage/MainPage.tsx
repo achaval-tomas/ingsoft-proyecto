@@ -21,13 +21,13 @@ async function getLobbies(): Promise<LobbyElement[]> {
 
 function MainPage() {
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
-    const [filteredLobbies, setFilteredLobbies] = useState<LobbyElement[]>([])
+    const [filteredLobbies, setFilteredLobbies] = useState<LobbyElement[]>([]);
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
-        setFilteredLobbies(await getLobbies())
+        setFilteredLobbies(await getLobbies());
     }
 
     useEffect(() => {
@@ -36,16 +36,15 @@ function MainPage() {
 
     const handleSearch = (searchQuery: string) => {
         if (searchQuery === "") {
-            fetchAndSaveLobbies();
+            void fetchAndSaveLobbies();
         } else {
-            let filtered = lobbies.filter((lobby) =>
-                lobby.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
-            setFilteredLobbies(filtered)
+            const filtered = lobbies.filter((lobby) =>
+                lobby.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()));
+            setFilteredLobbies(filtered);
         }
-    }
- 
-    async function handleSubmit(state: CreateLobbyFormState) {
+    };
 
+    async function handleSubmit(state: CreateLobbyFormState) {
         try {
             const playerId = urlParams.get("player") ?? "";
 

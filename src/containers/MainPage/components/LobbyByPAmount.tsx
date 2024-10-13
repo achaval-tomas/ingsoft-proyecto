@@ -1,22 +1,19 @@
 import { useState } from "react";
-import Searcher from "../../../components/Searcher";
 import FilledButton from "../../../components/FilledButton";
 
-interface SearchProps {
+type SearchProps = {
     onSearch: (searchQuery: number | "") => void;
 }
 
-
 function SearchLobbyByPlayerAmount({ onSearch }: SearchProps) {
-    const [searchQuery, setSearchQueryState] = useState<number | "">("")
-        
-        const handleSearch = () => {
-            onSearch(searchQuery);
-        };
-    
+    const [searchQuery, setSearchQueryState] = useState<number | "">("");
+
+    const handleSearch = () => {
+        onSearch(searchQuery);
+    };
 
     return (
-           <div className="flex items-center mb-4">
+        <div className="flex items-center mb-4">
             <input
                 type="number"
                 placeholder="Buscar sala"
@@ -27,10 +24,8 @@ function SearchLobbyByPlayerAmount({ onSearch }: SearchProps) {
             <FilledButton onClick={handleSearch}>
                 <p>Buscar</p>
             </FilledButton>
-       </div>
-
-
-    )
+        </div>
+    );
 }
 
-export default SearchLobbyByPlayerAmount
+export default SearchLobbyByPlayerAmount;

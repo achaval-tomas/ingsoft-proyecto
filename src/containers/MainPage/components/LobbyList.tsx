@@ -13,20 +13,18 @@ export interface LobbyElement {
 interface LobbyListProps {
     joinHandler: (id: string) => void;
     lobbyList: LobbyElement[];
-    onSearch: (searchQuery: string) => void
+    onSearch: (searchQuery: string) => void;
 }
 
 export default function LobbyList({ lobbyList, joinHandler, onSearch }: LobbyListProps) {
-    const [searchQuery, setSearchQueryState] = useState<string>("")
-    
+    const [searchQuery, setSearchQueryState] = useState<string>("");
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const search = e.target.value;
         setSearchQueryState(search);
-        onSearch && onSearch(search)
-        console.log(search)
-    }
+        onSearch(search);
+    };
 
-    console.log(lobbyList)
     const items = lobbyList.map(lobby =>
         <tr
             className="my-2 p-2 border"
@@ -45,8 +43,9 @@ export default function LobbyList({ lobbyList, joinHandler, onSearch }: LobbyLis
         </tr>,
     );
 
-    return  <div>
-        {/* this input might be in another component with the one that filters by player amount */}
+    return (
+        <div>
+            {/* this input might be in another component with the one that filters by player amount */}
             <input
                 className="mr-2 p-2 border rounded-md w-80"
                 type="text"
@@ -65,5 +64,6 @@ export default function LobbyList({ lobbyList, joinHandler, onSearch }: LobbyLis
                     {items}
                 </tbody>
             </table>
-            </div>;
+        </div>
+    );
 }

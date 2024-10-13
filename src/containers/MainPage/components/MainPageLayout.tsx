@@ -8,7 +8,7 @@ interface MainPageLayoutProps {
     lobbies: LobbyElement[];
     refreshHandler: () => void;
     joinHandler: (lobbyId: string) => void;
-    handleSearch: (searchQuery: string) => void
+    handleSearch: (searchQuery: string) => void;
 }
 
 function MainPageLayout({
@@ -16,7 +16,7 @@ function MainPageLayout({
     lobbies,
     refreshHandler,
     joinHandler,
-    handleSearch
+    handleSearch,
 }: MainPageLayoutProps) {
     const [showCreateForm, setCreateForm] = useState<boolean>(false);
 
@@ -43,7 +43,6 @@ function MainPageLayout({
                 joinHandler={joinHandler}
                 onSearch={handleSearch}
             />
-            
         </div>
     );
 }
