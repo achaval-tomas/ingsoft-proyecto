@@ -6,7 +6,6 @@ import { LobbyElement } from "./components/LobbyList";
 import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 
-
 export interface LobbyForm {
     name: string;
 }
@@ -20,11 +19,11 @@ async function getLobbies(): Promise<LobbyElement[]> {
 }
 
 function MainPage() {
-    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>("");
-
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
+
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -95,6 +94,5 @@ function MainPage() {
         />
     );
 }
-
 
 export default MainPage;
