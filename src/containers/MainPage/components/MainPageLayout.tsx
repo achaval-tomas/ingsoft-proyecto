@@ -2,6 +2,7 @@ import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
+import Input from "../../../components/Input";
 
 interface MainPageLayoutProps {
     searchQuery: string;
@@ -40,12 +41,11 @@ function MainPageLayout({
                     </FilledButton>
                 </div>
             </div>
-            <input
-                className="mr-2 p-2 border rounded-md w-80"
-                type="text"
-                placeholder="Buscar sala"
+            <Input
                 value={searchQuery}
-                onChange={(e) => onSearchQueryChange(e.target.value)}
+                onChange={onSearchQueryChange}
+                className="self-start"
+                placeholder="Buscar sala"
             />
             <LobbyList
                 lobbyList={lobbies}
