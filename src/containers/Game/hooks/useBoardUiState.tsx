@@ -17,7 +17,11 @@ function useBoardUiState(
     const tiles = useMemo<BoardTileUiState[]>(() => {
         const formedShapes = findFormedShapes(boardState.tiles);
 
-        const filteredFormedShapes = formedShapes.map(tileData => {
+        const filteredFormedShapes = formedShapes.map((tileData, tileIndex) => {
+            if (boardState.tiles[tileIndex] === boardState.blockedColor) {
+                return null;
+            }
+
             if (tileData == null) {
                 return null;
             }
