@@ -178,6 +178,13 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     """
     Cancels the last 'nmovs' movements made by the player
     during their current turn.
+
+    Return codes:
+        -1 -> no movements were cancelled.
+        0 -> at least one movement was cancelled.
+        1 -> internal server error.
+        2 -> game not found.
+        3 -> (should not happen) movement out of bounds.
     """
     player_cards = get_player_cards(db=db, player_id=player_id)
     if player_cards is None:
@@ -191,6 +198,7 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
 
     used_movements = deserialize(player_cards.temp_switches)
     used_mov_count = len(used_movements)
+    cancelled = False
 
     for m in range(min(nmovs, used_mov_count)):
         movement_data = used_movements[used_mov_count - m - 1]
@@ -213,6 +221,11 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
         player_cards.temp_switches = serialize(used_movements)
 
         db.commit()
+
+        cancelled = True
+
+    if not cancelled:
+        return -1
 
     return 0
 

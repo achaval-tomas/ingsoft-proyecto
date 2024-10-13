@@ -207,15 +207,18 @@ def end_game_turn(db: Session, player_id: str):
     if player_id != player_order[game.current_turn]:
         return 2, None, None
 
-    rc = crud_cards.cancel_movements(db=db, player_id=player_id)
-    if rc == 1:
+    rc1 = crud_cards.cancel_movements(db=db, player_id=player_id)
+    if rc1 == 1:
         return 3, None, None
 
-    rc, mov_cards, shape_cards = crud_cards.refill_cards(db=db, player_id=player_id)
-    if rc == 3:
+    rc2, mov_cards, shape_cards = crud_cards.refill_cards(db=db, player_id=player_id)
+    if rc2 == 3:
         return 4, None, None
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
+
+    if rc1 == 0:
+        return 5, None, None
 
     return 0, mov_cards, shape_cards

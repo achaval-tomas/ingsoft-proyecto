@@ -63,3 +63,8 @@ class TurnEndedMessageSchema(MessageSchema):
     playerId: str
     newShapeCards: list[card_schemas.ShapeCardSchema]
     newMovementCards: Optional[list[str]] = []
+
+
+class CancelMovementsMessageSchema(MessageSchema):
+    type: str = 'cancel-movements'
+    amount: int = 3

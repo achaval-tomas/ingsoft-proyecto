@@ -78,6 +78,7 @@ async def game_websocket(player_id: str, ws: WebSocket, db: Session = Depends(ge
                     response = await ws_handle_cancel_movements(
                         player_id=player_id,
                         db=db,
+                        data=received,
                     )
                 case 'use-shape-card':
                     response = await ws_handle_shape_card(
