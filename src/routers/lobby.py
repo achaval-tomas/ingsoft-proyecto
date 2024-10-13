@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
 from src.database.crud.crud_player import get_player
-from src.database.db import get_session
+from src.database.db import SessionDep
 from src.routers.handlers.ws_handle_leave_lobby import ws_handle_leave_lobby
 from src.routers.handlers.ws_handle_lobbystate import ws_handle_lobbystate
 from src.routers.handlers.ws_share_player_list import ws_share_player_list
@@ -36,14 +35,14 @@ lobby_router = APIRouter()
 
 
 @lobby_router.post('/lobby', response_model=LobbyIdSchema)
-def create_lobby(lobby: LobbyCreateSchema, db: Session = Depends(get_session)):
+def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
     return LobbyIdSchema(
         lobby_id=crud_lobby.create_lobby(db=db, lobby=lobby),
     )
 
 
 @lobby_router.post('/lobby/join', status_code=202)
-async def join_lobby(body: LobbyJoinSchema, db: Session = Depends(get_session)):
+async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
     res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
 
     if res == 1:
@@ -64,12 +63,12 @@ async def join_lobby(body: LobbyJoinSchema, db: Session = Depends(get_session)):
 
 
 @lobby_router.get('/lobby', response_model=list[LobbySchema])
-async def get_all_lobbies(db: Session = Depends(get_session)):
+async def get_all_lobbies(db: SessionDep):
     return [lobby_decoder(lobby) for lobby in crud_lobby.get_available_lobbies(db=db)]
 
 
 @lobby_router.post('/lobby/leave', status_code=200)
-async def leave_lobby(body: LobbyLeaveSchema, db: Session = Depends(get_session)):
+async def leave_lobby(body: LobbyLeaveSchema, db: SessionDep):
     res = await ws_handle_leave_lobby(
         db=db,
         player_id=body.player_id,
@@ -86,7 +85,7 @@ async def leave_lobby(body: LobbyLeaveSchema, db: Session = Depends(get_session)
 async def lobby_websocket(
     player_id: str,
     ws: WebSocket,
-    db: Session = Depends(get_session),
+    db: SessionDep,
 ):
     player = get_player(db=db, player_id=player_id)
     assert player is not None

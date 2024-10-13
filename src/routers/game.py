@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 import src.routers.helpers.connection_manager as cm
 from src.constants import errors
-from src.database.db import get_session
+from src.database.db import SessionDep
 from src.routers.handlers.ws_handle_cancel_movements import ws_handle_cancel_movements
 from src.routers.handlers.ws_handle_endturn import ws_handle_endturn
 from src.routers.handlers.ws_handle_game_start import ws_handle_game_start
@@ -18,7 +17,7 @@ game_router = APIRouter()
 
 
 @game_router.post('/game', status_code=200)
-async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_session)):
+async def start_game(body: game_schemas.GameCreate, db: SessionDep):
     rc = await ws_handle_game_start(
         db=db,
         player_id=body.player_id,
@@ -39,7 +38,7 @@ async def start_game(body: game_schemas.GameCreate, db: Session = Depends(get_se
 
 
 @game_router.post('/game/leave', status_code=200)
-async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_session)):
+async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
     res = await ws_handle_leave_game(player_id=body.playerId, db=db)
 
     if res == 1:
@@ -52,7 +51,7 @@ async def leave_game(body: player_schemas.PlayerId, db: Session = Depends(get_se
 async def game_websocket(
     player_id: str,
     ws: WebSocket,
-    db: Session = Depends(get_session),
+    db: SessionDep,
 ):
     await cm.game_manager.connect(ws, player_id)
 
