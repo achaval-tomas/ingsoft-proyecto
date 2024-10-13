@@ -112,11 +112,11 @@ def get_game(db: Session, player_id: str):
     player = get_player(db=db, player_id=player_id)
     if not player:
         return None
-    return db.query(Game).filter(Game.game_id == player.game_id).one_or_none()
+    return db.get(Game, player.game_id)
 
 
 def get_game_players(db: Session, game_id: int):
-    game = db.query(Game).filter(Game.game_id == game_id).one_or_none()
+    game = db.get(Game, game_id)
     if game is None:
         return []
     return deserialize(game.player_order)
@@ -174,8 +174,7 @@ def leave_game(db: Session, player_id: str):
 
 
 def delete_game(db: Session, game_id: str):
-    query = db.query(Game).filter(Game.game_id == game_id)
-    game = query.one_or_none()
+    game = db.get(Game, game_id)
     if not game:
         return
 
@@ -189,13 +188,15 @@ def delete_game(db: Session, game_id: str):
         db_player.game_id = None
         db.commit()
 
-    query.delete()
+    db.delete(game)
     db.commit()
 
 
 def delete_player_cards(db: Session, player_id: str):
-    db.query(PlayerCards).filter(PlayerCards.player_id == player_id).delete()
-    db.commit()
+    cards = db.get(PlayerCards, player_id)
+    if cards:
+        db.delete(cards)
+        db.commit()
 
 
 def end_game_turn(db: Session, player_id: str):

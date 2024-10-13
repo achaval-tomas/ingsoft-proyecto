@@ -88,7 +88,7 @@ def leave_lobby(db: Session, player_id: str):
 
 
 def get_lobby(db: Session, lobby_id: str):
-    return db.query(Lobby).filter(Lobby.lobby_id == lobby_id).one_or_none()
+    return db.get(Lobby, lobby_id)
 
 
 def get_lobby_by_player_id(db: Session, player_id: str):
@@ -103,8 +103,7 @@ def get_available_lobbies(db: Session, limit: int = 1000):
 
 
 def delete_lobby(db: Session, lobby_id: str):
-    query = db.query(Lobby).filter(Lobby.lobby_id == lobby_id)
-    lobby = query.one_or_none()
+    lobby = db.get(Lobby, lobby_id)
     if not lobby:
         return
 
@@ -115,5 +114,5 @@ def delete_lobby(db: Session, lobby_id: str):
         db_player.lobby_id = None
         db.commit()
 
-    query.delete()
+    db.delete(lobby)
     db.commit()

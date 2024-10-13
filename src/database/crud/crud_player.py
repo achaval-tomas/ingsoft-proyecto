@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 
-from src.database import models
 from src.database.crud.id_gen import create_uuid
+from src.database.models import Player
 from src.schemas.player_schemas import PlayerCreateSchema
 
 
 def create_player(db: Session, player: PlayerCreateSchema):
-    db_player = models.Player(player_name=player.player_name, player_id=create_uuid())
+    db_player = Player(player_name=player.player_name, player_id=create_uuid())
     db.add(db_player)
     db.commit()
     db.refresh(db_player)
@@ -14,13 +14,11 @@ def create_player(db: Session, player: PlayerCreateSchema):
 
 
 def get_player(db: Session, player_id: str):
-    return (
-        db.query(models.Player)
-        .filter(models.Player.player_id == player_id)
-        .one_or_none()
-    )
+    return db.get(Player, player_id)
 
 
 def delete_player(db: Session, player_id: str):
-    db.query(models.Player).filter(models.Player.player_id == player_id).delete()
-    db.commit()
+    player = db.get(Player, player_id)
+    if player:
+        db.delete(player)
+        db.commit()
