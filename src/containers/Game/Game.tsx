@@ -7,11 +7,12 @@ import WinnerDialog from "./components/WinnerDialog";
 import { toLobby } from "../../navigation/destinations";
 import { MovementTarget } from "../../domain/Movement";
 import { boardIndexToPosition, Position, positionsEqual, positionToBoardIndex } from "../../domain/Position";
-import { GameState, PlayerId } from "../../domain/GameState";
+import { GameState, getPlayerById, PlayerId } from "../../domain/GameState";
 import { GameMessageOut } from "../../domain/GameMessage";
 import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
 import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
+import { getShapeAtOrNull } from "../../domain/Board";
 
 type GameProps = {
     playerId: string;
@@ -94,11 +95,39 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         }
     };
 
-    const handleClickTile = (pos: Position) => {
-        const tileIndex = positionToBoardIndex(pos);
+    const handleClickTile = (position: Position) => {
+        const tileIndex = positionToBoardIndex(position);
 
         switch (selectionState?.type) {
             case "shape-card": {
+                const { boardState } = gameState;
+
+                const tileColor = boardState.tiles[tileIndex];
+                if (tileColor === boardState.blockedColor) {
+                    return;
+                }
+
+                const shapePlayer = getPlayerById(gameState, selectionState.playerId);
+                if (shapePlayer == null) {
+                    return;
+                }
+
+                const shapeCardState = shapePlayer.shapeCardsInHand[selectionState.shapeCardIndex];
+                if (shapeCardState == null) {
+                    return;
+                }
+
+                const shapeAtTile = getShapeAtOrNull(boardState.tiles, position);
+                if (shapeAtTile !== shapeCardState.shape) {
+                    return;
+                }
+
+                sendMessage({
+                    type: "use-shape-card",
+                    position,
+                    targetPlayerId: selectionState.playerId,
+                });
+                setSelectionState(null);
                 return;
             }
             case "movement-card": {
@@ -118,7 +147,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
                     return;
                 }
 
-                const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, pos));
+                const movementTarget = movementTargets.find(mt => positionsEqual(mt.position, position));
                 if (movementTarget == null) {
                     setSelectionState({
                         type: "movement-card-with-source-tile",

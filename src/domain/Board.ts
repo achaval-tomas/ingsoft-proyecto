@@ -1,6 +1,6 @@
 import { Color } from "./Color";
 import { Shape } from "./Shape";
-import { boardIndexToPosition, positionToBoardIndex } from "./Position";
+import { boardIndexToPosition, Position, positionToBoardIndex } from "./Position";
 import { getShapeFromNormalizedShapeData, normalizeShapeData, ShapeData } from "./ShapeData";
 
 export type BoardTileShapeData = {
@@ -60,4 +60,12 @@ export function findFormedShapes(boardTiles: readonly Color[]): (BoardTileShapeD
 
     // By now, all tiles should be visited, i.e, boardTilesData[i] !== undefined for all i.
     return boardTilesData as (BoardTileShapeData | null)[];
+}
+
+export function getShapeAtOrNull(boardTiles: readonly Color[], position: Position): Shape | null {
+    const shapeCandidate = findConnectedTiles(boardTiles, positionToBoardIndex(position));
+    const normalizedShapeCandidate = normalizeShapeData(shapeCandidate);
+    const shapeWithDataOrNull = getShapeFromNormalizedShapeData(normalizedShapeCandidate);
+
+    return shapeWithDataOrNull?.shape ?? null;
 }
