@@ -86,6 +86,10 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                         }
                     }),
                 },
+                temportalMovements: [
+                    { movement: movement, position: position, rotation: rotation },
+                    ...gameState.temportalMovements ?? [],
+                ],
             };
 
             return newGameState;
