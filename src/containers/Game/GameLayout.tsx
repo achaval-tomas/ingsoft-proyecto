@@ -25,26 +25,30 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickMovement
         >
             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
                 <div className="flex flex-row w-full h-full ">
-                    <div className="grid w-full h-full" style={{ gridTemplateRows: "1fr 4.5fr 1fr", gridTemplateColumns: "1fr 4.5fr 1fr" }}>
+                    <div className="grid w-full h-full" style={{ gridTemplateRows: "1fr 4fr 1fr", gridTemplateColumns: "1fr 4fr 1fr" }}>
                         <div className="row-start-2 col-start-2">
                             <Board uiState={boardUiState} onClickTile={onClickTile} />
                         </div>
                         <ShapeCardHand
+                            playerName={selfPlayerUiState.name}
                             shapeCards={selfPlayerUiState.shapeCardsInHand}
                             rotation="r0"
                             className="row-start-3 col-start-2 h-full w-full justify-center pt-[3%]"
                         />
                         {otherPlayersUiState[0] && <ShapeCardHand
+                            playerName={otherPlayersUiState[0].name}
                             shapeCards={otherPlayersUiState[0].shapeCardsInHand}
                             rotation="r90"
                             className="row-start-2 col-start-3 h-full w-full justify-center pl-[15%]"
                         />}
                         {otherPlayersUiState[1] && <ShapeCardHand
+                            playerName={otherPlayersUiState[1].name}
                             shapeCards={otherPlayersUiState[1].shapeCardsInHand}
                             rotation="r180"
                             className="row-start-1 col-start-2 h-full w-full justify-center pb-[3%]"
                         />}
                         {otherPlayersUiState[2] && <ShapeCardHand
+                            playerName={otherPlayersUiState[2].name}
                             shapeCards={otherPlayersUiState[2].shapeCardsInHand}
                             rotation="r270"
                             className="row-start-2 col-start-1 h-full w-full justify-center pr-[15%]"
