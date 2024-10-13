@@ -14,6 +14,7 @@ export type BoardTileUiState = {
 export type BoardUiState = {
     tiles: BoardTileUiState[];
     activeSide: Direction;
+    blockedColor: Color | null;
 }
 
 export type ShapeCardStatus = "normal" | "blocked" | "selected";

@@ -39,8 +39,9 @@ function useBoardUiState(
         () => ({
             tiles,
             activeSide: playerIndexToDirection(currentTurnPlayerIndex),
+            blockedColor: boardState.blockedColor,
         }),
-        [tiles, currentTurnPlayerIndex],
+        [tiles, currentTurnPlayerIndex, boardState.blockedColor],
     );
 
     return boardUiState;
