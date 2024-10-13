@@ -88,11 +88,28 @@ function Board({ uiState, onClickTile }: BoardProps) {
                         key={i}
                         color={t.color}
                         status={t.status}
-                        style={{ gridRowStart: 6 - y }}
+                        style={{ gridRowStart: 6 - y, gridColumnStart: x + 1 }}
                         onClick={() => onClickTile([x, y])}
                     />
                 );
             })}
+            {(uiState.blockedColor != null) && <div className="row-start-3 col-start-1">
+                <div
+                    className={"relative overflow-hidden right-[500%] top-[60.588%] w-full h-full rounded shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] "
+                        + colorToBackgroundClassName(uiState.blockedColor)}
+                    style={{
+                        transitionProperty: "background-color",
+                        transitionTimingFunction: "ease",
+                        transitionDuration: "250ms",
+                    }}
+                >
+                    <img
+                        src="/src/assets/blocked-color.svg"
+                        className="w-full h-full drop-shadow-[0_0_2px_rgba(0,0,0,1.0)]"
+                    />
+                </div>
+            </div>}
+
         </div>
     );
 }
