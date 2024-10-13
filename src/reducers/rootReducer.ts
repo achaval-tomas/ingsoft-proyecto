@@ -1,9 +1,10 @@
 import AppState from "../domain/AppState";
 import { Color } from "../domain/Color";
-import { GameState, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
+import { BoardState, GameState, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
 import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
 import { Position, positionToBoardIndex } from "../domain/Position";
 import { Rotation } from "../domain/Rotation";
+import { getShapeAtOrNull } from "../domain/Board";
 import Action from "./Action";
 
 function computeNextPlayer(s: GameState): number {
@@ -118,7 +119,6 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             return newGameState;
         }
         case "movement-cancelled": {
-
             if (gameState.temporalMovements.length === 0) {
                 return gameState;
             }
@@ -152,6 +152,58 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                     }),
                 );
             }
+
+            return newGameState;
+        }
+        case "shape-card-used": {
+            const { position, targetPlayerId } = action;
+
+            const tileIndex = positionToBoardIndex(position);
+
+            const shapeAtPosition = getShapeAtOrNull(gameState.boardState.tiles, position);
+            if (shapeAtPosition == null) {
+                return gameState;
+            }
+
+            const shapeColor = gameState.boardState.tiles[tileIndex];
+            if (shapeColor === gameState.boardState.blockedColor) {
+                return gameState;
+            }
+
+            const newBoardState: BoardState = {
+                ...gameState.boardState,
+                blockedColor: shapeColor,
+            };
+
+            const newGameState: GameState = (targetPlayerId === gameState.selfPlayerState.id)
+                ? {
+                    ...gameState,
+                    boardState: newBoardState,
+                    selfPlayerState: {
+                        ...gameState.selfPlayerState,
+                        shapeCardsInHand: filterFirst(
+                            gameState.selfPlayerState.shapeCardsInHand,
+                            sc => sc.shape === shapeAtPosition,
+                        ),
+                    },
+                }
+                : {
+                    ...gameState,
+                    boardState: newBoardState,
+                    otherPlayersState: gameState.otherPlayersState.map(otherPlayerState => {
+                        if (otherPlayerState.id !== targetPlayerId) {
+                            return otherPlayerState;
+                        }
+
+                        return {
+                            ...otherPlayerState,
+                            shapeCardsInHand: filterFirst(
+                                otherPlayerState.shapeCardsInHand,
+                                sc => sc.shape === shapeAtPosition,
+                            ),
+                        };
+                    }),
+                };
 
             return newGameState;
         }
