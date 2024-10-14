@@ -1,5 +1,5 @@
 import AppState from "../domain/AppState";
-import { GameState, getAllPlayers } from "../domain/GameState";
+import { GameState, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
 import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
 import { positionToBoardIndex } from "../domain/Position";
 import Action from "./Action";
@@ -113,25 +113,54 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             return newGameState;
         }
         case "movement-cancelled": {
-            const newGameState = { ...gameState };
 
-            if (gameState.temporalMovements.length > 0) {
-                const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
-
-                const { movement, position, rotation } = gameState.temporalMovements[gameState.temporalMovements.length - 1];
-                const swp1 = positionToBoardIndex(position);
-                const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
-                const tmp = newBoardState.tiles[swp1];
-
-                newBoardState.tiles[swp1] = newBoardState.tiles[swp2];
-                newBoardState.tiles[swp2] = tmp;
-
-                newGameState.boardState = newBoardState;
-                newGameState.temporalMovements = gameState.temporalMovements.slice(0, gameState.temporalMovements.length - 1);
+            if (gameState.temporalMovements.length === 0) {
+                return gameState;
             }
 
+            const newGameState = { ...gameState };
 
-            console.log("LOLO:", newGameState);
+            const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
+
+            const { movement, position, rotation } = gameState.temporalMovements[gameState.temporalMovements.length - 1];
+            const swp1 = positionToBoardIndex(position);
+            const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
+            const tmp = newBoardState.tiles[swp1];
+
+            newBoardState.tiles[swp1] = newBoardState.tiles[swp2];
+            newBoardState.tiles[swp2] = tmp;
+
+            newGameState.boardState = newBoardState;
+            newGameState.temporalMovements = gameState.temporalMovements.slice(0, gameState.temporalMovements.length - 1);
+
+            if (gameState.currentRoundPlayer === gameState.selfPlayerState.roundOrder) {
+                const selfPlayerState: SelfPlayerState = {
+                    ...gameState.selfPlayerState,
+                    movementCardsInHand: [...gameState.selfPlayerState.movementCardsInHand, movement],
+                    shapeCardsInHand: [...gameState.selfPlayerState.shapeCardsInHand],
+                };
+
+                newGameState.selfPlayerState = selfPlayerState;
+            } else {
+                const cancellerPlayer = gameState.otherPlayersState.find(p => p.roundOrder === gameState.currentRoundPlayer);
+
+                if (cancellerPlayer != null) {
+                    const newCancellerPlayer: OtherPlayerState = {
+                        ...cancellerPlayer,
+                        movementCardsInHandCount: cancellerPlayer.movementCardsInHandCount + 1,
+                        shapeCardsInHand: [...cancellerPlayer.shapeCardsInHand],
+                    };
+
+                    newGameState.otherPlayersState = gameState.otherPlayersState.map(p => {
+                        if (p.id === cancellerPlayer.id) {
+                            return newCancellerPlayer;
+                        } else {
+                            return p;
+                        }
+                    });
+                }
+            }
+
             return newGameState;
         }
     }
