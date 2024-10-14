@@ -88,12 +88,26 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             const swp1 = positionToBoardIndex(position);
             const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
 
+            const newSelfPlayerState: SelfPlayerState = { ...gameState.selfPlayerState };
+            let newOtherPlayerState: OtherPlayerState[] = gameState.otherPlayersState;
+
+            if (gameState.currentRoundPlayer === gameState.selfPlayerState.roundOrder) {
+                newSelfPlayerState.movementCardsInHand = filterFirstMovement(gameState.selfPlayerState.movementCardsInHand, movement);
+            } else {
+                newOtherPlayerState = gameState.otherPlayersState.map(p => {
+                    if (p.roundOrder === gameState.currentRoundPlayer) {
+                        return { ...p, movementCardsInHandCount: p.movementCardsInHandCount - 1 };
+                    } else {
+                        return p;
+                    }
+                });
+            }
+
+
             const newGameState: GameState = {
                 ...gameState,
-                selfPlayerState: {
-                    ...gameState.selfPlayerState,
-                    movementCardsInHand: filterFirstMovement(gameState.selfPlayerState.movementCardsInHand, movement),
-                },
+                selfPlayerState: newSelfPlayerState,
+                otherPlayersState: newOtherPlayerState,
                 boardState: {
                     ...gameState.boardState,
                     tiles: gameState.boardState.tiles.map((c, i) => {
