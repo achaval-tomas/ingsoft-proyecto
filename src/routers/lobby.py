@@ -16,6 +16,7 @@ from src.schemas.lobby_schemas import (
     LobbyLeaveSchema,
     LobbySchema,
 )
+from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
 
 
@@ -105,9 +106,15 @@ async def lobby_websocket(
             received = await ws.receive_text()
             request = deserialize(received)
 
-            match request['type']:
-                case 'get-lobby-state':
-                    response = await handle_lobbystate(player_id, db)
+            response = (
+                await message_handlers[request['type']](
+                    db=db,
+                    player_id=player_id,
+                    data=received,
+                )
+                if request['type'] in message_handlers
+                else error_message(detail=errors.INVALID_REQUEST)
+            )
 
             if response is not None:
                 await lobby_manager.send_personal_message(response, player_id)
@@ -115,3 +122,8 @@ async def lobby_websocket(
     except WebSocketDisconnect:
         lobby_manager.disconnect(player_id=player_id)
         return
+
+
+message_handlers = {
+    'get-lobby-state': handle_lobbystate,
+}

@@ -10,7 +10,7 @@ from src.schemas.game_schemas import TurnEndedMessageSchema
 from src.schemas.message_schema import error_message
 
 
-async def handle_endturn(player_id: str, db: Session):
+async def handle_end_turn(player_id: str, db: Session, **_):
     player = get_player(db=db, player_id=player_id)
     if not player:
         return error_message(detail=errors.PLAYER_NOT_FOUND)

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from src.constants import errors
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movements import handle_cancel_movements
-from src.routers.handlers.game.end_turn import handle_endturn
+from src.routers.handlers.game.end_turn import handle_end_turn
 from src.routers.handlers.game.gamestate import handle_gamestate
 from src.routers.handlers.game.leave_game import handle_leave_game
 from src.routers.handlers.game.movement_card import handle_movement_card
@@ -11,6 +11,7 @@ from src.routers.handlers.game.shape_card import handle_shape_card
 from src.routers.handlers.lobby.game_start import handle_game_start
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas import game_schemas, player_schemas
+from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
 
 game_router = APIRouter()
@@ -58,7 +59,7 @@ async def game_websocket(
     try:
         await game_manager.send_personal_message(
             player_id=player_id,
-            message=handle_gamestate(player_id=player_id, db=db),
+            message=await handle_gamestate(player_id=player_id, db=db),
         )
 
         while True:
@@ -66,29 +67,15 @@ async def game_websocket(
             received = await ws.receive_text()
             request = deserialize(received)
 
-            match request['type']:
-                case 'get-game-state':
-                    response = handle_gamestate(player_id=player_id, db=db)
-                case 'end-turn':
-                    response = await handle_endturn(player_id=player_id, db=db)
-                case 'use-movement-card':
-                    response = await handle_movement_card(
-                        player_id=player_id,
-                        db=db,
-                        data=received,
-                    )
-                case 'cancel-movements':
-                    response = await handle_cancel_movements(
-                        player_id=player_id,
-                        db=db,
-                        data=received,
-                    )
-                case 'use-shape-card':
-                    response = await handle_shape_card(
-                        player_id=player_id,
-                        db=db,
-                        data=received,
-                    )
+            response = (
+                await message_handlers[request['type']](
+                    db=db,
+                    player_id=player_id,
+                    data=received,
+                )
+                if request['type'] in message_handlers
+                else error_message(detail=errors.INVALID_REQUEST)
+            )
 
             if response is not None:
                 await game_manager.send_personal_message(
@@ -99,3 +86,12 @@ async def game_websocket(
     except WebSocketDisconnect:
         game_manager.disconnect(player_id=player_id)
         return
+
+
+message_handlers = {
+    'get-game-state': handle_gamestate,
+    'end-turn': handle_end_turn,
+    'use-movement-card': handle_movement_card,
+    'cancel-movements': handle_cancel_movements,
+    'use-shape-card': handle_shape_card,
+}

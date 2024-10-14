@@ -57,7 +57,7 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
     return other_players_state
 
 
-def handle_gamestate(player_id: str, db: Session):
+async def handle_gamestate(player_id: str, db: Session, **_):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
@@ -105,7 +105,7 @@ async def broadcast_gamestate(player_id: str, db: Session):
 
     for player in players:
         await game_manager.send_personal_message(
-            message=handle_gamestate(player_id=player, db=db),
+            message=await handle_gamestate(player_id=player, db=db),
             player_id=player,
         )
 

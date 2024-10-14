@@ -36,7 +36,7 @@ def lobbystate_message(lobby_id: str, db: Session):
     ).model_dump_json()
 
 
-async def handle_lobbystate(player_id: str, db: Session):
+async def handle_lobbystate(player_id: str, db: Session, **_):
     lobby = get_lobby_by_player_id(db=db, player_id=player_id)
 
     if not lobby:
