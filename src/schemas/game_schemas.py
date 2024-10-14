@@ -49,7 +49,7 @@ class BoardStateSchema(BaseModel):
 
 class TemporalMovementSchema(BaseModel):
     movement: str
-    position: tuple[str, Coordinate, str]
+    position: Coordinate
     rotation: str
 
 
