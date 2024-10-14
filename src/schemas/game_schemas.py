@@ -47,13 +47,19 @@ class BoardStateSchema(BaseModel):
     blockedColor: Optional[str] = None
 
 
+class TemporalMovementSchema(BaseModel):
+    movement: str
+    position: tuple[str, Coordinate, str]
+    rotation: str
+
+
 class GameStateSchema(BaseModel):
     selfPlayerState: SelfPlayerStateSchema
     otherPlayersState: list[OtherPlayersStateSchema]
     boardState: BoardStateSchema
     turnStart: datetime
     currentRoundPlayer: int
-    temporalMovements: Optional[list[tuple[str, Coordinate, str]]] = []
+    temporalMovements: Optional[list[TemporalMovementSchema]] = []
 
 
 class GameStateMessageSchema(MessageSchema):

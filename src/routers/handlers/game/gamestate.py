@@ -12,6 +12,7 @@ from src.schemas.game_schemas import (
     GameStateSchema,
     OtherPlayersStateSchema,
     SelfPlayerStateSchema,
+    TemporalMovementSchema,
 )
 from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
@@ -56,6 +57,17 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
     return other_players_state
 
 
+def extract_temporal_movements(game_data: Game):
+    return [
+        TemporalMovementSchema(
+            movement=mov,
+            position=pos,
+            rotation=rot,
+        )
+        for mov, pos, rot in deserialize(game_data.temp_switches)
+    ]
+
+
 async def handle_gamestate(player_id: str, db: Session, **_):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
@@ -79,13 +91,15 @@ async def handle_gamestate(player_id: str, db: Session, **_):
 
     otherPlayersState = extract_other_player_states(db, game_data, player_id)
 
+    temporalMovements = extract_temporal_movements(game_data)
+
     game_state = GameStateSchema(
         selfPlayerState=selfPlayerState,
         otherPlayersState=otherPlayersState,
         boardState=boardState,
         turnStart=0,
         currentRoundPlayer=game_data.current_turn,
-        temporalMovements=deserialize(game_data.temp_switches),
+        temporalMovements=temporalMovements,
     )
 
     response = GameStateMessageSchema(
