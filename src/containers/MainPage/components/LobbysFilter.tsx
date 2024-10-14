@@ -11,7 +11,6 @@ type FilterProps = SliderProps & {
 function LobbysFilter({
     playerCountValue,
     onPlayerCountChange,
-    onSearchByPCChange,
     lobbyNameValue,
     onLobbyNameChange,
     onResetQuerys }: FilterProps) {
@@ -45,7 +44,6 @@ function LobbysFilter({
                         <Slider
                             playerCountValue={playerCountValue}
                             onPlayerCountChange={onPlayerCountChange}
-                            onSearchByPCChange={onSearchByPCChange}
                         />
                     </MenuItem>
 
@@ -64,4 +62,3 @@ function LobbysFilter({
 };
 
 export default LobbysFilter
-

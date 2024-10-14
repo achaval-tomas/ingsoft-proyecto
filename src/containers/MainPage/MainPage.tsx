@@ -25,8 +25,6 @@ function MainPage() {
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
     const [searchByNameQuery, setSearchByNameQuery] = useState<string>("")
     const [searchByPlayerCQuery, setSearchByPlayerCQuery] = useState<number>(0)
-    const [searchByNameState, setSearchByNameState] = useState(false)
-    const [searchByPlayerCState, setSearchByPlayerCState] = useState(false)
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -36,19 +34,7 @@ function MainPage() {
         void fetchAndSaveLobbies();
     }, []);
 
-    function handleSearchByNameStateChange() {
-        setSearchByNameState(!searchByNameState);
-        setSearchByNameQuery("")
-    }
-
-    function handleSearchByPlayerCStateChange() {
-        setSearchByPlayerCState(!searchByPlayerCState);
-        setSearchByPlayerCQuery(0)
-    }
-
     function handleResetQuerys() {
-        setSearchByNameState(false);
-        setSearchByPlayerCState(false);
         setSearchByNameQuery("");
         setSearchByPlayerCQuery(0);
     }
@@ -56,7 +42,7 @@ function MainPage() {
     const filteredLobbies = useMemo(
         () => {
             if (searchByNameQuery && !searchByPlayerCQuery) {
-                return lobbies.filter(l => l.lobby_name.toLowerCase().includes(searchByNameQuery))
+                return lobbies.filter(l => l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()))
             } else if (!searchByNameQuery && searchByPlayerCQuery) {
                 return lobbies.filter(l => l.player_amount == searchByPlayerCQuery)
             } else if (searchByNameQuery && searchByPlayerCQuery) {
@@ -136,10 +122,6 @@ function MainPage() {
             searchByPlayerCQuery={searchByPlayerCQuery}
             onSearchNameQueryChange={setSearchByNameQuery}
             onSearchPlayerQueryChange={setSearchByPlayerCQuery}
-            searchByNameState={searchByNameState}
-            searchByPlayerCState={searchByPlayerCState}
-            onChangeSearchByNameState={handleSearchByNameStateChange}
-            onChangeSearchByPCState={handleSearchByPlayerCStateChange}
             onResetQuerys={handleResetQuerys}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}

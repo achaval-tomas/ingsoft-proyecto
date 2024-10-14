@@ -11,10 +11,6 @@ interface MainPageLayoutProps {
     searchByPlayerCQuery: number;
     onSearchNameQueryChange: (query: string) => void;
     onSearchPlayerQueryChange: (query: number) => void;
-    searchByNameState: boolean
-    searchByPlayerCState: boolean
-    onChangeSearchByNameState: () => void
-    onChangeSearchByPCState: () => void
     onResetQuerys: () => void
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
@@ -27,10 +23,6 @@ function MainPageLayout({
     searchByPlayerCQuery,
     onSearchNameQueryChange,
     onSearchPlayerQueryChange,
-    searchByNameState,
-    searchByPlayerCState,
-    onChangeSearchByNameState,
-    onChangeSearchByPCState,
     onResetQuerys,
     onSubmitLobbyForm,
     lobbies,
@@ -60,12 +52,8 @@ function MainPageLayout({
             <LobbysFilter
                 playerCountValue={searchByPlayerCQuery}
                 onPlayerCountChange={onSearchPlayerQueryChange}
-                searchByPCState={searchByPlayerCState}
-                onSearchByPCChange={onChangeSearchByPCState}
                 lobbyNameValue={searchByNameQuery}
                 onLobbyNameChange={onSearchNameQueryChange}
-                searchByNameState={searchByNameState}
-                onChangeSearchByNameState={onChangeSearchByNameState}
                 onResetQuerys={onResetQuerys}
             />
             <LobbyList

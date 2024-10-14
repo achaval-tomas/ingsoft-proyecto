@@ -4,17 +4,11 @@ import React from "react";
 export type SliderProps = {
     playerCountValue: number;
     onPlayerCountChange: (value: number) => void;
-    onSearchByPCChange: (switchState: boolean) => void;
 };
 
 
 const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
-    function Slider({ playerCountValue, onPlayerCountChange, onSearchByPCChange }, ref) {
-
-        const handleSliderChange = (value: number) => {
-            onSearchByPCChange(true);
-            onPlayerCountChange(value);
-        };
+    function Slider({ playerCountValue, onPlayerCountChange }, ref) {
 
         return (
             <div className="self-end mr-4" ref={ref}>
@@ -22,7 +16,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                     className="mb-0 mx-2 w-full cursor-pointer"
                     type="range"
                     value={playerCountValue}
-                    onChange={e => handleSliderChange(parseInt(e.target.value))}
+                    onChange={e => onPlayerCountChange(parseInt(e.target.value))}
                     onClick={e => e.preventDefault()}
                     min={0}
                     max={3}
@@ -39,6 +33,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     }
 );
 
-export default Slider
+export default Slider;
 
 

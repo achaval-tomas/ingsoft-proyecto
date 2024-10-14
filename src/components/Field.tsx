@@ -4,7 +4,7 @@ import Input from "./Input";
 
 export interface FieldProps {
     value: string | number;
-    onChange : (value: string | number) => void;
+    onChange: (value: string | number) => void;
     label: string;
     placeholder?: string;
     error?: string;
@@ -15,7 +15,7 @@ export interface FieldProps {
     disabled?: boolean;
 }
 
-function Field ({ value, onChange, label, placeholder, error, type, min, max, inputTestId, disabled = false }: FieldProps) {
+function Field({ value, onChange, label, placeholder, error, type, min, max, inputTestId, disabled = false }: FieldProps) {
     return <HUiField>
         <Label>{label}</Label>
         <Input
