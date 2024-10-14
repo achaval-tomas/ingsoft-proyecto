@@ -17,6 +17,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+  font-family: seaside-resort;
+  src: url(SeasideResortNF.ttf);
+}
+
 a {
   font-weight: 500;
   color: #646cff;
