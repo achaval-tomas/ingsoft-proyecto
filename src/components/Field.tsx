@@ -28,7 +28,7 @@ function Field ({ value, onChange, label, placeholder, error, type, min, max, in
             max={max}
             data-testid={inputTestId}
         />
-        {(error != null) && <p className="mt-2.5 text-sm !text-red-400">{error}</p>}
+        {(error != null) && <p className="mt-2.5 text-sm text-red-400">{error}</p>}
     </HUiField>;
 }
 
