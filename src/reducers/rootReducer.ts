@@ -1,7 +1,9 @@
 import AppState from "../domain/AppState";
+import { Color } from "../domain/Color";
 import { GameState, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
 import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
-import { positionToBoardIndex } from "../domain/Position";
+import { Position, positionToBoardIndex } from "../domain/Position";
+import { Rotation } from "../domain/Rotation";
 import Action from "./Action";
 
 function computeNextPlayer(s: GameState): number {
@@ -46,12 +48,8 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
 
                 for (let i = gameState.temporalMovements.length - 1; i >= 0; --i) {
                     const { movement, position, rotation } = gameState.temporalMovements[i];
-                    const swp1 = positionToBoardIndex(position);
-                    const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
-                    const tmp = newBoardState.tiles[swp1];
 
-                    newBoardState.tiles[swp1] = newBoardState.tiles[swp2];
-                    newBoardState.tiles[swp2] = tmp;
+                    newBoardState.tiles = getTilesWithMovementDone(movement, position, rotation, newBoardState.tiles);
                 }
 
                 newGameState.boardState = newBoardState;
@@ -85,9 +83,6 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
         case "movement-card-used": {
             const { movement, position, rotation } = action;
 
-            const swp1 = positionToBoardIndex(position);
-            const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
-
             const newSelfPlayerState: SelfPlayerState = { ...gameState.selfPlayerState };
             let newOtherPlayerState: OtherPlayerState[] = gameState.otherPlayersState;
 
@@ -110,13 +105,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                 otherPlayersState: newOtherPlayerState,
                 boardState: {
                     ...gameState.boardState,
-                    tiles: gameState.boardState.tiles.map((c, i) => {
-                        switch (i) {
-                            case swp1: return gameState.boardState.tiles[swp2];
-                            case swp2: return gameState.boardState.tiles[swp1];
-                            default: return c;
-                        }
-                    }),
+                    tiles: getTilesWithMovementDone(movement, position, rotation, gameState.boardState.tiles),
                 },
                 temporalMovements: [
                     ...gameState.temporalMovements,
@@ -134,15 +123,12 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
 
             const newGameState = { ...gameState };
 
-            const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
-
             const { movement, position, rotation } = gameState.temporalMovements[gameState.temporalMovements.length - 1];
-            const swp1 = positionToBoardIndex(position);
-            const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
-            const tmp = newBoardState.tiles[swp1];
 
-            newBoardState.tiles[swp1] = newBoardState.tiles[swp2];
-            newBoardState.tiles[swp2] = tmp;
+            const newBoardState = {
+                ...gameState.boardState,
+                tiles: getTilesWithMovementDone(movement, position, rotation, gameState.boardState.tiles),
+            };
 
             newGameState.boardState = newBoardState;
             newGameState.temporalMovements = gameState.temporalMovements.slice(0, gameState.temporalMovements.length - 1);
@@ -178,6 +164,19 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             return newGameState;
         }
     }
+}
+
+function getTilesWithMovementDone(movement: Movement, position: Position, rotation: Rotation, tiles: readonly Color[]) {
+    const swp1 = positionToBoardIndex(position);
+    const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
+
+    return tiles.map((c, i) => {
+        switch (i) {
+            case swp1: return tiles[swp2];
+            case swp2: return tiles[swp1];
+            default: return c;
+        }
+    });
 }
 
 function filterFirstMovement(movements: readonly Movement[], movement: Movement): Movement[] {
