@@ -5,7 +5,7 @@ import { toHome } from "../../navigation/destinations";
 import playerService from "../../services/playerService";
 
 function InitialPage() {
-    const [serverError, setServerError] = useState<boolean>(false);
+    const [serverError, setServerError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     async function handleSubmit(playerName: string) {
@@ -14,7 +14,7 @@ function InitialPage() {
 
             navigate(toHome(playerId));
         } catch {
-            setServerError(true);
+            setServerError("Hubo un error en el servidor. Por favor intente más tarde.");
         }
     }
 
@@ -30,13 +30,11 @@ function InitialPage() {
                 </div>
             </div>
         </div>
-        <div className="w-full flex-grow flex justify-center items-center">
-            <PlayerNameForm onSubmit={name => void handleSubmit(name)} />
-            { serverError &&
-                <p className="text-center text-red-500 py-2">
-                    Hay un error en el servidor, por favor intentá más tarde
-                </p>
-            }
+        <div className="justify-self-center">
+            <PlayerNameForm
+                submitError={serverError}
+                onSubmit={name => void handleSubmit(name)}
+            />
         </div>
     </div>;
 }

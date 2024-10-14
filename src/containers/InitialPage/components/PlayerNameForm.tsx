@@ -5,19 +5,20 @@ import Field from "../../../components/Field";
 type PlayerNameFormState = string;
 
 interface PlayerNameFormProps {
+    submitError: string | null;
     onSubmit: (state: PlayerNameFormState) => void;
 }
 
-function PlayerNameForm({ onSubmit }: PlayerNameFormProps) {
+function PlayerNameForm({ submitError, onSubmit }: PlayerNameFormProps) {
     const [playerName, setPlayerName] = useState<string>("");
-    const [error, setError] = useState<string | null>(null);
+    const [playerNameError, setPlayerNameError] = useState<string | null>(null);
 
-    useEffect(() => setError(null), [playerName]);
+    useEffect(() => setPlayerNameError(null), [playerName]);
 
     const handleSubmit = useCallback(() => {
         const playerNameTrimmed = playerName.trim();
         if (playerNameTrimmed === "") {
-            setError("El nombre de jugador es obligatorio");
+            setPlayerNameError("El nombre de jugador es obligatorio");
             return;
         }
 
@@ -32,20 +33,19 @@ function PlayerNameForm({ onSubmit }: PlayerNameFormProps) {
             <Field
                 label="Nombre de jugador"
                 placeholder={"Ingrese su nombre"}
-                error={error ?? undefined}
+                error={playerNameError ?? undefined}
                 value={playerName}
                 onChange={setPlayerName}
                 inputTestId="input-player-name"
             />
-            <div className="mt-4">
-                <FilledButton
-                    type="submit"
-                    className="w-full"
-                    testId="button-play"
-                >
-                    Jugar
-                </FilledButton>
-            </div>
+            <FilledButton
+                type="submit"
+                className="mt-4 w-full"
+                testId="button-play"
+            >
+                Jugar
+            </FilledButton>
+            {(submitError != null) && <p className="mt-2 text-red-400">{submitError}</p>}
         </form>
     );
 }
