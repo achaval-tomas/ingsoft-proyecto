@@ -35,13 +35,13 @@ function PlayerNameForm({ onSubmit }: PlayerNameFormProps) {
                 error={error ?? undefined}
                 value={playerName}
                 onChange={setPlayerName}
-                inputTestId="lobby-name"
+                inputTestId="input-player-name"
             />
             <div className="mt-4">
                 <FilledButton
                     type="submit"
                     className="w-full"
-                    testId="lobby-btn-create"
+                    testId="button-play"
                 >
                     Jugar
                 </FilledButton>

@@ -12,8 +12,8 @@ test("It passes the name on submit", async () => {
         />,
     );
 
-    const button = screen.getByText("Crear");
-    const input = screen.getByLabelText("Nombre de jugador:");
+    const button = screen.getByTestId("button-play");
+    const input = screen.getByTestId("input-player-name");
 
     await userEvent.type(input, "Tomás");
     await userEvent.click(button);
@@ -30,8 +30,8 @@ test("It only enables submit when name isn't empty", async () => {
         />,
     );
 
-    const button = screen.getByText("Crear");
-    const input = screen.getByLabelText("Nombre de jugador:");
+    const button = screen.getByTestId("button-play");
+    const input = screen.getByTestId("input-player-name");
 
     await userEvent.click(button);
 
