@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
 
@@ -22,7 +24,8 @@ class ConnectionManager:
     def disconnect(self, player_id: str, websocket: WebSocket):
         """removes a disconnected websocket from list of active connections"""
         if player_id in self.active_connections:
-            self.active_connections[player_id].remove(websocket)
+            with suppress(ValueError):
+                self.active_connections[player_id].remove(websocket)
 
             if not self.active_connections[player_id]:
                 del self.active_connections[player_id]
