@@ -37,9 +37,14 @@ lobby_router = APIRouter()
 
 @lobby_router.post('/lobby', response_model=LobbyIdSchema)
 def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
-    return LobbyIdSchema(
-        lobby_id=crud_lobby.create_lobby(db=db, lobby=lobby),
-    )
+    res = crud_lobby.create_lobby(db=db, lobby=lobby)
+
+    if res == 1:
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
+    elif res == 2:
+        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
+
+    return LobbyIdSchema(lobby_id=res)
 
 
 @lobby_router.post('/lobby/join', status_code=202)
@@ -49,10 +54,12 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
-        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
+        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
     elif res == 3:
-        raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
+        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
     elif res == 4:
+        raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
+    elif res == 5:
         raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED)
 
     await share_player_list(

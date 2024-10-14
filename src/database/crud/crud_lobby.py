@@ -8,9 +8,11 @@ from src.tools.jsonify import deserialize, serialize
 
 
 def create_lobby(db: Session, lobby: LobbyCreateSchema):
-    db_player = get_player(db=db, player_id=lobby.lobby_owner)
-    if not db_player:
-        return None
+    player = get_player(db=db, player_id=lobby.lobby_owner)
+    if player is None:
+        return 1
+    if player.lobby_id or player.game_id:
+        return 2
 
     player_list = [lobby.lobby_owner]
 
@@ -24,7 +26,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
         player_amount=1,
     )
 
-    db_player.lobby_id = db_lobby.lobby_id
+    player.lobby_id = db_lobby.lobby_id
 
     db.add(db_lobby)
     db.commit()
@@ -37,19 +39,18 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
     player = get_player(db, player_id)
     if not player:
         return 1
+    if player.lobby_id or player.game_id:
+        return 2
 
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
-        return 2
-    elif lobby.player_amount == lobby.max_players:
         return 3
+    elif lobby.player_amount == lobby.max_players:
+        return 4
 
     players = deserialize(lobby.players)
     if player_id in players:
-        return 4
-
-    assert not player.game_id
-    assert not player.lobby_id
+        return 5
 
     player.lobby_id = lobby.lobby_id
 
