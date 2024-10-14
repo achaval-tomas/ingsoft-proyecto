@@ -12,7 +12,7 @@ function useGameUiState(
     selectedTile: Position | null,
     movementTargets: MovementTarget[],
 ): GameUiState {
-    const { selfPlayerState, otherPlayersState, boardState } = gameState;
+    const { selfPlayerState, otherPlayersState, boardState, currentRoundPlayer, temporalMovements } = gameState;
 
     const selfPlayerUiState = useMemo<SelfPlayerUiState>(
         () => ({
@@ -23,8 +23,9 @@ function useGameUiState(
                     status: (i === selectedMovementCard) ? "selected" : "normal",
                 }),
             ),
+            canCancelMovement: currentRoundPlayer === selfPlayerState.roundOrder && temporalMovements.length > 0,
         }),
-        [selfPlayerState, selectedMovementCard],
+        [selfPlayerState, selectedMovementCard, currentRoundPlayer, temporalMovements],
     );
 
     const otherPlayersUiState = useMemo<OtherPlayerUiState[]>(

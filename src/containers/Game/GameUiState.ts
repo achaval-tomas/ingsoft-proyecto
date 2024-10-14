@@ -37,6 +37,7 @@ export type MovementCardUiState = {
 
 export type SelfPlayerUiState = CommonPlayerUiState & {
     movementCardsInHand: MovementCardUiState[];
+    canCancelMovement: boolean;
 }
 
 export type OtherPlayerUiState = CommonPlayerUiState & {
