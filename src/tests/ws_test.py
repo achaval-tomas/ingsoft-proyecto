@@ -323,7 +323,7 @@ def test_card_movement():
 
         cards = get_player_cards(db=next(get_session()), player_id=current_turn)
         assert set(deserialize(cards.movement_cards)) == set(initial_cards)
-        assert deserialize(cards.temp_switches) == []
+        assert deserialize(game.temp_switches) == []
 
 
 def test_card_shape():

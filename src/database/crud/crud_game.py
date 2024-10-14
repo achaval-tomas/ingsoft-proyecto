@@ -232,7 +232,4 @@ def end_game_turn(db: Session, player_id: str):
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
 
-    if rc1 == 0:
-        return 5, None, None
-
     return 0, mov_cards, shape_cards

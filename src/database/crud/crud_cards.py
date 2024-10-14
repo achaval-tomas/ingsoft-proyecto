@@ -213,7 +213,7 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
         player_cards.movement_cards = serialize(mov_cards)
 
         used_movements.pop(used_mov_count - m - 1)
-        player_cards.temp_switches = serialize(used_movements)
+        game.temp_switches = serialize(used_movements)
 
         db.commit()
 

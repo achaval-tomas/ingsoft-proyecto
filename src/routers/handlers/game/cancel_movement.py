@@ -16,7 +16,7 @@ async def handle_cancel_movement(db: Session, player_id: str, **_):
 
     match rc:
         case -1:
-            return None
+            return error_message(detail=errors.NO_MOVEMENTS_TO_CANCEL)
         case 1:
             return error_message(detail=errors.INTERNAL_SERVER_ERROR)
         case 2:

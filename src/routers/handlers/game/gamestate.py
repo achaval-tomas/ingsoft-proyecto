@@ -5,7 +5,6 @@ from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game_from_player
 from src.database.crud.crud_player import get_player
 from src.database.models import Game
-from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import validate_shape_cards
 from src.schemas.game_schemas import (
     BoardStateSchema,
@@ -95,19 +94,3 @@ async def handle_gamestate(player_id: str, db: Session, **_):
     )
 
     return response.model_dump_json()
-
-
-async def broadcast_gamestate(player_id: str, db: Session):
-    game = get_game_from_player(db=db, player_id=player_id)
-    if game is None:
-        return error_message(detail=errors.GAME_NOT_FOUND)
-
-    players = deserialize(game.player_order)
-
-    for player in players:
-        await game_manager.send_personal_message(
-            message=await handle_gamestate(player_id=player, db=db),
-            player_id=player,
-        )
-
-    return None
