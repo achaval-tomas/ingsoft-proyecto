@@ -8,7 +8,7 @@ function InitialPage() {
     const [serverError, setServerError] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    async function createPlayerHandler(playerName: string) {
+    async function handleSubmit(playerName: string) {
         try {
             const playerId = await playerService.createPlayer(playerName);
 
@@ -31,7 +31,7 @@ function InitialPage() {
             </div>
         </div>
         <div className="w-full flex-grow flex justify-center items-center">
-            <PlayerNameForm handleSubmit={name => void createPlayerHandler(name)} />
+            <PlayerNameForm onSubmit={name => void handleSubmit(name)} />
             { serverError &&
                 <p className="text-center text-red-500 py-2">
                     Hay un error en el servidor, por favor intentá más tarde

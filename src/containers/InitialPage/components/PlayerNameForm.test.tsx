@@ -8,7 +8,7 @@ test("It passes the name on submit", async () => {
 
     render(
         <PlayerNameForm
-            handleSubmit={n => { name = n; }}
+            onSubmit={n => { name = n; }}
         />,
     );
 
@@ -26,7 +26,7 @@ test("It only enables submit when name isn't empty", async () => {
 
     render(
         <PlayerNameForm
-            handleSubmit={() => { submit = true; }}
+            onSubmit={() => { submit = true; }}
         />,
     );
 

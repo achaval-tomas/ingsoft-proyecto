@@ -1,56 +1,51 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FilledButton from "../../../components/FilledButton";
+import Field from "../../../components/Field";
 
 type PlayerNameFormState = string;
 
 interface PlayerNameFormProps {
-    handleSubmit: (state: PlayerNameFormState) => void;
+    onSubmit: (state: PlayerNameFormState) => void;
 }
 
-function PlayerNameForm({ handleSubmit }: PlayerNameFormProps) {
-    const [name, setName] = useState<string>("");
+function PlayerNameForm({ onSubmit }: PlayerNameFormProps) {
+    const [playerName, setPlayerName] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
 
-    // this state will manage the display of a warning when the user
-    // tries to create a player with no name
-    const [showWarning, setShowWarning] = useState<boolean>(false);
+    useEffect(() => setError(null), [playerName]);
+
+    const handleSubmit = useCallback(() => {
+        const playerNameTrimmed = playerName.trim();
+        if (playerNameTrimmed === "") {
+            setError("El nombre de jugador es obligatorio");
+            return;
+        }
+
+        onSubmit(playerNameTrimmed);
+    }, [playerName, onSubmit]);
 
     return (
         <form
-            onSubmit={(e) => {
-                e.preventDefault();
-
-                if (name !== "") {
-                    handleSubmit(name);
-                } else {
-                    // if user didn't input a name then do nothing with
-                    // the form and show warning
-                    setShowWarning(true);
-                }
-            }}
-            className="border border-surface-500 rounded p-6 flex flex-col justify-center items-center"
+            className="flex flex-col rounded gap-y-3 min-w-[24rem] p-12 border border-border bg-surface"
+            onSubmit={e => { e.preventDefault(); handleSubmit(); }}
         >
-            <div className="grid grid-rows-2 grid-cols-2">
-                <label htmlFor="player-name" className="col-span-1 row-span-1">Nombre de jugador:</label>
-                <input
-                    type="text"
-                    id="player-name"
-                    value={name || ""}
-                    onChange={e => {
-                        setName(e.target.value);
-                        setShowWarning(false);
-                    }}
-                    className="col-span-1 row-span-1"
+            <Field
+                label="Nombre de jugador"
+                placeholder={"Ingrese su nombre"}
+                error={error ?? undefined}
+                value={playerName}
+                onChange={setPlayerName}
+                inputTestId="lobby-name"
+            />
+            <div className="mt-4">
+                <FilledButton
+                    type="submit"
+                    className="w-full"
+                    testId="lobby-btn-create"
                 >
-                </input>
-                { showWarning && <p className="text-sm col-start-2 !text-red-400">Elegí un nombre</p>}
+                    Jugar
+                </FilledButton>
             </div>
-            <FilledButton
-                className="mt-4"
-                backgroundColor={showWarning ? "bg-red-600" : undefined}
-                type="submit"
-            >
-                Crear
-            </FilledButton>
         </form>
     );
 }
