@@ -103,7 +103,7 @@ def get_available_lobbies(db: Session, limit: int = 1000):
 
 
 def delete_lobby(db: Session, lobby_id: str):
-    lobby = db.get(Lobby, lobby_id)
+    lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
         return
 

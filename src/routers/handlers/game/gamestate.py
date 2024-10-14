@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
-from src.database.crud.crud_game import get_game
+from src.database.crud.crud_game import get_game_from_player
 from src.database.crud.crud_player import get_player
 from src.database.models import Game
 from src.routers.helpers.connection_manager import game_manager
@@ -62,7 +62,7 @@ def handle_gamestate(player_id: str, db: Session):
     if not player_data:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
 
-    game_data = get_game(db=db, player_id=player_id)
+    game_data = get_game_from_player(db=db, player_id=player_id)
     if not game_data:
         return error_message(detail=errors.GAME_NOT_FOUND)
 
@@ -97,7 +97,7 @@ def handle_gamestate(player_id: str, db: Session):
 
 
 async def broadcast_gamestate(player_id: str, db: Session):
-    game = get_game(db=db, player_id=player_id)
+    game = get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return error_message(detail=errors.GAME_NOT_FOUND)
 

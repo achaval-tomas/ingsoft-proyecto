@@ -122,7 +122,7 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     if player is None:
         return 1
 
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return 2
 
@@ -188,7 +188,7 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     if player_cards is None:
         return 1
 
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return 2
 
@@ -233,7 +233,7 @@ def currently_used_movement_cards(db: Session, player_id: str):
     Returns a list of all movement cards held by
     players who are in game with player @player_id
     """
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
 
     cards = []
     for player in deserialize(game.player_order):
@@ -250,7 +250,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     if player is None:
         return 1
 
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return 2
 

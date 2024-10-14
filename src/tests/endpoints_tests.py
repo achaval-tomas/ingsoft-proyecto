@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from src.constants import errors
-from src.database.crud.crud_game import delete_game, get_game
+from src.database.crud.crud_game import delete_game, get_game_from_player
 from src.database.crud.crud_lobby import delete_lobby
 from src.database.crud.crud_player import delete_player
 from src.database.db import get_session
@@ -322,7 +322,7 @@ def test_leave_game_error_game_not_found():
     client.post('/game', json=game_test.model_dump())
 
     db = next(get_session())
-    game = get_game(db=db, player_id=player_id_1)
+    game = get_game_from_player(db=db, player_id=player_id_1)
     if game:
         delete_game(db=db, game_id=str(game.game_id))
 

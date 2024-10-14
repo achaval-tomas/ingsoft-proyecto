@@ -6,7 +6,7 @@ from src.cards.card_utils import coord_to_index
 from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
-from src.database.models import Game, Lobby, PlayerCards
+from src.database.models import Game, Lobby
 from src.schemas.card_schemas import Coordinate
 from src.tools.jsonify import deserialize, serialize
 
@@ -108,15 +108,19 @@ def clamp_val(val: int):
     return max(0, min(val, 5))
 
 
-def get_game(db: Session, player_id: str):
+def get_game(db: Session, game_id: int):
+    return db.get(Game, game_id)
+
+
+def get_game_from_player(db: Session, player_id: str):
     player = get_player(db=db, player_id=player_id)
     if not player or not player.game_id:
         return None
-    return db.get(Game, player.game_id)
+    return get_game(db=db, game_id=player.game_id)
 
 
 def get_game_players(db: Session, game_id: int):
-    game = db.get(Game, game_id)
+    game = get_game(db=db, game_id=game_id)
     if game is None:
         return []
     return deserialize(game.player_order)
@@ -134,7 +138,7 @@ def leave_game(db: Session, player_id: str):
         2 -> Player does not exist in the database
         3 -> There is a winner (winner_id) because everyone else left
     """
-    game = get_game(db=db, player_id=player_id)
+    game = get_game_from_player(db=db, player_id=player_id)
     if not game:
         return 1, None
 
@@ -174,7 +178,7 @@ def leave_game(db: Session, player_id: str):
 
 
 def delete_game(db: Session, game_id: str):
-    game = db.get(Game, game_id)
+    game = get_game(db=db, game_id=game_id)
     if not game:
         return
 
@@ -193,14 +197,14 @@ def delete_game(db: Session, game_id: str):
 
 
 def delete_player_cards(db: Session, player_id: str):
-    cards = db.get(PlayerCards, player_id)
+    cards = crud_cards.get_player_cards(db=db, player_id=player_id)
     if cards:
         db.delete(cards)
         db.commit()
 
 
 def end_game_turn(db: Session, player_id: str):
-    game = get_game(db=db, player_id=player_id)
+    game = get_game_from_player(db=db, player_id=player_id)
     if not game:
         return 1, None, None
 

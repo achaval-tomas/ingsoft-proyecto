@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 
 from src.constants import errors
 from src.database.crud.crud_cards import cancel_movements, get_player_cards
-from src.database.crud.crud_game import get_game
+from src.database.crud.crud_game import get_game_from_player
 from src.database.db import get_session
 from src.main import app
 from src.schemas.card_schemas import (
@@ -214,7 +214,7 @@ def test_card_movement():
 
     db = next(get_session())
 
-    game = get_game(db, player_id)
+    game = get_game_from_player(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]
     original_board = deserialize(game.board)
 
@@ -250,7 +250,7 @@ def test_card_movement():
             ).model_dump_json()
         )
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         board = deserialize(game.board)
 
         assert pos0 == board[7]
@@ -278,7 +278,7 @@ def test_card_movement():
             ).model_dump_json()
         )
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
 
@@ -307,7 +307,7 @@ def test_card_movement():
             ).model_dump_json()
         )
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
 
@@ -316,7 +316,7 @@ def test_card_movement():
 
         cancel_movements(db=next(get_session()), player_id=current_turn)
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
         assert original_board == board
@@ -361,7 +361,7 @@ def test_card_shape():
 
     db = next(get_session())
 
-    game = get_game(db, player_id)
+    game = get_game_from_player(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]
 
     game.board = serialize(
