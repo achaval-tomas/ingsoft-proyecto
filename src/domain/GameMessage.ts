@@ -60,8 +60,7 @@ export const GameMessageOutSchema = z.discriminatedUnion("type", [
     }),
     z.object({
         // cancel a temporal movement
-        type: z.literal("cancel-movements"),
-        amount: z.number().min(1).max(3),
+        type: z.literal("cancel-movement"),
     }),
 ]);
 
