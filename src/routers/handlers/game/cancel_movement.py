@@ -28,7 +28,7 @@ async def handle_cancel_movement(db: Session, player_id: str, **_):
 
     await game_manager.broadcast_in_game(
         db=db,
-        player_id=player_id,
+        game_id=player.game_id,
         message=simple_message(
             msg_type='movement-cancelled',
         ),

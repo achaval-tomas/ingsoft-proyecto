@@ -92,6 +92,6 @@ message_handlers = {
     'get-game-state': handle_gamestate,
     'end-turn': handle_end_turn,
     'use-movement-card': handle_movement_card,
-    'cancel-movements': handle_cancel_movement,
+    'cancel-movement': handle_cancel_movement,
     'use-shape-card': handle_shape_card,
 }
