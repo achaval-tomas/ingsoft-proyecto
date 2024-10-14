@@ -10,11 +10,17 @@ async function getJoinableLobbies(): Promise<LobbyElement[]> {
     return data.filter(l => l.max_players > l.player_amount);
 }
 
+type CreateLobbyResult = {
+    type: "PlayerNotFound" | "AlreadyJoinedOtherLobby" | "Ok" | "Other";
+    message: string;
+    lobby_id: string | null;
+};
+
 async function createLobby(
     playerId: string,
     lobbyName: string,
     maxPlayers: number,
-): Promise<string> {
+): Promise<CreateLobbyResult> {
     const res = await post(`${httpServerUrl}/lobby`, {
         lobby_name: lobbyName,
         lobby_owner: playerId,
@@ -22,12 +28,26 @@ async function createLobby(
         max_players: maxPlayers,
     });
 
-    const data = await res.json() as { lobby_id: string };
-    return data.lobby_id;
+    if (res.ok) {
+        const data = await res.json() as { lobby_id: string };
+        return { type: "Ok", message: "", lobby_id: data.lobby_id };
+    }
+
+    const json = await res.json() as { detail: string };
+
+    if (res.status === 404 && json.detail === "No se pudo encontrar al jugador que realizó la solicitud") {
+        return { type: "PlayerNotFound", message: json.detail, lobby_id: null };
+    }
+
+    if (res.status === 400 && json.detail === "Solo puedes crear o unirte a una partida a la vez!") {
+        return { type: "AlreadyJoinedOtherLobby", message: json.detail, lobby_id: null };
+    }
+
+    return { type: "Other", message: "Error al intentar crear partida", lobby_id: null };
 }
 
 type JoinLobbyResult = {
-    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "Ok" | "Other";
+    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "AlreadyJoinedOtherLobby" | "Ok" | "Other";
     message: string;
 };
 
@@ -49,6 +69,10 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyRe
 
     if (res.status === 400 && json.detail === "El jugador ya está en la partida") {
         return { type: "AlreadyJoined", message: json.detail };
+    }
+
+    if (res.status === 400 && json.detail === "Solo puedes crear o unirte a una partida a la vez!") {
+        return { type: "AlreadyJoinedOtherLobby", message: json.detail };
     }
 
     if (res.status === 404 && json.detail === "No se pudo encontrar al jugador que realizó la solicitud") {

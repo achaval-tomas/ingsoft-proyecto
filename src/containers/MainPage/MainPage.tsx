@@ -3,7 +3,7 @@ import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
-import { toInitial, toLobby } from "../../navigation/destinations";
+import { toInitial, toLobby, toPlay } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 
 export interface LobbyForm {
@@ -36,19 +36,28 @@ function MainPage() {
         try {
             const playerId = urlParams.get("player") ?? "";
 
-            const lobbyId = await lobbyService.createLobby(
+            const res = await lobbyService.createLobby(
                 playerId,
                 state.name,
                 state.maxPlayers,
             );
 
-            if (lobbyId === null) {
-                alert("Jugador no existente");
+            if (res.type === "PlayerNotFound" || res.type === "Other") {
+                alert(res.message);
                 navigate(toInitial());
                 return;
             }
 
-            navigate(toLobby(playerId));
+            if (res.type === "AlreadyJoinedOtherLobby") {
+                alert(res.message);
+                navigate(toLobby(playerId));
+                return;
+            }
+
+            if (res.type === "Ok") {
+                navigate(toLobby(playerId));
+                return;
+            }
         } catch {
             alert("Error al comunicarse con el servidor, intente de nuevo más tarde.");
         }
@@ -58,7 +67,13 @@ function MainPage() {
         const playerId = urlParams.get("player") ?? "";
         const res = await lobbyService.joinLobby(playerId, lobbyId);
 
-        if (res.type === "Ok" || res.type === "AlreadyJoined") {
+        if (res.type === "Ok") {
+            navigate(toLobby(playerId));
+            return;
+        }
+
+        if (res.type === "AlreadyJoined" || res.type === "AlreadyJoinedOtherLobby") {
+            alert(res.message);
             navigate(toLobby(playerId));
             return;
         }
