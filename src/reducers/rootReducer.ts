@@ -44,14 +44,15 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             if (gameState.temportalMovements != null && gameState.temportalMovements.length > 0) {
                 const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
 
-                gameState.temportalMovements.forEach(({ movement, position, rotation }) => {
+                for (let i = gameState.temportalMovements.length - 1; i >= 0; --i) {
+                    const { movement, position, rotation } = gameState.temportalMovements[i];
                     const swp1 = positionToBoardIndex(position);
                     const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
                     const tmp = newBoardState.tiles[swp1];
 
                     newBoardState.tiles[swp1] = newBoardState.tiles[swp2];
                     newBoardState.tiles[swp2] = tmp;
-                });
+                };
 
                 newGameState.boardState = newBoardState;
             }
@@ -104,8 +105,8 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                     }),
                 },
                 temportalMovements: [
-                    { movement: movement, position: position, rotation: rotation },
                     ...gameState.temportalMovements ?? [],
+                    { movement: movement, position: position, rotation: rotation },
                 ],
             };
 
