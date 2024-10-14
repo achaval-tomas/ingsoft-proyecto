@@ -4,7 +4,6 @@ from src.constants import errors
 from src.database.crud.crud_game import end_game_turn, get_game_players
 from src.database.crud.crud_player import get_player
 from src.routers.handlers.game.announce_winner import handle_announce_winner
-from src.routers.handlers.game.gamestate import broadcast_gamestate
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.game_schemas import TurnEndedMessageSchema
 from src.schemas.message_schema import error_message
@@ -27,8 +26,6 @@ async def handle_end_turn(player_id: str, db: Session, **_):
         case 4:
             await handle_announce_winner(db=db, winner_id=player_id)
             return None
-        case 5:  # movements were cancelled
-            return await broadcast_gamestate(db=db, player_id=player_id)
 
     msg = TurnEndedMessageSchema(
         playerId=player_id,

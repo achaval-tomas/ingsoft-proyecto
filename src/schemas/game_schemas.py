@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.schemas import card_schemas
+from src.schemas.card_schemas import Coordinate
 from src.schemas.message_schema import MessageSchema
 
 
@@ -46,12 +47,19 @@ class BoardStateSchema(BaseModel):
     blockedColor: Optional[str] = None
 
 
+class TemporalMovementSchema(BaseModel):
+    movement: str
+    position: Coordinate
+    rotation: str
+
+
 class GameStateSchema(BaseModel):
     selfPlayerState: SelfPlayerStateSchema
     otherPlayersState: list[OtherPlayersStateSchema]
     boardState: BoardStateSchema
     turnStart: datetime
     currentRoundPlayer: int
+    temporalMovements: Optional[list[TemporalMovementSchema]] = []
 
 
 class GameStateMessageSchema(MessageSchema):
@@ -63,8 +71,3 @@ class TurnEndedMessageSchema(MessageSchema):
     playerId: str
     newShapeCards: list[card_schemas.ShapeCardSchema]
     newMovementCards: Optional[list[str]] = []
-
-
-class CancelMovementsMessageSchema(MessageSchema):
-    type: str = 'cancel-movements'
-    amount: int = 3

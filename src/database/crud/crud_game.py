@@ -45,6 +45,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
         current_turn=current_turn,
         board=serialize(board),
         blocked_color=None,
+        temp_switches=serialize([]),
     )
 
     db.add(db_game)
@@ -169,7 +170,7 @@ def leave_game(db: Session, player_id: str):
     player.game_id = None
     db.commit()
 
-    delete_player_cards(db=db, player_id=player_id)
+    crud_cards.delete_player_cards(db=db, player_id=player_id)
 
     if len(players) == 1:
         return 3, players[0]
@@ -188,7 +189,7 @@ def delete_game(db: Session, game_id: str):
         if not db_player:
             continue
 
-        delete_player_cards(db=db, player_id=player_id)
+        crud_cards.delete_player_cards(db=db, player_id=player_id)
         db_player.game_id = None
         db.commit()
 
@@ -196,11 +197,19 @@ def delete_game(db: Session, game_id: str):
     db.commit()
 
 
-def delete_player_cards(db: Session, player_id: str):
-    cards = crud_cards.get_player_cards(db=db, player_id=player_id)
-    if cards:
-        db.delete(cards)
-        db.commit()
+def confirm_movements(db: Session, player_id: str):
+    """
+    Confirms temporary movements. To be used after discarding a shape.
+    Returns 1 on unexpected problem, 0 if successful.
+    """
+    game = get_game_from_player(db=db, player_id=player_id)
+    if game is None:
+        return 1
+
+    game.temp_switches = serialize([])
+    db.commit()
+
+    return 0
 
 
 def end_game_turn(db: Session, player_id: str):
@@ -222,8 +231,5 @@ def end_game_turn(db: Session, player_id: str):
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
-
-    if rc1 == 0:
-        return 5, None, None
 
     return 0, mov_cards, shape_cards

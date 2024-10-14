@@ -24,6 +24,7 @@ PLAYER_IS_MISSING = 'No se pudo encontrar a uno de los jugadores'
 INVALID_CARD = 'No puedes utilizar esta carta!'
 
 MOVEMENT_OUT_OF_BOUNDS = 'No es posible realizar este movimiento'
+NO_MOVEMENTS_TO_CANCEL = 'No tienes movimientos para cancelar!'
 
 INTERNAL_SERVER_ERROR = 'Hubo un problema en el servidor.'
 
