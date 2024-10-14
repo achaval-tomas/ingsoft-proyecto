@@ -9,6 +9,11 @@ export default {
             colors: {
                 primary: colors.teal,
                 surface: colors.zinc["800"],
+                secondary: {
+                    light: "#f7a13b",
+                    DEFAULT: "#f6931e",
+                    dark: "#b46507",
+                },
                 border: colors.zinc["700"],
             },
             transitionProperty: {
