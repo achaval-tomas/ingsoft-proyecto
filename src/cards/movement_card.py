@@ -19,14 +19,6 @@ movement_data = {
 
 
 def rotate_movement(target: Coordinate, rot: str):
-    match rot:
-        case 'r0':
-            pass
-        case 'r90':
-            return (-target[1], target[0])
-        case 'r180':
-            return (-target[0], -target[1])
-        case 'r270':
-            return (target[1], -target[0])
-
-    return target
+    x, y = target
+    rots = {'r0': target, 'r90': (-y, x), 'r180': (-x, -y), 'r270': (y, -x)}
+    return rots[rot]

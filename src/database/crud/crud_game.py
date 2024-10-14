@@ -1,12 +1,12 @@
-import random
+from random import shuffle
 
 from sqlalchemy.orm import Session
 
-from src.cards.card_utils import get_board_index_from_coords
+from src.cards.card_utils import coord_to_index
 from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
 from src.database.crud.crud_player import get_player
-from src.database.models import Game, Lobby, PlayerCards
+from src.database.models import Game, Lobby
 from src.schemas.card_schemas import Coordinate
 from src.tools.jsonify import deserialize, serialize
 
@@ -27,7 +27,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     player_order = deserialize(lobby.players)
     if len(player_order) < lobby.min_players:
         return 3
-    random.shuffle(player_order)
+    shuffle(player_order)
 
     # the first turn will go to the first player in the shuffled list
     current_turn = 0
@@ -37,7 +37,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     board = colors * 9
 
     # randomize the board
-    random.shuffle(board)
+    shuffle(board)
 
     # create game
     db_game = Game(
@@ -78,7 +78,7 @@ def switch_tiles(
 
     Returns 0 on success, 1 if the switch is not allowed.
     """
-    board_origin = get_board_index_from_coords(origin)
+    board_origin = coord_to_index(origin)
     if not 0 <= board_origin < 36:
         return 1
 
@@ -89,7 +89,7 @@ def switch_tiles(
         target_x = clamp_val(target_x)
         target_y = clamp_val(target_y)
 
-    board_target = get_board_index_from_coords((target_x, target_y))
+    board_target = coord_to_index((target_x, target_y))
 
     if not 0 <= board_target < 36 or board_origin == board_target:
         return 1
@@ -108,15 +108,19 @@ def clamp_val(val: int):
     return max(0, min(val, 5))
 
 
-def get_game(db: Session, player_id: str):
+def get_game(db: Session, game_id: int):
+    return db.get(Game, game_id)
+
+
+def get_game_from_player(db: Session, player_id: str):
     player = get_player(db=db, player_id=player_id)
-    if not player:
+    if not player or not player.game_id:
         return None
-    return db.query(Game).filter(Game.game_id == player.game_id).one_or_none()
+    return get_game(db=db, game_id=player.game_id)
 
 
 def get_game_players(db: Session, game_id: int):
-    game = db.query(Game).filter(Game.game_id == game_id).one_or_none()
+    game = get_game(db=db, game_id=game_id)
     if game is None:
         return []
     return deserialize(game.player_order)
@@ -134,7 +138,7 @@ def leave_game(db: Session, player_id: str):
         2 -> Player does not exist in the database
         3 -> There is a winner (winner_id) because everyone else left
     """
-    game = get_game(db=db, player_id=player_id)
+    game = get_game_from_player(db=db, player_id=player_id)
     if not game:
         return 1, None
 
@@ -174,8 +178,7 @@ def leave_game(db: Session, player_id: str):
 
 
 def delete_game(db: Session, game_id: str):
-    query = db.query(Game).filter(Game.game_id == game_id)
-    game = query.one_or_none()
+    game = get_game(db=db, game_id=game_id)
     if not game:
         return
 
@@ -189,17 +192,19 @@ def delete_game(db: Session, game_id: str):
         db_player.game_id = None
         db.commit()
 
-    query.delete()
+    db.delete(game)
     db.commit()
 
 
 def delete_player_cards(db: Session, player_id: str):
-    db.query(PlayerCards).filter(PlayerCards.player_id == player_id).delete()
-    db.commit()
+    cards = crud_cards.get_player_cards(db=db, player_id=player_id)
+    if cards:
+        db.delete(cards)
+        db.commit()
 
 
 def end_game_turn(db: Session, player_id: str):
-    game = get_game(db=db, player_id=player_id)
+    game = get_game_from_player(db=db, player_id=player_id)
     if not game:
         return 1, None, None
 
@@ -207,15 +212,18 @@ def end_game_turn(db: Session, player_id: str):
     if player_id != player_order[game.current_turn]:
         return 2, None, None
 
-    rc = crud_cards.cancel_movements(db=db, player_id=player_id)
-    if rc == 1:
+    rc1 = crud_cards.cancel_movements(db=db, player_id=player_id)
+    if rc1 == 1:
         return 3, None, None
 
-    rc, mov_cards, shape_cards = crud_cards.refill_cards(db=db, player_id=player_id)
-    if rc == 3:
+    rc2, mov_cards, shape_cards = crud_cards.refill_cards(db=db, player_id=player_id)
+    if rc2 == 3:
         return 4, None, None
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
     db.commit()
+
+    if rc1 == 0:
+        return 5, None, None
 
     return 0, mov_cards, shape_cards

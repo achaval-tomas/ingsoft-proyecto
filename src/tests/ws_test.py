@@ -2,8 +2,8 @@ from fastapi.testclient import TestClient
 
 from src.constants import errors
 from src.database.crud.crud_cards import cancel_movements, get_player_cards
-from src.database.crud.crud_game import get_game
-from src.database.session import get_db
+from src.database.crud.crud_game import get_game_from_player
+from src.database.db import get_session
 from src.main import app
 from src.schemas.card_schemas import (
     MovementCardUsedSchema,
@@ -21,7 +21,7 @@ from src.tools.jsonify import deserialize, serialize
 client = TestClient(app)
 
 
-# def test_game_ws_end_turn():
+# def test_game_end_turn():
 #     data_owner = {
 #         'player_name': 'cage owner',
 #     }
@@ -92,7 +92,7 @@ client = TestClient(app)
 #                 }
 
 
-def test_game_ws_gamestate():
+def test_game_gamestate():
     data_owner = {
         'player_name': 'cage owner',
     }
@@ -122,7 +122,7 @@ def test_game_ws_gamestate():
         assert data_received['type'] == 'game-state'
 
 
-def test_game_ws_gamestate_br():
+def test_game_gamestate_br():
     data_owner = {'player_name': 'cage owner'}
     owner = client.post('/player', json=data_owner)
     owner_json = owner.json()
@@ -146,7 +146,7 @@ def test_game_ws_gamestate_br():
         assert data_received['type'] == 'error'
 
 
-def test_lobby_ws_lobbystate():
+def test_lobby_lobbystate():
     data_owner = {'player_name': 'cage owner'}
     owner = client.post('/player', json=data_owner)
     owner_json = owner.json()
@@ -179,7 +179,7 @@ def test_lobby_ws_lobbystate():
         }
 
 
-def test_card_ws_movement():
+def test_card_movement():
     player_test = PlayerCreateSchema(player_name='TestGame')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
@@ -212,9 +212,9 @@ def test_card_ws_movement():
     response = client.post('/game', json=game_test.model_dump())
     assert response.status_code == 200
 
-    db = next(get_db())
+    db = next(get_session())
 
-    game = get_game(db, player_id)
+    game = get_game_from_player(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]
     original_board = deserialize(game.board)
 
@@ -250,7 +250,7 @@ def test_card_ws_movement():
             ).model_dump_json()
         )
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         board = deserialize(game.board)
 
         assert pos0 == board[7]
@@ -278,7 +278,7 @@ def test_card_ws_movement():
             ).model_dump_json()
         )
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
 
@@ -307,26 +307,26 @@ def test_card_ws_movement():
             ).model_dump_json()
         )
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
 
         assert pos0 == board[31]
         assert pos1 == board[7]
 
-        cancel_movements(db=next(get_db()), player_id=current_turn)
+        cancel_movements(db=next(get_session()), player_id=current_turn)
 
-        game = get_game(db, player_id)
+        game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
         assert original_board == board
 
-        cards = get_player_cards(db=next(get_db()), player_id=current_turn)
+        cards = get_player_cards(db=next(get_session()), player_id=current_turn)
         assert set(deserialize(cards.movement_cards)) == set(initial_cards)
         assert deserialize(cards.temp_switches) == []
 
 
-def test_card_ws_shape():
+def test_card_shape():
     player_test = PlayerCreateSchema(player_name='TestGame')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
@@ -359,9 +359,9 @@ def test_card_ws_shape():
     response = client.post('/game', json=game_test.model_dump())
     assert response.status_code == 200
 
-    db = next(get_db())
+    db = next(get_session())
 
-    game = get_game(db, player_id)
+    game = get_game_from_player(db, player_id)
     current_turn = deserialize(game.player_order)[game.current_turn]
 
     game.board = serialize(

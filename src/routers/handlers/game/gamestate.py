@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 
-import src.routers.helpers.connection_manager as cm
 from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
-from src.database.crud.crud_game import get_game
+from src.database.crud.crud_game import get_game_from_player
 from src.database.crud.crud_player import get_player
 from src.database.models import Game
+from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import validate_shape_cards
 from src.schemas.game_schemas import (
     BoardStateSchema,
@@ -57,12 +57,12 @@ def extract_other_player_states(db: Session, game_data: Game, player_id: str):
     return other_players_state
 
 
-def ws_handle_gamestate(player_id: str, db: Session):
+async def handle_gamestate(player_id: str, db: Session, **_):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
 
-    game_data = get_game(db=db, player_id=player_id)
+    game_data = get_game_from_player(db=db, player_id=player_id)
     if not game_data:
         return error_message(detail=errors.GAME_NOT_FOUND)
 
@@ -96,16 +96,16 @@ def ws_handle_gamestate(player_id: str, db: Session):
     return response.model_dump_json()
 
 
-async def ws_broadcast_gamestate(player_id: str, db: Session):
-    game = get_game(db=db, player_id=player_id)
+async def broadcast_gamestate(player_id: str, db: Session):
+    game = get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return error_message(detail=errors.GAME_NOT_FOUND)
 
     players = deserialize(game.player_order)
 
     for player in players:
-        await cm.game_manager.send_personal_message(
-            message=ws_handle_gamestate(player_id=player, db=db),
+        await game_manager.send_personal_message(
+            message=await handle_gamestate(player_id=player, db=db),
             player_id=player,
         )
 

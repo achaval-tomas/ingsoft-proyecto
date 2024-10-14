@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 import src.database.crud.crud_game as crud_game
 from src.cards.card_dealer import MovCardDealer, ShapeCardDealer
 from src.cards.card_utils import (
+    coord_to_index,
     find_connected_tiles,
-    get_board_index_from_coords,
     match_shape_to_player_card,
 )
 from src.cards.movement_card import movement_data, rotate_movement
@@ -20,9 +20,7 @@ from src.tools.jsonify import deserialize, serialize
 
 
 def get_player_cards(db: Session, player_id: str):
-    return (
-        db.query(PlayerCards).filter(PlayerCards.player_id == player_id).one_or_none()
-    )
+    return db.get(PlayerCards, player_id) if player_id else None
 
 
 def hand_all_initial_cards(db: Session, players: list[str]):
@@ -124,7 +122,7 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     if player is None:
         return 1
 
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return 2
 
@@ -151,7 +149,7 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     player_cards.movement_cards = serialize(player_movement_cards)
 
     temp_switches = deserialize(player_cards.temp_switches)
-    temp_switches.append((req.movement, req.position, target, movement.clamps))
+    temp_switches.append((req.movement, req.position, target))
     player_cards.temp_switches = serialize(temp_switches)
 
     db.commit()
@@ -178,12 +176,19 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     """
     Cancels the last 'nmovs' movements made by the player
     during their current turn.
+
+    Return codes:
+        -1 -> no movements were cancelled.
+        0 -> at least one movement was cancelled.
+        1 -> internal server error.
+        2 -> game not found.
+        3 -> (should not happen) movement out of bounds.
     """
     player_cards = get_player_cards(db=db, player_id=player_id)
     if player_cards is None:
         return 1
 
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return 2
 
@@ -191,28 +196,34 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
 
     used_movements = deserialize(player_cards.temp_switches)
     used_mov_count = len(used_movements)
+    cancelled = False
 
     for m in range(min(nmovs, used_mov_count)):
-        movement_data = used_movements[used_mov_count - m - 1]
+        mov_name, origin, target = used_movements[used_mov_count - m - 1]
 
         rc = crud_game.switch_tiles(
             db=db,
             game=game,
-            origin=movement_data[1],
-            target=movement_data[2],
-            clamp=movement_data[3],
+            origin=origin,
+            target=target,
+            clamp=movement_data[mov_name].clamps,
         )
 
         if rc == 1:
             return 3
 
-        mov_cards.append(movement_data[0])
+        mov_cards.append(mov_name)
         player_cards.movement_cards = serialize(mov_cards)
 
         used_movements.pop(used_mov_count - m - 1)
         player_cards.temp_switches = serialize(used_movements)
 
         db.commit()
+
+        cancelled = True
+
+    if not cancelled:
+        return -1
 
     return 0
 
@@ -222,7 +233,7 @@ def currently_used_movement_cards(db: Session, player_id: str):
     Returns a list of all movement cards held by
     players who are in game with player @player_id
     """
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
 
     cards = []
     for player in deserialize(game.player_order):
@@ -239,7 +250,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     if player is None:
         return 1
 
-    game = crud_game.get_game(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=player_id)
     if game is None:
         return 2
 
@@ -252,7 +263,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
         return 4
 
     board = deserialize(game.board)
-    shape_color = board[get_board_index_from_coords(req.position)]
+    shape_color = board[coord_to_index(req.position)]
 
     if shape_color == game.blocked_color:
         return 5

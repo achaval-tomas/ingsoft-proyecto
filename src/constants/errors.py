@@ -6,6 +6,9 @@ GAME_NOT_FOUND = 'El juego con el que desea conectarse no existe'
 
 LOBBY_IS_FULL = 'Esta sala está llena!'
 ALREADY_JOINED = 'El jugador ya está en la partida'
+ALREADY_JOINED_OTHER = 'Solo puedes crear o unirte a una partida a la vez!'
+
+INVALID_REQUEST = 'La solicitud realizada no es válida.'
 
 NOT_IN_GAME = 'El jugador no está actualmente en una partida'
 NOT_YOUR_TURN = 'Debes esperar a que sea tu turno!'

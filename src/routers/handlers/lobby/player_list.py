@@ -31,7 +31,7 @@ def player_list(lobby: Lobby, db: Session):
     ).model_dump_json()
 
 
-async def ws_share_player_list(
+async def share_player_list(
     player_id: str,
     lobby_id: str,
     db: Session,

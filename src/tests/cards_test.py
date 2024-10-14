@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from src.database.crud.crud_cards import get_player_cards, refill_cards
-from src.database.session import get_db
+from src.database.db import get_session
 from src.main import app
 from src.schemas.card_schemas import dump_shape_cards, validate_shape_cards
 from src.schemas.game_schemas import GameCreate
@@ -45,7 +45,7 @@ def test_initial_hand_cards():
     response = client.post('/game', json=game_test.model_dump())
     assert response.status_code == 200
 
-    db = next(get_db())
+    db = next(get_session())
 
     cards = get_player_cards(db=db, player_id=player_id)
 
@@ -89,7 +89,7 @@ def test_refill_cards():
     response = client.post('/game', json=game_test.model_dump())
     assert response.status_code == 200
 
-    db = next(get_db())
+    db = next(get_session())
 
     cards = get_player_cards(db=db, player_id=player_id)
 
