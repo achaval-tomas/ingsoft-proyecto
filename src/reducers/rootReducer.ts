@@ -167,6 +167,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
 }
 
 function getTilesWithMovementDone(movement: Movement, position: Position, rotation: Rotation, tiles: readonly Color[]) {
+function getTilesWithMovementDone(movement: Movement, position: Position, rotation: Rotation, tiles: readonly Color[]): Color[] {
     const swp1 = positionToBoardIndex(position);
     const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
 
