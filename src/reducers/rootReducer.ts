@@ -41,11 +41,11 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
 
             newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
 
-            if (gameState.temportalMovements != null && gameState.temportalMovements.length > 0) {
+            if (gameState.temporalMovements.length > 0) {
                 const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
 
-                for (let i = gameState.temportalMovements.length - 1; i >= 0; --i) {
-                    const { movement, position, rotation } = gameState.temportalMovements[i];
+                for (let i = gameState.temporalMovements.length - 1; i >= 0; --i) {
+                    const { movement, position, rotation } = gameState.temporalMovements[i];
                     const swp1 = positionToBoardIndex(position);
                     const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
                     const tmp = newBoardState.tiles[swp1];
@@ -57,7 +57,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                 newGameState.boardState = newBoardState;
             }
 
-            newGameState.temportalMovements = [];
+            newGameState.temporalMovements = [];
 
             return newGameState;
         }
@@ -104,8 +104,8 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                         }
                     }),
                 },
-                temportalMovements: [
-                    ...gameState.temportalMovements ?? [],
+                temporalMovements: [
+                    ...gameState.temporalMovements,
                     { movement: movement, position: position, rotation: rotation },
                 ],
             };
@@ -115,10 +115,10 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
         case "movement-cancelled": {
             const newGameState = { ...gameState };
 
-            if (gameState.temportalMovements != null && gameState.temportalMovements.length > 0) {
+            if (gameState.temporalMovements.length > 0) {
                 const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
 
-                const { movement, position, rotation } = gameState.temportalMovements[gameState.temportalMovements.length - 1];
+                const { movement, position, rotation } = gameState.temporalMovements[gameState.temporalMovements.length - 1];
                 const swp1 = positionToBoardIndex(position);
                 const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
                 const tmp = newBoardState.tiles[swp1];
@@ -127,10 +127,11 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                 newBoardState.tiles[swp2] = tmp;
 
                 newGameState.boardState = newBoardState;
-                newGameState.temportalMovements = gameState.temportalMovements.slice(0, gameState.temportalMovements.length - 1);
+                newGameState.temporalMovements = gameState.temporalMovements.slice(0, gameState.temporalMovements.length - 1);
             }
 
 
+            console.log("LOLO:", newGameState);
             return newGameState;
         }
     }

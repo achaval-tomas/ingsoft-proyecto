@@ -65,7 +65,7 @@ export const GameStateSchema = z.object({
     // turnStart: z.string().datetime(),
     currentRoundPlayer: z.number().int().max(3),
     winner: PlayerIdSchema.optional(),
-    temportalMovements: TemporalMovementSchema.array().max(3).optional(),
+    temporalMovements: TemporalMovementSchema.array().max(3),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
