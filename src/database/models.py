@@ -29,6 +29,7 @@ class Game(Base):
     current_turn = Column(Integer)
     board = Column(String)
     blocked_color = Column(String)
+    temp_switches = Column(String)
 
 
 class PlayerCards(Base):
@@ -37,4 +38,3 @@ class PlayerCards(Base):
     movement_cards = Column(String)
     shape_cards_in_hand = Column(String)
     shape_cards_deck = Column(String)
-    temp_switches = Column(String)

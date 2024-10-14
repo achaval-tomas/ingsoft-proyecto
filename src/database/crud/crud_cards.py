@@ -54,12 +54,18 @@ def hand_initial_cards(
         movement_cards=serialize(mov_cards),
         shape_cards_in_hand=dump_shape_cards(shape_cards_deck[0:3]),
         shape_cards_deck=dump_shape_cards(shape_cards_deck[3:]),
-        temp_switches=serialize([]),
     )
 
     db.add(db_cards)
     db.commit()
     db.refresh(db_cards)
+
+
+def delete_player_cards(db: Session, player_id: str):
+    cards = get_player_cards(db=db, player_id=player_id)
+    if cards:
+        db.delete(cards)
+        db.commit()
 
 
 def refill_cards(db: Session, player_id: str):
@@ -148,25 +154,10 @@ def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
     player_movement_cards.remove(req.movement)
     player_cards.movement_cards = serialize(player_movement_cards)
 
-    temp_switches = deserialize(player_cards.temp_switches)
-    temp_switches.append((req.movement, req.position, target))
-    player_cards.temp_switches = serialize(temp_switches)
+    temp_switches = deserialize(game.temp_switches)
+    temp_switches.append((req.movement, req.position, req.rotation))
+    game.temp_switches = serialize(temp_switches)
 
-    db.commit()
-
-    return 0
-
-
-def confirm_movements(db: Session, player_id: str):
-    """
-    Confirms temporary movements. To be used after discarding a shape.
-    Returns 1 on unexpected problem, 0 if successful
-    """
-    player_cards = get_player_cards(db=db, player_id=player_id)
-    if player_cards is None:
-        return 1
-
-    player_cards.temp_switches = serialize([])
     db.commit()
 
     return 0
@@ -192,25 +183,31 @@ def cancel_movements(db: Session, player_id: str, nmovs: int = 3):
     if game is None:
         return 2
 
+    player_order = deserialize(game.player_order)
+    if player_id != player_order[game.current_turn]:
+        return 3
+
     mov_cards = deserialize(player_cards.movement_cards)
 
-    used_movements = deserialize(player_cards.temp_switches)
+    used_movements = deserialize(game.temp_switches)
     used_mov_count = len(used_movements)
     cancelled = False
 
     for m in range(min(nmovs, used_mov_count)):
-        mov_name, origin, target = used_movements[used_mov_count - m - 1]
+        mov_name, position, rotation = used_movements[used_mov_count - m - 1]
+        movement = movement_data[mov_name]
+        target = rotate_movement(movement.target, rotation)
 
         rc = crud_game.switch_tiles(
             db=db,
             game=game,
-            origin=origin,
+            origin=position,
             target=target,
-            clamp=movement_data[mov_name].clamps,
+            clamp=movement.clamps,
         )
 
         if rc == 1:
-            return 3
+            return 4
 
         mov_cards.append(mov_name)
         player_cards.movement_cards = serialize(mov_cards)
@@ -287,7 +284,7 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     game.blocked_color = shape_color
     db.commit()
 
-    if confirm_movements(db=db, player_id=player_id) == 1:
+    if crud_game.confirm_movements(db=db, player_id=player_id) == 1:
         return 3
 
     if not player_shape_cards and not deserialize(player_cards.shape_cards_deck):

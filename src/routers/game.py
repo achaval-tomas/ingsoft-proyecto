@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from src.constants import errors
 from src.database.db import SessionDep
-from src.routers.handlers.game.cancel_movements import handle_cancel_movements
+from src.routers.handlers.game.cancel_movement import handle_cancel_movement
 from src.routers.handlers.game.end_turn import handle_end_turn
 from src.routers.handlers.game.gamestate import handle_gamestate
 from src.routers.handlers.game.leave_game import handle_leave_game
@@ -92,6 +92,6 @@ message_handlers = {
     'get-game-state': handle_gamestate,
     'end-turn': handle_end_turn,
     'use-movement-card': handle_movement_card,
-    'cancel-movements': handle_cancel_movements,
+    'cancel-movements': handle_cancel_movement,
     'use-shape-card': handle_shape_card,
 }

@@ -86,6 +86,7 @@ async def handle_gamestate(player_id: str, db: Session, **_):
         boardState=boardState,
         turnStart=0,
         currentRoundPlayer=game_data.current_turn,
+        temporalMovements=deserialize(game_data.temp_switches),
     )
 
     response = GameStateMessageSchema(

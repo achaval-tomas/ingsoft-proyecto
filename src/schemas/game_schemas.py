@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.schemas import card_schemas
+from src.schemas.card_schemas import Coordinate
 from src.schemas.message_schema import MessageSchema
 
 
@@ -52,6 +53,7 @@ class GameStateSchema(BaseModel):
     boardState: BoardStateSchema
     turnStart: datetime
     currentRoundPlayer: int
+    temporalMovements: Optional[list[tuple[str, Coordinate, str]]] = []
 
 
 class GameStateMessageSchema(MessageSchema):
@@ -66,5 +68,4 @@ class TurnEndedMessageSchema(MessageSchema):
 
 
 class CancelMovementsMessageSchema(MessageSchema):
-    type: str = 'cancel-movements'
-    amount: int = 3
+    type: str = 'cancel-movement'
