@@ -58,6 +58,11 @@ export const GameMessageOutSchema = z.discriminatedUnion("type", [
         rotation: RotationSchema,
         movement: MovementSchema,
     }),
+    z.object({
+        // cancel a temporal movement
+        type: z.literal("cancel-movements"),
+        amount: z.number().min(1).max(3),
+    }),
 ]);
 
 export type GameMessageIn = z.infer<typeof GameMessageInSchema>;
