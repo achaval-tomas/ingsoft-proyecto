@@ -39,21 +39,20 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
     player = get_player(db, player_id)
     if not player:
         return 1
-    if player.lobby_id or player.game_id:
+    if player.lobby_id == lobby_id:
         return 2
+    if player.lobby_id or player.game_id:
+        return 3
 
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
-        return 3
-    elif lobby.player_amount == lobby.max_players:
         return 4
-
-    players = deserialize(lobby.players)
-    if player_id in players:
+    elif lobby.player_amount == lobby.max_players:
         return 5
 
     player.lobby_id = lobby.lobby_id
 
+    players = deserialize(lobby.players)
     players.append(player_id)
     lobby.players = serialize(players)
     lobby.player_amount += 1

@@ -54,13 +54,13 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
-        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
-    elif res == 3:
-        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
-    elif res == 4:
-        raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
-    elif res == 5:
         raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED)
+    elif res == 3:
+        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
+    elif res == 4:
+        raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
+    elif res == 5:
+        raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
 
     await share_player_list(
         player_id=body.player_id,
