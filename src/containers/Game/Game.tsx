@@ -116,6 +116,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickMovementCard={handleClickMovementCard}
                 onClickTile={handleClickTile}
+                onClickCancelMovement={() => sendMessage({ type: "cancel-movement" })}
             />
             <ConfirmDialog
                 isOpen={showLeaveGameDialog}

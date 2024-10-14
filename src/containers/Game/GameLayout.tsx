@@ -13,10 +13,12 @@ type GameLayoutProps = {
     onClickLeaveGame: () => void;
     onClickMovementCard: (i: number) => void;
     onClickTile: (i: Position) => void;
+    onClickCancelMovement: () => void;
 };
 
-function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile }: GameLayoutProps) {
+function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
     const { selfPlayerUiState, otherPlayersUiState, boardUiState } = uiState;
+    const canCancel = selfPlayerUiState.movementCardsInHand.length < 3;
 
     return (
         <div
@@ -61,6 +63,18 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickMovement
                     </div>
                 </div>
             </div>
+            { canCancel &&
+                <div className="row-start-2 col-start-1 justify-self-center self-start relative top-16 right-56">
+                    <FilledButton
+                        backgroundColor="bg-secondary hover:bg-secondary-light"
+                        className="text-sm text-surface"
+                        padding="px-4 py-2"
+                        onClick={onClickCancelMovement}
+                    >
+                        Revertir movimiento
+                    </FilledButton>
+                </div>
+            }
             <MovementCardHand
                 movementCards={selfPlayerUiState.movementCardsInHand}
                 className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[2.5%] pb-[0.5%] w-0 h-full"
