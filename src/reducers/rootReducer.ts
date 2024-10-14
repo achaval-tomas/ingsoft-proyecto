@@ -84,20 +84,19 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             const { movement, position, rotation } = action;
 
             const newSelfPlayerState: SelfPlayerState = { ...gameState.selfPlayerState };
-            let newOtherPlayerState: OtherPlayerState[] = gameState.otherPlayersState;
 
             if (gameState.currentRoundPlayer === gameState.selfPlayerState.roundOrder) {
                 newSelfPlayerState.movementCardsInHand = filterFirstMovement(gameState.selfPlayerState.movementCardsInHand, movement);
-            } else {
-                newOtherPlayerState = gameState.otherPlayersState.map(p => {
-                    if (p.roundOrder === gameState.currentRoundPlayer) {
-                        return { ...p, movementCardsInHandCount: p.movementCardsInHandCount - 1 };
-                    } else {
-                        return p;
-                    }
-                });
             }
 
+            const newOtherPlayerState = changeOtherPlayerState(
+                gameState.otherPlayersState,
+                p => p.roundOrder === gameState.currentRoundPlayer,
+                p => ({
+                    ...p,
+                    movementCardsInHandCount: p.movementCardsInHandCount - 1,
+                }),
+            );
 
             const newGameState: GameState = {
                 ...gameState,
@@ -137,28 +136,18 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                 const selfPlayerState: SelfPlayerState = {
                     ...gameState.selfPlayerState,
                     movementCardsInHand: [...gameState.selfPlayerState.movementCardsInHand, movement],
-                    shapeCardsInHand: [...gameState.selfPlayerState.shapeCardsInHand],
                 };
 
                 newGameState.selfPlayerState = selfPlayerState;
             } else {
-                const cancellerPlayer = gameState.otherPlayersState.find(p => p.roundOrder === gameState.currentRoundPlayer);
-
-                if (cancellerPlayer != null) {
-                    const newCancellerPlayer: OtherPlayerState = {
-                        ...cancellerPlayer,
-                        movementCardsInHandCount: cancellerPlayer.movementCardsInHandCount + 1,
-                        shapeCardsInHand: [...cancellerPlayer.shapeCardsInHand],
-                    };
-
-                    newGameState.otherPlayersState = gameState.otherPlayersState.map(p => {
-                        if (p.id === cancellerPlayer.id) {
-                            return newCancellerPlayer;
-                        } else {
-                            return p;
-                        }
-                    });
-                }
+                newGameState.otherPlayersState = changeOtherPlayerState(
+                    gameState.otherPlayersState,
+                    p => p.roundOrder === gameState.currentRoundPlayer,
+                    p => ({
+                        ...p,
+                        movementCardsInHandCount: p.movementCardsInHandCount + 1,
+                    }),
+                );
             }
 
             return newGameState;
@@ -166,7 +155,20 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
     }
 }
 
-function getTilesWithMovementDone(movement: Movement, position: Position, rotation: Rotation, tiles: readonly Color[]) {
+function changeOtherPlayerState(
+    players: readonly OtherPlayerState[],
+    playerPredicate: (p: OtherPlayerState) => boolean,
+    playerChanger: (p: OtherPlayerState) => OtherPlayerState,
+): OtherPlayerState[] {
+    return players.map(p => {
+        if (playerPredicate(p)) {
+            return playerChanger(p);
+        } else {
+            return p;
+        }
+    });
+}
+
 function getTilesWithMovementDone(movement: Movement, position: Position, rotation: Rotation, tiles: readonly Color[]): Color[] {
     const swp1 = positionToBoardIndex(position);
     const swp2 = positionToBoardIndex(getTargetFromPositionClamped(movement, rotation, position));
