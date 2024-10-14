@@ -127,7 +127,7 @@ async def lobby_websocket(
                 await lobby_manager.send_personal_message(response, player_id)
 
     except WebSocketDisconnect:
-        lobby_manager.disconnect(player_id=player_id)
+        lobby_manager.disconnect(player_id=player_id, websocket=ws)
         return
 
 

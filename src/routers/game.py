@@ -84,7 +84,7 @@ async def game_websocket(
                 )
 
     except WebSocketDisconnect:
-        game_manager.disconnect(player_id=player_id)
+        game_manager.disconnect(player_id=player_id, websocket=ws)
         return
 
 

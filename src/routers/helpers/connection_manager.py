@@ -8,27 +8,32 @@ from src.tools.jsonify import deserialize
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: dict[str, WebSocket] = {}
+        self.active_connections: dict[str, list[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, player_id: str):
         """accepts a websocket connection, saves it in active_connections"""
         await websocket.accept()
 
         if player_id in self.active_connections:
-            self.disconnect(player_id=player_id)
+            self.active_connections[player_id].append(websocket)
+        else:
+            self.active_connections[player_id] = [websocket]
 
-        self.active_connections[player_id] = websocket
+    def disconnect(self, player_id: str, websocket: WebSocket):
+        """removes a disconnected websocket from list of active connections"""
+        if player_id in self.active_connections:
+            self.active_connections[player_id].remove(websocket)
 
-    def disconnect(self, player_id: str):
-        """removes a disconnected player from list of active connections"""
-        del self.active_connections[player_id]
+            if not self.active_connections[player_id]:
+                del self.active_connections[player_id]
 
     async def send_personal_message(self, message: str, player_id: str):
         """sends a message to a specific player"""
         if player_id not in self.active_connections:
             return
 
-        await self.active_connections[player_id].send_text(message)
+        for ws in self.active_connections[player_id]:
+            await ws.send_text(message)
 
 
 class GameConnectionManager(ConnectionManager):
