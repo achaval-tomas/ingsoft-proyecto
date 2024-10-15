@@ -32,14 +32,23 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             const newGameState = { ...gameState };
 
             if (action.playerId === gameState.selfPlayerState.id) {
-                newGameState.selfPlayerState.shapeCardsInHand = action.newShapeCards;
-                newGameState.selfPlayerState.movementCardsInHand = action.newMovementCards ?? [];
-            } else {
-                const dealtPlayer = newGameState.otherPlayersState.find(p => p.id === action.playerId);
+                const newSelfPlayerState = { ...gameState.selfPlayerState };
 
-                if (dealtPlayer != null) {
-                    dealtPlayer.shapeCardsInHand = action.newShapeCards;
-                }
+                newSelfPlayerState.shapeCardsInDeckCount -= action.newShapeCards.length - newSelfPlayerState.shapeCardsInHand.length;
+                newSelfPlayerState.shapeCardsInHand = action.newShapeCards;
+                newSelfPlayerState.movementCardsInHand = action.newMovementCards ?? [];
+
+                newGameState.selfPlayerState = newSelfPlayerState;
+            } else {
+                newGameState.otherPlayersState = changeOtherPlayerState(
+                    gameState.otherPlayersState,
+                    p => p.id === action.playerId,
+                    p => ({
+                        ...p,
+                        shapeCardsInDeckCount: p.shapeCardsInDeckCount - (action.newShapeCards.length - p.shapeCardsInHand.length),
+                        shapeCardsInHand: action.newShapeCards,
+                    }),
+                );
             }
 
             newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
