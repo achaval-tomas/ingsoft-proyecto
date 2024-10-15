@@ -21,7 +21,6 @@ type GameLayoutProps = {
 
 function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCard, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
     const { selfPlayerUiState, otherPlayersUiState, boardUiState } = uiState;
-    const canCancel = selfPlayerUiState.movementCardsInHand.length < 3;
 
     return (
         <div
@@ -74,7 +73,7 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
                     </div>
                 </div>
             </div>
-            { canCancel &&
+            { selfPlayerUiState.canCancelMovement &&
                 <div className="row-start-2 col-start-1 justify-self-center self-start relative top-16 right-56">
                     <FilledButton
                         backgroundColor="bg-secondary hover:bg-secondary-light"
