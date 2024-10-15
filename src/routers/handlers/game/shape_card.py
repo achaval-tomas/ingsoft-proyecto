@@ -28,9 +28,6 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
             return error_message(detail=errors.INVALID_COLOR)
         case 6:
             return error_message(detail=errors.INVALID_CARD)
-        case 7:
-            await handle_announce_winner(winner_id=player_id, db=db)
-            return None
 
     msg = ShapeCardUsedSchema(
         position=req.position,
@@ -43,5 +40,8 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
         db=db,
         message=msg,
     )
+
+    if rc == 7:
+        await handle_announce_winner(winner_id=player_id, db=db)
 
     return None
