@@ -23,24 +23,26 @@ async def handle_end_turn(player_id: str, db: Session, **_):
             return error_message(detail=errors.NOT_YOUR_TURN)
         case 3:
             return error_message(detail=errors.INTERNAL_SERVER_ERROR)
-        case 4:
-            await handle_announce_winner(db=db, winner_id=player_id)
-            return None
 
-    msg = TurnEndedMessageSchema(
+    msg_gen = TurnEndedMessageSchema(
         playerId=player_id,
         newShapeCards=shape_cards,
-    )
+    ).model_dump_json()
+
+    msg_player = TurnEndedMessageSchema(
+        playerId=player_id,
+        newShapeCards=shape_cards,
+        newMovementCards=mov_cards,
+    ).model_dump_json()
 
     players = get_game_players(db=db, game_id=player.game_id)
     for player in players:
-        if player == player_id:
-            continue
         await game_manager.send_personal_message(
             player_id=player,
-            message=msg.model_dump_json(),
+            message=msg_player if player == player_id else msg_gen,
         )
 
-    msg.newMovementCards = mov_cards
+    if res == 4:
+        await handle_announce_winner(db=db, winner_id=player_id)
 
-    return msg.model_dump_json()
+    return None
