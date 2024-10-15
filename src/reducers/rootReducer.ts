@@ -1,6 +1,6 @@
 import AppState from "../domain/AppState";
 import { Color } from "../domain/Color";
-import { BoardState, GameState, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
+import { BoardState, GameState, GameStatePatch, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
 import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
 import { Position, positionToBoardIndex } from "../domain/Position";
 import { Rotation } from "../domain/Rotation";
@@ -175,11 +175,8 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                 blockedColor: shapeColor,
             };
 
-            const newGameState: GameState = (targetPlayerId === gameState.selfPlayerState.id)
+            const updateShapeCardsPatch: GameStatePatch = (targetPlayerId === gameState.selfPlayerState.id)
                 ? {
-                    ...gameState,
-                    temporalMovements: [],
-                    boardState: newBoardState,
                     selfPlayerState: {
                         ...gameState.selfPlayerState,
                         shapeCardsInHand: filterFirst(
@@ -189,9 +186,6 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                     },
                 }
                 : {
-                    ...gameState,
-                    temporalMovements: [],
-                    boardState: newBoardState,
                     otherPlayersState: gameState.otherPlayersState.map(otherPlayerState => {
                         if (otherPlayerState.id !== targetPlayerId) {
                             return otherPlayerState;
@@ -206,6 +200,13 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                         };
                     }),
                 };
+
+            const newGameState: GameState = {
+                ...gameState,
+                boardState: newBoardState,
+                temporalMovements: [],
+                ...updateShapeCardsPatch,
+            };
 
             return newGameState;
         }

@@ -69,6 +69,7 @@ export const GameStateSchema = z.object({
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
+export type GameStatePatch = Partial<GameState>;
 
 export function getAllPlayers(gameState: GameState): CommonPlayerState[] {
     return [gameState.selfPlayerState, ...gameState.otherPlayersState];
