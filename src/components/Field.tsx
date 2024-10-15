@@ -1,9 +1,10 @@
-import { Field as HUiField, Input, Label } from "@headlessui/react";
+import { Field as HUiField, Label } from "@headlessui/react";
 import { HTMLInputTypeAttribute } from "react";
+import Input from "./Input";
 
 export interface FieldProps {
     value: string | number;
-    onChange : (value: string) => void;
+    onChange : (value: string | number) => void;
     label: string;
     placeholder?: string;
     error?: string;
@@ -18,12 +19,12 @@ function Field ({ value, onChange, label, placeholder, error, type, min, max, in
     return <HUiField>
         <Label>{label}</Label>
         <Input
-            className="mt-2.5 block w-full rounded-lg bg-black/20 py-1.5 px-3 text-sm/6 text-white"
+            className="mt-2.5 block w-full"
             disabled={disabled}
             type={type}
             placeholder={placeholder}
-            value={value}
-            onChange={e => onChange(e.target.value)}
+            value={value.toString()}
+            onChange={onChange}
             min={min}
             max={max}
             data-testid={inputTestId}

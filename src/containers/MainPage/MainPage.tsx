@@ -1,7 +1,7 @@
 import MainPageLayout from "./components/MainPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
 import { toInitial, toLobby, toPlay } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
@@ -20,21 +20,23 @@ async function getLobbies(): Promise<LobbyElement[]> {
 }
 
 function MainPage() {
-    const [allLobbies, setallLobbies] = useState<LobbyElement[]>([]);
-    const [filteredLobbies, setFilteredLobbies] = useState<LobbyElement[]>([])
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
+    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
+    const [searchQuery, setSearchQuery] = useState<number | string>("")
 
     async function fetchAndSaveLobbies() {
-        setallLobbies(await getLobbies());
-        setFilteredLobbies(await getLobbies())
+        setLobbies(await getLobbies());
     }
 
     useEffect(() => {
         void fetchAndSaveLobbies();
     }, []);
 
-
+    const filteredLobbies = useMemo(
+        () => lobbies.filter(l => searchQuery == "" || l.player_amount == searchQuery),
+        [lobbies, searchQuery]
+    );
 
     async function handleSubmit(state: CreateLobbyFormState) {
 
@@ -68,14 +70,7 @@ function MainPage() {
         }
     }
 
-    function handleSearch(searchQuery: number | "") {
-        if (searchQuery === "") {
-            fetchAndSaveLobbies();
-        } else {
-            const filtered = allLobbies.filter((lobby) => lobby.player_amount == searchQuery)
-            setFilteredLobbies(filtered)
-        }
-    }
+
 
     async function joinHandler(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
@@ -119,13 +114,14 @@ function MainPage() {
     return (
 
         <MainPageLayout
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}
             refreshHandler={() => {
                 void fetchAndSaveLobbies();
             }}
             joinHandler={lobbyId => void joinHandler(lobbyId)}
-            handleSearch={handleSearch}
         />
     );
 }
