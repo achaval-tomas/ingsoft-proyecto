@@ -24,6 +24,7 @@ function MainPage() {
     const navigate = useNavigate();
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
     const [searchQuery, setSearchQuery] = useState<number | string>("")
+    const [searchState, setSearchState] = useState(false)
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -32,6 +33,12 @@ function MainPage() {
     useEffect(() => {
         void fetchAndSaveLobbies();
     }, []);
+
+    function handleSearchStateChange() {
+        setSearchState(!searchState);
+        console.log(searchState)
+        setSearchQuery("")
+    }
 
     const filteredLobbies = useMemo(
         () => lobbies.filter(l => searchQuery == "" || l.player_amount == searchQuery),
@@ -116,6 +123,8 @@ function MainPage() {
         <MainPageLayout
             searchQuery={searchQuery}
             onSearchQueryChange={setSearchQuery}
+            searchState={searchState}
+            onSearchStateChange={handleSearchStateChange}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}
             refreshHandler={() => {

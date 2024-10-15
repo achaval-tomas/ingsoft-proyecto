@@ -8,6 +8,8 @@ import Slider from "../../../components/Slider";
 interface MainPageLayoutProps {
     searchQuery: number | string;
     onSearchQueryChange: (searchQuery: number | string) => void;
+    searchState: boolean;
+    onSearchStateChange: () => void;
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
@@ -17,6 +19,8 @@ interface MainPageLayoutProps {
 function MainPageLayout({
     searchQuery,
     onSearchQueryChange,
+    searchState,
+    onSearchStateChange,
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
@@ -45,6 +49,8 @@ function MainPageLayout({
             <Slider
                 value={searchQuery}
                 onChange={onSearchQueryChange}
+                switchState={searchState}
+                onSwitch={onSearchStateChange}
             />
             <LobbyList
                 lobbyList={lobbies}
