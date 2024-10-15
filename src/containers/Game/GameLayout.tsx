@@ -1,4 +1,5 @@
 import FilledButton from "../../components/FilledButton";
+import OutlinedButton from "../../components/OutlinedButton";
 import TextButton from "../../components/TextButton";
 import { colorToBackgroundClassName } from "../../domain/Color";
 import { PlayerId } from "../../domain/GameState";
@@ -73,24 +74,15 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
                     </div>
                 </div>
             </div>
-            { selfPlayerUiState.canCancelMovement &&
-                <div className="row-start-2 col-start-1 justify-self-center self-start relative top-16 right-56">
-                    <FilledButton
-                        backgroundColor="bg-secondary hover:bg-secondary-light"
-                        className="text-sm text-surface"
-                        padding="px-4 py-2"
-                        onClick={onClickCancelMovement}
-                    >
-                        Revertir movimiento
-                    </FilledButton>
-                </div>
-            }
             <MovementCardHand
                 movementCards={selfPlayerUiState.movementCardsInHand}
                 className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[2.5%] pb-[0.5%] w-0 h-full"
                 onClickMovementCard={onClickMovementCard}
             />
-            <div className="row-start-2 col-start-1 justify-self-end self-end">
+            <div className="row-start-2 col-start-1 justify-self-end self-end flex flex-col gap-2">
+                {selfPlayerUiState.canCancelMovement && <OutlinedButton onClick={onClickCancelMovement}>
+                    Revertir último movimiento
+                </OutlinedButton>}
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
             </div>
             <div className="row-start-1 col-start-1 justify-self-end self-start">
