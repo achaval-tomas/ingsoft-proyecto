@@ -178,6 +178,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
             const newGameState: GameState = (targetPlayerId === gameState.selfPlayerState.id)
                 ? {
                     ...gameState,
+                    temporalMovements: [],
                     boardState: newBoardState,
                     selfPlayerState: {
                         ...gameState.selfPlayerState,
@@ -189,6 +190,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                 }
                 : {
                     ...gameState,
+                    temporalMovements: [],
                     boardState: newBoardState,
                     otherPlayersState: gameState.otherPlayersState.map(otherPlayerState => {
                         if (otherPlayerState.id !== targetPlayerId) {
