@@ -1,5 +1,6 @@
 import { Switch } from "@headlessui/react";
 import Input from "./Input";
+import React from "react";
 
 export type SliderProps = {
     value: string | number;
@@ -9,9 +10,12 @@ export type SliderProps = {
 };
 
 
-function Slider({ value, onChange, switchState, onSwitch }: SliderProps) {
+const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
+    function Slider({ value, onChange, switchState, onSwitch }, ref) {
 
-    return <div className="self-end mr-4">
+    return <div 
+                className="self-end mr-4"
+                ref={ref}>
                 <Switch
                     checked={switchState}
                     onChange={onSwitch}
@@ -38,6 +42,6 @@ function Slider({ value, onChange, switchState, onSwitch }: SliderProps) {
                     ))}
                 </div>
             </div>
-};
+});
 
 export default Slider

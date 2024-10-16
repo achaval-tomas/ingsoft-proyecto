@@ -2,7 +2,6 @@ import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
-import Filter from "./LobbysFilter";
 import LobbysFilter from "./LobbysFilter";
 
 
