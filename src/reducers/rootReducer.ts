@@ -47,6 +47,7 @@ function gameStateReducer(gameState: GameState | null, action: Action): GameStat
                         ...p,
                         shapeCardsInDeckCount: p.shapeCardsInDeckCount - (action.newShapeCards.length - p.shapeCardsInHand.length),
                         shapeCardsInHand: action.newShapeCards,
+                        movementCardsInHandCount: 3,
                     }),
                 );
             }
