@@ -3,6 +3,8 @@ import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
 import Slider from "../../../components/Slider";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+
 
 
 interface MainPageLayoutProps {
@@ -46,12 +48,30 @@ function MainPageLayout({
                     </FilledButton>
                 </div>
             </div>
-            <Slider
+            <Menu>
+                <MenuButton className="self-end rounded-lg bg-primary-600 hover:bg-primary-500 data-[active]:bg-primary-500 transition-colors px-4 py-2">
+                        Buscar por cantidad de jugadores
+                </MenuButton>
+                <MenuItems 
+                    anchor="bottom"
+                    className="bg-zinc-700/90 rounded-lg"
+                >
+                    <MenuItem>
+                        <Slider 
+                            value={searchQuery}
+                            onChange={onSearchQueryChange}
+                            switchState={searchState}
+                            onSwitch={onSearchStateChange}
+                        />
+                    </MenuItem>
+                </MenuItems>
+            </Menu>
+            {/* <Slider
                 value={searchQuery}
                 onChange={onSearchQueryChange}
                 switchState={searchState}
                 onSwitch={onSearchStateChange}
-            />
+            /> */}
             <LobbyList
                 lobbyList={lobbies}
                 joinHandler={joinHandler}
