@@ -36,7 +36,6 @@ function MainPage() {
 
     function handleSearchStateChange() {
         setSearchState(!searchState);
-        console.log(searchState)
         setSearchQuery("")
     }
 

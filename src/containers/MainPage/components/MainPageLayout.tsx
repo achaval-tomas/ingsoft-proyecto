@@ -2,8 +2,8 @@ import { useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
-import Slider from "../../../components/Slider";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import Filter from "./LobbysFilter";
+import LobbysFilter from "./LobbysFilter";
 
 
 
@@ -48,31 +48,12 @@ function MainPageLayout({
                     </FilledButton>
                 </div>
             </div>
-            <Menu>
-                <MenuButton className="self-end rounded-lg bg-primary-600 hover:bg-primary-500 data-[active]:bg-primary-500 transition-colors px-4 py-2 mx-2 mb-3">
-                        Buscar por cantidad de jugadores
-                        <i className="fa-solid fa-chevron-down ml-2"/>
-                </MenuButton>
-                <MenuItems 
-                    anchor="bottom end"
-                    className="bg-zinc-700/90 w-[var(--button-width)] [--anchor-gap:2px] rounded-lg"
-                >
-                    <MenuItem>
-                        <Slider 
-                            value={searchQuery}
-                            onChange={onSearchQueryChange}
-                            switchState={searchState}
-                            onSwitch={onSearchStateChange}
-                        />
-                    </MenuItem>
-                </MenuItems>
-            </Menu>
-            {/* <Slider
+            <LobbysFilter
                 value={searchQuery}
                 onChange={onSearchQueryChange}
                 switchState={searchState}
                 onSwitch={onSearchStateChange}
-            /> */}
+            />
             <LobbyList
                 lobbyList={lobbies}
                 joinHandler={joinHandler}
