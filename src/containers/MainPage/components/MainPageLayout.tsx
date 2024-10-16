@@ -54,7 +54,7 @@ function MainPageLayout({
                 </MenuButton>
                 <MenuItems 
                     anchor="bottom"
-                    className="bg-zinc-700/90 rounded-lg"
+                    className="bg-zinc-700/90 w-[var(--button-width)] [--anchor-gap:2px] rounded-lg"
                 >
                     <MenuItem>
                         <Slider 
