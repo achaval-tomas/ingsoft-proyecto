@@ -5,9 +5,10 @@ type MovementCardHandProps = {
     movementCards: MovementCardUiState[];
     className: string;
     onClickMovementCard: (i: number) => void;
+    onClickCancelMovement: (() => void) | null;
 }
 
-function MovementCardHand({ movementCards, className, onClickMovementCard }: MovementCardHandProps) {
+function MovementCardHand({ movementCards, className, onClickMovementCard, onClickCancelMovement }: MovementCardHandProps) {
     const sharedClassNames =
         "relative h-full overflow-hidden rounded-xl group-hover:z-[13] transition-movement-card";
 
@@ -55,6 +56,12 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
 
     return (
         <div className={`${className} flex flex-row`}>
+            {onClickCancelMovement && <div
+                className="h-full aspect-[1/1] max-w-min relative flex invisible"
+                onClick={() => { }}>
+                <img className="h-1/2 aspect-[1/1] mr-[10%] self-end" src="/src/assets/undo-movement.svg" />
+            </div>
+            }
             {movementCards.map((mc, i) => (
                 <div key={i} className="group h-full aspect-[1/1.4865757] max-w-min">
                     <div
@@ -65,6 +72,13 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
                     </div>
                 </div>
             ))}
+            {onClickCancelMovement && <div
+                className="h-full aspect-[1/1] max-w-min relative flex"
+                onClick={onClickCancelMovement}
+            >
+                <img className="relative h-1/2 aspect-[1/1] ml-[10%] self-end transition-movement-card bottom-[0%] hover:bottom-[10%]" src="/src/assets/undo-movement.svg" />
+            </div>
+            }
         </div>
     );
 }
