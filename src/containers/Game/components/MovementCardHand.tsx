@@ -75,11 +75,10 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
                     </div>
                 </div>
             ))}
-            {onClickCancelMovement && <div
-                className={`h-full aspect-[1/1] ${justifyDiv} max-w-min relative flex`}
-                onClick={onClickCancelMovement}
-            >
-                <img className={`relative h-[40%] aspect-[1/1] ${buttonMargin} self-end transition-movement-card bottom-[0%] hover:bottom-[10%]`} src="/src/assets/undo-movement.svg" />
+            {onClickCancelMovement && <div className={`h-full aspect-[1/1] ${justifyDiv} max-w-min relative flex`}>
+                <img className={`relative h-[40%] aspect-[1/1] ${buttonMargin} self-end transition-movement-card bottom-[0%] hover:bottom-[10%]`}
+                    src="/src/assets/undo-movement.svg"
+                    onClick={onClickCancelMovement} />
             </div>
             }
         </div>
