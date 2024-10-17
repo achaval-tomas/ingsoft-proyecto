@@ -54,9 +54,13 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
         }
     };
 
+    const usePadding = movementCards.length > 0;
+    const buttonMargin = usePadding ? "ml-[5%]" : ""
+    const justifyDiv = usePadding ? "" : "justify-center"
+
     return (
         <div className={`${className} flex flex-row`}>
-            {onClickCancelMovement && <div
+            {onClickCancelMovement && usePadding && <div
                 className="h-full aspect-[1/1] max-w-min relative flex invisible"
                 onClick={() => { }}>
                 <img className="h-1/2 aspect-[1/1] mr-[10%] self-end" src="/src/assets/undo-movement.svg" />
@@ -73,10 +77,10 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
                 </div>
             ))}
             {onClickCancelMovement && <div
-                className="h-full aspect-[1/1] max-w-min relative flex"
+                className={`h-full aspect-[1/1] ${justifyDiv} max-w-min relative flex`}
                 onClick={onClickCancelMovement}
             >
-                <img className="relative h-1/2 aspect-[1/1] ml-[10%] self-end transition-movement-card bottom-[0%] hover:bottom-[10%]" src="/src/assets/undo-movement.svg" />
+                <img className={`relative h-1/2 aspect-[1/1] ${buttonMargin} self-end transition-movement-card bottom-[0%] hover:bottom-[10%]`} src="/src/assets/undo-movement.svg" />
             </div>
             }
         </div>
