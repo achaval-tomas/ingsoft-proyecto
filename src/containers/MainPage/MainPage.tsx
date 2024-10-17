@@ -3,7 +3,7 @@ import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
-import { toInitial, toLobby, toPlay } from "../../navigation/destinations";
+import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 
 
@@ -23,8 +23,10 @@ function MainPage() {
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
-    const [searchQuery, setSearchQuery] = useState<number | string>("")
-    const [searchState, setSearchState] = useState(false)
+    const [searchByNameQuery, setSearchByNameQuery] = useState<string>("")
+    const [searchByPlayerCQuery, setSearchByPlayerCQuery] = useState<number>(0)
+    const [searchByNameState, setSearchByNameState] = useState(false)
+    const [searchByPlayerCState, setSearchByPlayerCState] = useState(false)
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -34,14 +36,36 @@ function MainPage() {
         void fetchAndSaveLobbies();
     }, []);
 
-    function handleSearchStateChange() {
-        setSearchState(!searchState);
-        setSearchQuery("")
+    function handleSearchByNameStateChange() {
+        setSearchByNameState(!searchByNameState);
+        setSearchByNameQuery("")
+    }
+
+    function handleSearchByPlayerCStateChange() {
+        setSearchByPlayerCState(!searchByPlayerCState);
+        setSearchByPlayerCQuery(0)
+    }
+
+    function handleResetQuerys() {
+        setSearchByNameState(false);
+        setSearchByPlayerCState(false);
+        setSearchByNameQuery("");
+        setSearchByPlayerCQuery(0);
     }
 
     const filteredLobbies = useMemo(
-        () => lobbies.filter(l => searchQuery == "" || l.player_amount == searchQuery),
-        [lobbies, searchQuery]
+        () => {
+            if (searchByNameQuery && !searchByPlayerCQuery) {
+                return lobbies.filter(l => l.lobby_name.toLowerCase().includes(searchByNameQuery))
+            } else if (!searchByNameQuery && searchByPlayerCQuery) {
+                return lobbies.filter(l => l.player_amount == searchByPlayerCQuery)
+            } else if (searchByNameQuery && searchByPlayerCQuery) {
+                return lobbies.filter(l => l.lobby_name.toLowerCase().includes(searchByNameQuery) && l.player_amount == searchByPlayerCQuery)
+            } else {
+                return lobbies
+            }
+        },
+        [lobbies, searchByPlayerCQuery, searchByNameQuery]
     );
 
     async function handleSubmit(state: CreateLobbyFormState) {
@@ -105,25 +129,18 @@ function MainPage() {
         return <Navigate to={toInitial()} replace />;
     }
 
-
-    function handleSearch(searchQuery: string) {
-        if (searchQuery === "") {
-            fetchAndSaveLobbies();
-        } else {
-            setLobbies((prevLobbies) =>
-                prevLobbies.filter((lobby) =>
-                    lobby.lobby_name.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-            );
-        }
-    }
     return (
 
         <MainPageLayout
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-            searchState={searchState}
-            onSearchStateChange={handleSearchStateChange}
+            searchByNameQuery={searchByNameQuery}
+            searchByPlayerCQuery={searchByPlayerCQuery}
+            onSearchNameQueryChange={setSearchByNameQuery}
+            onSearchPlayerQueryChange={setSearchByPlayerCQuery}
+            searchByNameState={searchByNameState}
+            searchByPlayerCState={searchByPlayerCState}
+            onChangeSearchByNameState={handleSearchByNameStateChange}
+            onChangeSearchByPCState={handleSearchByPlayerCStateChange}
+            onResetQuerys={handleResetQuerys}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}
             refreshHandler={() => {

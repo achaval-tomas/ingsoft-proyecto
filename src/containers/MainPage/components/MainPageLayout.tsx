@@ -7,10 +7,15 @@ import LobbysFilter from "./LobbysFilter";
 
 
 interface MainPageLayoutProps {
-    searchQuery: number | string;
-    onSearchQueryChange: (searchQuery: number | string) => void;
-    searchState: boolean;
-    onSearchStateChange: () => void;
+    searchByNameQuery: string;
+    searchByPlayerCQuery: number;
+    onSearchNameQueryChange: (query: string) => void;
+    onSearchPlayerQueryChange: (query: number) => void;
+    searchByNameState: boolean
+    searchByPlayerCState: boolean
+    onChangeSearchByNameState: () => void
+    onChangeSearchByPCState: () => void
+    onResetQuerys: () => void
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
@@ -18,10 +23,15 @@ interface MainPageLayoutProps {
 }
 
 function MainPageLayout({
-    searchQuery,
-    onSearchQueryChange,
-    searchState,
-    onSearchStateChange,
+    searchByNameQuery,
+    searchByPlayerCQuery,
+    onSearchNameQueryChange,
+    onSearchPlayerQueryChange,
+    searchByNameState,
+    searchByPlayerCState,
+    onChangeSearchByNameState,
+    onChangeSearchByPCState,
+    onResetQuerys,
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
@@ -48,10 +58,15 @@ function MainPageLayout({
                 </div>
             </div>
             <LobbysFilter
-                value={searchQuery}
-                onChange={onSearchQueryChange}
-                switchState={searchState}
-                onSwitch={onSearchStateChange}
+                playerCountValue={searchByPlayerCQuery}
+                onPlayerCountChange={onSearchPlayerQueryChange}
+                searchByPCState={searchByPlayerCState}
+                onSearchByPCChange={onChangeSearchByPCState}
+                lobbyNameValue={searchByNameQuery}
+                onLobbyNameChange={onSearchNameQueryChange}
+                searchByNameState={searchByNameState}
+                onChangeSearchByNameState={onChangeSearchByNameState}
+                onResetQuerys={onResetQuerys}
             />
             <LobbyList
                 lobbyList={lobbies}
