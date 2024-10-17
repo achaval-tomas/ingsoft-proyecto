@@ -236,6 +236,73 @@ def test_create_lobby():
     assert 'lobby_id' in data
 
 
+def test_create_lobby_error_player_not_found():
+    player_owner = create_player('Santino')
+    db = next(get_session())
+    delete_player(db=db, player_id=player_owner)
+    data_lobby = LobbyCreateSchema(
+        lobby_name='room',
+        lobby_owner=player_owner,
+        min_players=2,
+        max_players=4,
+    )
+    response = client.post('/lobby', json=data_lobby.model_dump())
+
+    assert (
+        response.status_code == 404
+    ), f'Se esperaba un status code 404, pero se recibió {response.status_code}'
+    assert (
+        response.json()['detail'] == errors.PLAYER_NOT_FOUND
+    ), f"Mensaje de error incorrecto: {response.json()['detail']}"
+
+
+def test_create_lobby_error_already_joiner_other():
+    player_owner = create_player('Santino')
+    player_owner_2 = create_player('Cande')
+    create_lobby('room 1', player_owner, 2, 4)
+    data_lobby_2 = create_lobby('room 2', player_owner_2, 2, 4)
+
+    player_join = LobbyJoinSchema(
+        player_id=player_owner,
+        lobby_id=data_lobby_2,
+    )
+
+    response = client.post('/lobby/join', json=player_join.model_dump())
+
+    assert (
+        response.status_code == 400
+    ), f'Se esperaba un status code 400, pero se recibió {response.status_code}'
+    assert (
+        response.json()['detail'] == errors.ALREADY_JOINED_OTHER
+    ), f"Mensaje de error incorrecto: {response.json()['detail']}"
+
+
+def test_create_lobby_error_already_created_other():
+    player_owner = create_player('Santino')
+
+    data_lobby_1 = LobbyCreateSchema(
+        lobby_name='room 1',
+        lobby_owner=player_owner,
+        min_players=2,
+        max_players=4,
+    )
+    data_lobby_2 = LobbyCreateSchema(
+        lobby_name='room 3',
+        lobby_owner=player_owner,
+        min_players=2,
+        max_players=4,
+    )
+    response = client.post('/lobby', json=data_lobby_1.model_dump())
+    response = client.post('/lobby', json=data_lobby_2.model_dump())
+
+    assert (
+        response.status_code == 400
+    ), f'Se esperaba un status code 400, pero se recibió {response.status_code}'
+    assert (
+        response.json()['detail'] == errors.ALREADY_JOINED_OTHER
+    ), f"Mensaje de error incorrecto: {response.json()['detail']}"
+
+
 def test_get_all_lobbies():
     player_test_1 = create_player('Cage')
     player_test_2 = create_player('Cande')
