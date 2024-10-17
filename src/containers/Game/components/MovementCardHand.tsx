@@ -60,11 +60,10 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
 
     return (
         <div className={`${className} flex flex-row`}>
-            {onClickCancelMovement && usePadding && <div
-                className="h-full aspect-[1/1] max-w-min relative flex invisible"
-                onClick={() => { }}>
-                <img className="h-[40%] aspect-[1/1] mr-[10%] self-end" src="/src/assets/undo-movement.svg" />
-            </div>
+            {onClickCancelMovement && usePadding &&
+                <div className="invisible h-full aspect-[1/1] max-w-min relative flex">
+                    <img className="h-[40%] aspect-[1/1] mr-[10%] self-end" src="/src/assets/undo-movement.svg" />
+                </div>
             }
             {movementCards.map((mc, i) => (
                 <div key={i} className="group h-full aspect-[1/1.4865757] max-w-min">
