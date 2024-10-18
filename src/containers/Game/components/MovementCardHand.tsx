@@ -54,12 +54,11 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
         }
     };
 
-    const useInvisibleDiv = movementCards.length > 0;
-    const justifyDiv = useInvisibleDiv ? "" : "justify-center";
+    const cancelMovementButtonParentClassNames = "h-full aspect-[1/2] max-w-min flex items-end";
 
     return (
         <div className={`${className} flex flex-row`}>
-            {onClickCancelMovement && useInvisibleDiv && <div className="invisible h-full aspect-[1/1] max-w-min relative flex" />}
+            {onClickCancelMovement && (movementCards.length !== 0) && <div className={cancelMovementButtonParentClassNames} />}
             {movementCards.map((mc, i) => (
                 <div key={i} className="group h-full aspect-[1/1.4865757] max-w-min">
                     <div
@@ -70,14 +69,13 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
                     </div>
                 </div>
             ))}
-            {onClickCancelMovement && <div className={`h-full aspect-[1/1] ${justifyDiv} max-w-min relative flex`}>
+            {onClickCancelMovement && <div className={cancelMovementButtonParentClassNames}>
                 <img
-                    className="relative h-[40%] aspect-[1/1] mx-[5%] self-end transition-movement-card bottom-[0%] hover:bottom-[10%]"
+                    className="relative w-full aspect-[1/1] mx-[10%] transition-movement-card bottom-[0%] hover:bottom-[10%]"
                     src="/src/assets/undo-movement.svg"
                     onClick={onClickCancelMovement}
                 />
-            </div>
-            }
+            </div>}
         </div>
     );
 }
