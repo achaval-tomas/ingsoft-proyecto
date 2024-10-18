@@ -13,7 +13,7 @@ client = TestClient(app)
 
 
 def test_initial_hand_cards():
-    player_test = PlayerCreateSchema(player_name='TestGame')
+    player_test = PlayerCreateSchema(player_name='testPlayer')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
     player_id = player_test_json['player_id']
@@ -57,7 +57,7 @@ def test_initial_hand_cards():
 
 
 def test_refill_cards():
-    player_test = PlayerCreateSchema(player_name='TestGame')
+    player_test = PlayerCreateSchema(player_name='testPlayer')
     player_test_id = client.post('/player', json=player_test.model_dump())
     player_test_json = player_test_id.json()
     player_id = player_test_json['player_id']

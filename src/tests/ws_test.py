@@ -13,9 +13,9 @@ from src.schemas.card_schemas import (
     UseShapeCardSchema,
 )
 from src.schemas.game_schemas import GameCreate
-from src.schemas.lobby_schemas import LobbyCreateSchema
 from src.schemas.message_schema import ErrorMessageSchema
-from src.schemas.player_schemas import PlayerCreateSchema, WinnerMessageSchema
+from src.schemas.player_schemas import WinnerMessageSchema
+from src.tests.test_utils import create_lobby, create_player
 from src.tools.jsonify import deserialize, serialize
 
 client = TestClient(app)
@@ -37,7 +37,7 @@ client = TestClient(app)
 #     joiner_id = joiner_json['player_id']
 
 #     data_lobby = {
-#         'lobby_name': "cage's room",
+#         'lobby_name': "testLobby",
 #         'lobby_owner': owner_id,
 #         'min_players': 2,
 #         'max_players': 4,
@@ -93,25 +93,10 @@ client = TestClient(app)
 
 
 def test_game_gamestate():
-    data_owner = {
-        'player_name': 'cage owner',
-    }
-    owner = client.post('/player', json=data_owner)
-    owner_json = owner.json()
-    owner_id = owner_json['player_id']
-
-    data_lobby = {
-        'lobby_name': "cage's room",
-        'lobby_owner': owner_id,
-        'min_players': 1,
-        'max_players': 4,
-    }
-    lobby = client.post('/lobby', json=data_lobby)
-    lobby_json = lobby.json()
-    lobby_id = lobby_json['lobby_id']
-
-    data_create = {'player_id': owner_id, 'lobby_id': lobby_id}
-    client.post('/game', json=data_create)
+    owner_id = create_player('testPlayer')
+    lobby_test = create_lobby('testLobby', owner_id, 1, 4)
+    game_test = GameCreate(lobby_id=lobby_test, player_id=owner_id)
+    client.post('/game', json=game_test.model_dump())
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -123,23 +108,10 @@ def test_game_gamestate():
 
 
 def test_game_gamestate_br():
-    data_owner = {'player_name': 'cage owner'}
-    owner = client.post('/player', json=data_owner)
-    owner_json = owner.json()
-    owner_id = owner_json['player_id']
-
-    data_lobby = {
-        'lobby_name': "cage's room",
-        'lobby_owner': owner_id,
-        'min_players': 2,
-        'max_players': 4,
-    }
-    lobby = client.post('/lobby', json=data_lobby)
-    lobby_json = lobby.json()
-    lobby_id = lobby_json['lobby_id']
-
-    data_create = {'player_id': owner_id, 'lobby_id': lobby_id}
-    client.post('/game', json=data_create)
+    owner_id = create_player('testPlayer')
+    lobby_test = create_lobby('testLobby', owner_id, 2, 4)
+    game_test = GameCreate(lobby_id=lobby_test, player_id=owner_id)
+    client.post('/game', json=game_test.model_dump())
 
     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
@@ -147,22 +119,9 @@ def test_game_gamestate_br():
 
 
 def test_lobby_lobbystate():
-    data_owner = {'player_name': 'cage owner'}
-    owner = client.post('/player', json=data_owner)
-    owner_json = owner.json()
-    owner_id = owner_json['player_id']
-
-    data_lobby = {
-        'lobby_name': "cage's room",
-        'lobby_owner': owner_id,
-        'min_players': 2,
-        'max_players': 4,
-    }
-    lobby = client.post('/lobby', json=data_lobby)
-    lobby_json = lobby.json()
-    lobby_id = lobby_json['lobby_id']
-
-    players_info = [{'id': owner_id, 'name': 'cage owner'}]
+    owner_id = create_player('testPlayer')
+    lobby_id = create_lobby('testLobby', owner_id, 1, 4)
+    players_info = [{'name': 'testPlayer', 'id': owner_id}]
 
     with client.websocket_connect('/lobby/' + owner_id) as websocket_owner:
         websocket_owner.send_json({'type': 'get-lobby-state'})
@@ -175,53 +134,25 @@ def test_lobby_lobbystate():
             'players': players_info,
             'owner': owner_id,
             'id': lobby_id,
-            'name': "cage's room",
+            'name': 'testLobby',
         }
 
 
 def test_card_movement():
-    player_test = PlayerCreateSchema(player_name='TestGame')
-    player_test_id = client.post('/player', json=player_test.model_dump())
-    player_test_json = player_test_id.json()
-    player_id = player_test_json['player_id']
-
-    data_joiner = {
-        'player_name': 'cage joiner',
-    }
-    joiner = client.post('/player', json=data_joiner)
-    joiner_json = joiner.json()
-    joiner_id = joiner_json['player_id']
-
-    lobby_test = LobbyCreateSchema(
-        lobby_name='LobbyTest',
-        lobby_owner=player_id,
-        min_players=0,
-        max_players=4,
-    )
-    lobby_test_id = client.post('/lobby', json=lobby_test.model_dump())
-    lobby_json = lobby_test_id.json()
-    lobby_id = lobby_json['lobby_id']
-
-    data = {
-        'player_id': joiner_id,
-        'lobby_id': lobby_id,
-    }
-    response = client.post('/lobby/join', json=data)
-
-    game_test = GameCreate(lobby_id=lobby_id, player_id=player_id)
-    response = client.post('/game', json=game_test.model_dump())
-    assert response.status_code == 200
+    player_id = create_player('testPlayer')
+    lobby_test = create_lobby('testLobby', player_id, 1, 4)
+    game_test = GameCreate(lobby_id=lobby_test, player_id=player_id)
+    client.post('/game', json=game_test.model_dump())
 
     db = next(get_session())
 
     game = get_game_from_player(db, player_id)
-    current_turn = deserialize(game.player_order)[game.current_turn]
     original_board = deserialize(game.board)
 
     pos0 = original_board[0]
     pos1 = original_board[7]
 
-    cards = get_player_cards(db=db, player_id=current_turn)
+    cards = get_player_cards(db=db, player_id=player_id)
 
     initial_cards = ['diagonal-adjacent', 'l-ccw', 'straight-edge']
     cards.movement_cards = serialize(initial_cards)
@@ -234,7 +165,7 @@ def test_card_movement():
         movement='diagonal-adjacent',
     ).model_dump_json()
 
-    with client.websocket_connect('/game/' + current_turn) as websocket_owner:
+    with client.websocket_connect('/game/' + player_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
         assert data_received['type'] == 'game-state'
 
@@ -314,55 +245,27 @@ def test_card_movement():
         assert pos0 == board[31]
         assert pos1 == board[7]
 
-        cancel_movements(db=next(get_session()), player_id=current_turn)
+        cancel_movements(db=next(get_session()), player_id=player_id)
 
         game = get_game_from_player(db, player_id)
         db.refresh(game)
         board = deserialize(game.board)
         assert original_board == board
 
-        cards = get_player_cards(db=next(get_session()), player_id=current_turn)
+        cards = get_player_cards(db=next(get_session()), player_id=player_id)
         assert set(deserialize(cards.movement_cards)) == set(initial_cards)
         assert deserialize(game.temp_switches) == []
 
 
 def test_card_shape():
-    player_test = PlayerCreateSchema(player_name='TestGame')
-    player_test_id = client.post('/player', json=player_test.model_dump())
-    player_test_json = player_test_id.json()
-    player_id = player_test_json['player_id']
-
-    data_joiner = {
-        'player_name': 'TestGame',
-    }
-    joiner = client.post('/player', json=data_joiner)
-    joiner_json = joiner.json()
-    joiner_id = joiner_json['player_id']
-
-    lobby_test = LobbyCreateSchema(
-        lobby_name='LobbyTest',
-        lobby_owner=player_id,
-        min_players=0,
-        max_players=4,
-    )
-    lobby_test_id = client.post('/lobby', json=lobby_test.model_dump())
-    lobby_json = lobby_test_id.json()
-    lobby_id = lobby_json['lobby_id']
-
-    data = {
-        'player_id': joiner_id,
-        'lobby_id': lobby_id,
-    }
-    response = client.post('/lobby/join', json=data)
-
-    game_test = GameCreate(lobby_id=lobby_id, player_id=player_id)
-    response = client.post('/game', json=game_test.model_dump())
-    assert response.status_code == 200
+    player_id = create_player('testPlayer')
+    lobby_test = create_lobby('testLobby', player_id, 1, 4)
+    game_test = GameCreate(lobby_id=lobby_test, player_id=player_id)
+    client.post('/game', json=game_test.model_dump())
 
     db = next(get_session())
 
     game = get_game_from_player(db, player_id)
-    current_turn = deserialize(game.player_order)[game.current_turn]
 
     game.board = serialize(
         to_board_tiles(
@@ -377,7 +280,7 @@ def test_card_shape():
         ),
     )
 
-    cards = get_player_cards(db=db, player_id=current_turn)
+    cards = get_player_cards(db=db, player_id=player_id)
 
     forced_cards = ['b-4', 'c-1', 'c-3']
     shape_cards = [
@@ -392,14 +295,14 @@ def test_card_shape():
     db.refresh(cards)
     db.refresh(game)
 
-    with client.websocket_connect('/game/' + current_turn) as websocket_owner:
+    with client.websocket_connect('/game/' + player_id) as websocket_owner:
         data_received = websocket_owner.receive_json()
         assert data_received['type'] == 'game-state'
 
         data = UseShapeCardSchema(
             type='use-shape-card',
             position=(0, 4),
-            targetPlayerId=current_turn,
+            targetPlayerId=player_id,
         ).model_dump_json()
 
         websocket_owner.send_text(data)
@@ -409,7 +312,7 @@ def test_card_shape():
             data_received
             == ShapeCardUsedSchema(
                 position=(0, 4),
-                targetPlayerId=current_turn,
+                targetPlayerId=player_id,
             ).model_dump_json()
         )
 
@@ -427,7 +330,7 @@ def test_card_shape():
         data = UseShapeCardSchema(
             type='use-shape-card',
             position=(4, 0),
-            targetPlayerId=current_turn,
+            targetPlayerId=player_id,
         ).model_dump_json()
 
         websocket_owner.send_text(data)
@@ -437,7 +340,7 @@ def test_card_shape():
             data_received
             == ShapeCardUsedSchema(
                 position=(4, 0),
-                targetPlayerId=current_turn,
+                targetPlayerId=player_id,
             ).model_dump_json()
         )
 
@@ -453,7 +356,7 @@ def test_card_shape():
         data = UseShapeCardSchema(
             type='use-shape-card',
             position=(2, 2),
-            targetPlayerId=current_turn,
+            targetPlayerId=player_id,
         ).model_dump_json()
 
         websocket_owner.send_text(data)
@@ -469,7 +372,7 @@ def test_card_shape():
         data = UseShapeCardSchema(
             type='use-shape-card',
             position=(4, 3),
-            targetPlayerId=current_turn,
+            targetPlayerId=player_id,
         ).model_dump_json()
 
         websocket_owner.send_text(data)
@@ -485,17 +388,26 @@ def test_card_shape():
         data = UseShapeCardSchema(
             type='use-shape-card',
             position=(4, 1),
-            targetPlayerId=current_turn,
+            targetPlayerId=player_id,
         ).model_dump_json()
 
         websocket_owner.send_text(data)
-        data_received = websocket_owner.receive_text()
 
+        data_received = websocket_owner.receive_text()
+        assert (
+            data_received
+            == ShapeCardUsedSchema(
+                position=(4, 1),
+                targetPlayerId=player_id,
+            ).model_dump_json()
+        )
+
+        data_received = websocket_owner.receive_text()
         assert (
             data_received
             == WinnerMessageSchema(
-                playerId=current_turn,
-                playerName='TestGame',
+                playerId=player_id,
+                playerName='testPlayer',
             ).model_dump_json()
         )
 
