@@ -13,7 +13,7 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
         "relative h-full overflow-hidden rounded-xl group-hover:z-[13] transition-movement-card";
 
     const individualClassNamesFor = (movementCard: MovementCardUiState, i: number) => {
-        const isMiddleCard = ((i === 1 && movementCards.length === 3) || movementCards.length === 1);
+        const isMiddleCard = (i === 1 && movementCards.length === 3);
 
         switch (movementCard.status) {
             case "normal": {
