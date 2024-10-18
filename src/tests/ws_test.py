@@ -1,10 +1,7 @@
-from fastapi.testclient import TestClient
-
 from src.constants import errors
 from src.database.crud.crud_cards import cancel_movements, get_player_cards
 from src.database.crud.crud_game import get_game_from_player
 from src.database.db import get_session
-from src.main import app
 from src.schemas.card_schemas import (
     MovementCardUsedSchema,
     ShapeCardSchema,
@@ -12,13 +9,11 @@ from src.schemas.card_schemas import (
     UseMovementCardSchema,
     UseShapeCardSchema,
 )
-from src.schemas.game_schemas import GameCreate, TurnEndedMessageSchema
+from src.schemas.game_schemas import GameCreate
 from src.schemas.message_schema import ErrorMessageSchema
 from src.schemas.player_schemas import WinnerMessageSchema
-from src.tests.test_utils import create_lobby, create_player
+from src.tests.test_utils import client, create_lobby, create_player
 from src.tools.jsonify import deserialize, serialize
-
-client = TestClient(app)
 
 
 def test_game_end_turn():

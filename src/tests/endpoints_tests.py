@@ -1,11 +1,8 @@
-from fastapi.testclient import TestClient
-
 from src.constants import errors
 from src.database.crud.crud_game import delete_game, get_game_from_player
 from src.database.crud.crud_lobby import delete_lobby
 from src.database.crud.crud_player import delete_player
 from src.database.db import get_session
-from src.main import app
 from src.schemas.game_schemas import GameCreate
 from src.schemas.lobby_schemas import (
     LobbyCreateSchema,
@@ -13,9 +10,7 @@ from src.schemas.lobby_schemas import (
     LobbyLeaveSchema,
 )
 from src.schemas.player_schemas import PlayerCreateSchema
-from src.tests.test_utils import create_lobby, create_player
-
-client = TestClient(app)
+from src.tests.test_utils import client, create_lobby, create_player
 
 """ PLAYER TESTS """
 
