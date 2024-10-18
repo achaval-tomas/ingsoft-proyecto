@@ -1,7 +1,5 @@
 import FilledButton from "../../components/FilledButton";
-import OutlinedButton from "../../components/OutlinedButton";
 import TextButton from "../../components/TextButton";
-import { colorToBackgroundClassName } from "../../domain/Color";
 import { PlayerId } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
 import Board from "./components/Board";
@@ -76,13 +74,11 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
             </div>
             <MovementCardHand
                 movementCards={selfPlayerUiState.movementCardsInHand}
-                className="row-start-2 col-start-1 justify-center justify-self-center h-full pt-[2.5%] pb-[0.5%] w-0 h-full"
+                className="row-start-2 col-start-1 justify-center justify-self-center pt-[2.5%] pb-[0.5%] w-0 h-full"
                 onClickMovementCard={onClickMovementCard}
+                onClickCancelMovement={selfPlayerUiState.canCancelMovement ? onClickCancelMovement : null}
             />
             <div className="row-start-2 col-start-1 justify-self-end self-end flex flex-col gap-2">
-                {selfPlayerUiState.canCancelMovement && <OutlinedButton onClick={onClickCancelMovement}>
-                    Revertir último movimiento
-                </OutlinedButton>}
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
             </div>
             <div className="row-start-1 col-start-1 justify-self-end self-start">

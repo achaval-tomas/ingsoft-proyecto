@@ -5,14 +5,15 @@ type MovementCardHandProps = {
     movementCards: MovementCardUiState[];
     className: string;
     onClickMovementCard: (i: number) => void;
+    onClickCancelMovement: (() => void) | null;
 }
 
-function MovementCardHand({ movementCards, className, onClickMovementCard }: MovementCardHandProps) {
+function MovementCardHand({ movementCards, className, onClickMovementCard, onClickCancelMovement }: MovementCardHandProps) {
     const sharedClassNames =
         "relative h-full overflow-hidden rounded-xl group-hover:z-[13] transition-movement-card";
 
     const individualClassNamesFor = (movementCard: MovementCardUiState, i: number) => {
-        const isMiddleCard = ((i === 1 && movementCards.length === 3) || movementCards.length === 1);
+        const isMiddleCard = (i === 1 && movementCards.length === 3);
 
         switch (movementCard.status) {
             case "normal": {
@@ -53,8 +54,11 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
         }
     };
 
+    const cancelMovementButtonParentClassNames = "h-full aspect-[1/2] max-w-min flex items-end";
+
     return (
         <div className={`${className} flex flex-row`}>
+            {onClickCancelMovement && (movementCards.length !== 0) && <div className={cancelMovementButtonParentClassNames} />}
             {movementCards.map((mc, i) => (
                 <div key={i} className="group h-full aspect-[1/1.4865757] max-w-min">
                     <div
@@ -65,6 +69,15 @@ function MovementCardHand({ movementCards, className, onClickMovementCard }: Mov
                     </div>
                 </div>
             ))}
+            {onClickCancelMovement && <div className={cancelMovementButtonParentClassNames}>
+                <img
+                    className={"relative w-full aspect-[1/1] mx-[10%] rounded-[7.5%] transition-movement-card"
+                        + " bottom-[0%] hover:bottom-[4%] shadow-sm shadow-black hover:shadow-md hover:shadow-black"}
+                    src="/src/assets/undo-movement.svg"
+                    title="Revertir el último movimiento"
+                    onClick={onClickCancelMovement}
+                />
+            </div>}
         </div>
     );
 }
