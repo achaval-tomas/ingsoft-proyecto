@@ -1,53 +1,33 @@
-from fastapi.testclient import TestClient
-
 from src.database.crud.crud_cards import get_player_cards, refill_cards
 from src.database.db import get_session
-from src.main import app
 from src.schemas.card_schemas import dump_shape_cards, validate_shape_cards
 from src.schemas.game_schemas import GameCreate
-from src.schemas.lobby_schemas import LobbyCreateSchema
-from src.schemas.player_schemas import PlayerCreateSchema
+from src.tests.test_utils import client, create_lobby, create_player
 from src.tools.jsonify import deserialize, serialize
-
-client = TestClient(app)
 
 
 def test_initial_hand_cards():
-    player_test = PlayerCreateSchema(player_name='testPlayer')
-    player_test_id = client.post('/player', json=player_test.model_dump())
-    player_test_json = player_test_id.json()
-    player_id = player_test_json['player_id']
+    owner_id = create_player('testPlayer')
+    joiner_id = create_player('testPlayer2')
+    lobby_id = create_lobby('testLobby', owner_id, 2, 4)
+    game_test = GameCreate(lobby_id=lobby_id, player_id=owner_id)
+    client.post('/game', json=game_test.model_dump())
 
-    data_joiner = {
-        'player_name': 'cage joiner',
-    }
-    joiner = client.post('/player', json=data_joiner)
-    joiner_json = joiner.json()
-    joiner_id = joiner_json['player_id']
-
-    lobby_test = LobbyCreateSchema(
-        lobby_name='LobbyTest',
-        lobby_owner=player_id,
-        min_players=0,
-        max_players=4,
-    )
-    lobby_test_id = client.post('/lobby', json=lobby_test.model_dump())
-    lobby_json = lobby_test_id.json()
-    lobby_id = lobby_json['lobby_id']
-
-    data = {
+    data_join = {
         'player_id': joiner_id,
         'lobby_id': lobby_id,
     }
-    response = client.post('/lobby/join', json=data)
+    client.post('/lobby/join', json=data_join)
 
-    game_test = GameCreate(lobby_id=lobby_id, player_id=player_id)
-    response = client.post('/game', json=game_test.model_dump())
-    assert response.status_code == 200
+    data_create = {
+        'player_id': owner_id,
+        'lobby_id': lobby_id,
+    }
+    client.post('/game', json=data_create)
 
     db = next(get_session())
 
-    cards = get_player_cards(db=db, player_id=player_id)
+    cards = get_player_cards(db=db, player_id=owner_id)
 
     shape_cards_hand = deserialize(cards.shape_cards_in_hand)
     shape_cards_deck = deserialize(cards.shape_cards_deck)
@@ -57,41 +37,27 @@ def test_initial_hand_cards():
 
 
 def test_refill_cards():
-    player_test = PlayerCreateSchema(player_name='testPlayer')
-    player_test_id = client.post('/player', json=player_test.model_dump())
-    player_test_json = player_test_id.json()
-    player_id = player_test_json['player_id']
+    owner_id = create_player('testPlayer')
+    joiner_id = create_player('testPlayer2')
+    lobby_id = create_lobby('testLobby', owner_id, 2, 4)
+    game_test = GameCreate(lobby_id=lobby_id, player_id=owner_id)
+    client.post('/game', json=game_test.model_dump())
 
-    data_joiner = {
-        'player_name': 'cage joiner',
-    }
-    joiner = client.post('/player', json=data_joiner)
-    joiner_json = joiner.json()
-    joiner_id = joiner_json['player_id']
-
-    lobby_test = LobbyCreateSchema(
-        lobby_name='LobbyTest',
-        lobby_owner=player_id,
-        min_players=0,
-        max_players=4,
-    )
-    lobby_test_id = client.post('/lobby', json=lobby_test.model_dump())
-    lobby_json = lobby_test_id.json()
-    lobby_id = lobby_json['lobby_id']
-
-    data = {
+    data_join = {
         'player_id': joiner_id,
         'lobby_id': lobby_id,
     }
-    response = client.post('/lobby/join', json=data)
+    client.post('/lobby/join', json=data_join)
 
-    game_test = GameCreate(lobby_id=lobby_id, player_id=player_id)
-    response = client.post('/game', json=game_test.model_dump())
-    assert response.status_code == 200
+    data_create = {
+        'player_id': owner_id,
+        'lobby_id': lobby_id,
+    }
+    client.post('/game', json=data_create)
 
     db = next(get_session())
 
-    cards = get_player_cards(db=db, player_id=player_id)
+    cards = get_player_cards(db=db, player_id=owner_id)
 
     shape_cards = validate_shape_cards(cards.shape_cards_in_hand)
     shape_cards.pop(0)
@@ -102,7 +68,7 @@ def test_refill_cards():
 
     response_test, mov_cards_res, shape_cards_res = refill_cards(
         db=db,
-        player_id=player_id,
+        player_id=owner_id,
     )
 
     db.refresh(cards)
