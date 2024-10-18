@@ -12,7 +12,7 @@ from src.schemas.card_schemas import (
     UseMovementCardSchema,
     UseShapeCardSchema,
 )
-from src.schemas.game_schemas import GameCreate
+from src.schemas.game_schemas import GameCreate, TurnEndedMessageSchema
 from src.schemas.message_schema import ErrorMessageSchema
 from src.schemas.player_schemas import WinnerMessageSchema
 from src.tests.test_utils import create_lobby, create_player
@@ -21,75 +21,46 @@ from src.tools.jsonify import deserialize, serialize
 client = TestClient(app)
 
 
-# def test_game_end_turn():
-#     data_owner = {
-#         'player_name': 'cage owner',
-#     }
-#     owner = client.post('/player', json=data_owner)
-#     owner_json = owner.json()
-#     owner_id = owner_json['player_id']
+def test_game_end_turn():
+    owner_id = create_player('testPlayer')
+    joiner_id = create_player('testPlayer2')
+    lobby_id = create_lobby('testLobby', owner_id, 2, 4)
+    game_test = GameCreate(lobby_id=lobby_id, player_id=owner_id)
+    client.post('/game', json=game_test.model_dump())
 
-#     data_joiner = {
-#         'player_name': 'cage joiner',
-#     }
-#     joiner = client.post('/player', json=data_joiner)
-#     joiner_json = joiner.json()
-#     joiner_id = joiner_json['player_id']
+    data_join = {
+        'player_id': joiner_id,
+        'lobby_id': lobby_id,
+    }
+    client.post('/lobby/join', json=data_join)
 
-#     data_lobby = {
-#         'lobby_name': "testLobby",
-#         'lobby_owner': owner_id,
-#         'min_players': 2,
-#         'max_players': 4,
-#     }
-#     lobby = client.post('/lobby', json=data_lobby)
-#     lobby_json = lobby.json()
-#     lobby_id = lobby_json['lobby_id']
+    data_create = {
+        'player_id': owner_id,
+        'lobby_id': lobby_id,
+    }
+    client.post('/game', json=data_create)
 
-#     data_join = {
-#         'player_id': joiner_id,
-#         'lobby_id': lobby_id,
-#     }
+    db = next(get_session())
+    game = get_game_from_player(db=db, player_id=owner_id)
+    first_turn_id = deserialize(game.player_order)[game.current_turn]
 
-#     data_create = {
-#         'player_id': owner_id,
-#         'lobby_id': lobby_id,
-#     }
+    with client.websocket_connect('/game/' + first_turn_id) as websocket_owner:
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'game-state'
 
-#     client.post('/lobby/join', json=data_join)
-#     client.post('/game', json=data_create)
+        websocket_owner.send_json(
+            {
+                'type': 'end-turn',
+            },
+        )
+        data_received = websocket_owner.receive_json()
 
-#     with client.websocket_connect('/game/' + owner_id) as websocket_owner:
-#         data_received = websocket_owner.receive_json()
-#         assert data_received['type'] == 'game-state'
-#         owner_turn = data_received['gameState']['selfPlayerState']['roundOrder']
-#         current_turn = data_received['gameState']['currentRoundPlayer']
+        assert data_received['type'] == 'turn-ended'
+        assert data_received['playerId'] == first_turn_id
 
-#         if owner_turn == current_turn:
-#             websocket_owner.send_json(
-#                 {
-#                     'type': 'end-turn',
-#                 },
-#             )
-#             data_received = websocket_owner.receive_json()
-#             assert data_received == {
-#                 'type': 'turn-ended',
-#                 'playerId': owner_id,
-#             }
-#         else:
-#             with client.websocket_connect('/game/' + joiner_id) as websocket_joiner:
-#                 data_received = websocket_joiner.receive_json()
-#                 assert data_received['type'] == 'game-state'
-#                 websocket_joiner.send_json(
-#                     {
-#                         'type': 'end-turn',
-#                     },
-#                 )
-#                 data_received = websocket_joiner.receive_json()
-#                 assert data_received == {
-#                     'type': 'turn-ended',
-#                     'playerId': joiner_id,
-#                 }
+        db.refresh(game)
+        new_turn_id = deserialize(game.player_order)[game.current_turn]
+        assert new_turn_id != first_turn_id
 
 
 def test_game_gamestate():
