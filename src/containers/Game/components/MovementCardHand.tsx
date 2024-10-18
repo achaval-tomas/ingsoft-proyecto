@@ -74,6 +74,7 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
                     className={"relative w-full aspect-[1/1] mx-[10%] rounded-[7.5%] transition-movement-card"
                         + " bottom-[0%] hover:bottom-[4%] shadow-sm shadow-black hover:shadow-md hover:shadow-black"}
                     src="/src/assets/undo-movement.svg"
+                    title="Revertir el último movimiento"
                     onClick={onClickCancelMovement}
                 />
             </div>}
