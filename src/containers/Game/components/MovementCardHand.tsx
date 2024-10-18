@@ -71,7 +71,7 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
             ))}
             {onClickCancelMovement && <div className={cancelMovementButtonParentClassNames}>
                 <img
-                    className="relative w-full aspect-[1/1] mx-[10%] transition-movement-card bottom-[0%] hover:bottom-[10%]"
+                    className="relative w-full aspect-[1/1] mx-[10%] transition-movement-card bottom-[0%] hover:bottom-[4%]"
                     src="/src/assets/undo-movement.svg"
                     onClick={onClickCancelMovement}
                 />
