@@ -74,7 +74,7 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
             </div>
             <MovementCardHand
                 movementCards={selfPlayerUiState.movementCardsInHand}
-                className="justify-center justify-self-center row-start-2 col-start-1 pt-[2.5%] pb-[0.5%] h-full w-0"
+                className="row-start-2 col-start-1 justify-center justify-self-center pt-[2.5%] pb-[0.5%] w-0 h-full"
                 onClickMovementCard={onClickMovementCard}
                 onClickCancelMovement={selfPlayerUiState.canCancelMovement ? onClickCancelMovement : null}
             />
