@@ -26,6 +26,6 @@ async def handle_leave_game(player_id: str, db: Session):
         )
         if res == 3:
             await handle_announce_winner(db=db, winner_id=winner_id)
-        return None
+        return 0
 
     return res
