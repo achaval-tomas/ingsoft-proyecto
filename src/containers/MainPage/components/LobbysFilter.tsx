@@ -24,9 +24,8 @@ function LobbysFilter({
                 <MenuItems
                     anchor="bottom end"
                     className="bg-zinc-700/90 w-80 [--anchor-gap:2px] rounded-lg">
-
-
                     <MenuItem as="div">
+                        <h3 className="ml-3 mb-2 mt-2 font-bold">Nombre</h3>
                         <input
                             type="string"
                             value={lobbyNameValue}
@@ -36,19 +35,17 @@ function LobbysFilter({
                             className="px-3 py-1.5 rounded-lg bg-black/50 ml-2 text-sm/6 text-white"
                         />
                     </MenuItem>
-
                     <MenuSeparator className="m-3 h-0.5 rounded-lg bg-white/80" />
-
-
                     <MenuItem as="div">
+                        <h3 className="ml-3 mb-2 mt-2 font-bold">
+                            Cantidad de Jugadores
+                        </h3>
                         <Slider
                             playerCountValue={playerCountValue}
                             onPlayerCountChange={onPlayerCountChange}
                         />
                     </MenuItem>
-
                     <MenuSeparator className="m-3 h-0.5 rounded-lg bg-white/80" />
-
                     <MenuItem
                         as="div"
                         className="m-2"

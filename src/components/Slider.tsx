@@ -21,10 +21,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                     min={0}
                     max={3}
                 />
-                <div className="flex justify-between mx-2 mt-0 mb-2 w-full">
-                    {[0, 1, 2, 3].map((amount) => (
+                <div className="flex justify-between mx-2 mt-0 mb-2 w-full font-bold">
+                    <span>R</span>
+                    {[1, 2, 3].map((amount) => (
                         <span
-                            className="mx-1.5 font-bold"
                             key={amount}>{amount}</span>
                     ))}
                 </div>
