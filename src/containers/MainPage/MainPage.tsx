@@ -35,12 +35,6 @@ function MainPage() {
         void fetchAndSaveLobbies();
     }, []);
 
-    function handleResetQuerys() {
-        setSearchQuery("");
-        setMinPlayerCountQuery(0);
-        setMaxPlayerCountQuery(3);
-    }
-
     const filteredLobbies = useMemo(
         () => lobbies
             .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -79,6 +73,12 @@ function MainPage() {
         }
     }
 
+    function handleClearFilters() {
+        setSearchQuery("");
+        setMinPlayerCountQuery(0);
+        setMaxPlayerCountQuery(3);
+    }
+
     async function joinHandler(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
         const res = await lobbyService.joinLobby(playerId, lobbyId);
@@ -114,7 +114,7 @@ function MainPage() {
             onSearchQueryChange={setSearchQuery}
             onMinPlayerCountQueryChange={setMinPlayerCountQuery}
             onMaxPlayerCountQueryChange={setMaxPlayerCountQuery}
-            onResetQuerys={handleResetQuerys}
+            onClearFilters={handleClearFilters}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}
             refreshHandler={() => {

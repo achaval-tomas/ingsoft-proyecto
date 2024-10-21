@@ -11,7 +11,7 @@ interface MainPageLayoutProps {
     onSearchQueryChange: (searchQuery: string) => void;
     onMinPlayerCountQueryChange: (query: number) => void;
     onMaxPlayerCountQueryChange: (query: number) => void;
-    onResetQuerys: () => void;
+    onClearFilters: () => void;
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
@@ -25,7 +25,7 @@ function MainPageLayout({
     onSearchQueryChange,
     onMinPlayerCountQueryChange,
     onMaxPlayerCountQueryChange,
-    onResetQuerys,
+    onClearFilters,
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
@@ -58,7 +58,7 @@ function MainPageLayout({
                 onMaxPlayerCountChange={onMaxPlayerCountQueryChange}
                 lobbyNameValue={searchQuery}
                 onLobbyNameChange={onSearchQueryChange}
-                onResetQuerys={onResetQuerys}
+                onClearFilters={onClearFilters}
             />
             <LobbyList
                 lobbyList={lobbies}

@@ -5,7 +5,7 @@ import FilledButton from "../../../components/FilledButton";
 type FilterProps = SliderProps & {
     lobbyNameValue: string;
     onLobbyNameChange: (value: string) => void;
-    onResetQuerys: () => void;
+    onClearFilters: () => void;
 }
 
 function LobbysFilter({
@@ -15,7 +15,7 @@ function LobbysFilter({
     onMaxPlayerCountChange,
     lobbyNameValue,
     onLobbyNameChange,
-    onResetQuerys,
+    onClearFilters,
 }: FilterProps) {
     return (
         <div className="self-end">
@@ -53,7 +53,7 @@ function LobbysFilter({
                         as="div"
                         className="m-2"
                         onClick={e => e.preventDefault()}>
-                        <FilledButton onClick={onResetQuerys}>Eliminar Filtros</FilledButton>
+                        <FilledButton onClick={onClearFilters}>Eliminar Filtros</FilledButton>
                     </MenuItem>
                 </MenuItems>
             </Menu>
