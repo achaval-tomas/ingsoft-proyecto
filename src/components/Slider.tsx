@@ -5,10 +5,10 @@ export type SliderProps = {
 
 function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
     return (
-        <div className="self-end mr-4">
-            <label className="text-sm font-normal">Jugadores en sala (min)</label>
+        <div className="self-end">
+            <label>Jugadores en sala (min)</label>
             <input
-                className="mb-0 mx-2 w-full cursor-pointer custom-slider"
+                className="w-full cursor-pointer custom-slider mt-2"
                 type="range"
                 value={playerCountRange[0]}
                 onChange={e => {
@@ -19,15 +19,17 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
                 min={1}
                 max={3}
             />
-            <div className="flex justify-between mx-2 mt-0 mb-2 w-full text-xs font-normal">
+            <div className="flex justify-between px-1.5 w-full text-xs">
                 {[1, 2, 3].map((amount) => (
                     <span key={amount}>{amount}</span>
                 ))}
             </div>
 
-            <label className="text-sm font-normal">Jugadores en sala (max)</label>
+            <div className="h-2" />
+
+            <label>Jugadores en sala (max)</label>
             <input
-                className="mb-0 mx-2 w-full cursor-pointer custom-slider"
+                className="w-full cursor-pointer custom-slider mt-2"
                 type="range"
                 value={playerCountRange[1]}
                 onChange={e => {
@@ -38,7 +40,7 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
                 min={1}
                 max={3}
             />
-            <div className="flex justify-between mx-2 mt-0 mb-2 w-full text-xs font-normal">
+            <div className="flex justify-between px-1.5 w-full text-xs">
                 {[1, 2, 3].map((amount) => (
                     <span key={amount}>{amount}</span>
                 ))}

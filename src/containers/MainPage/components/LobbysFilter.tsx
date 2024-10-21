@@ -1,6 +1,8 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Slider, { SliderProps } from "../../../components/Slider";
 import FilledButton from "../../../components/FilledButton";
+import Field from "../../../components/Field";
+import TextButton from "../../../components/TextButton";
 
 type FilterProps = SliderProps & {
     lobbyNameValue: string;
@@ -24,33 +26,31 @@ function LobbysFilter({
                 </MenuButton>
                 <MenuItems
                     anchor="bottom end"
-                    className="bg-zinc-700/90 w-80 [--anchor-gap:2px] rounded-lg">
+                    className="flex flex-col bg-zinc-700 w-96 [--anchor-gap:2px] rounded-lg p-8 gap-4"
+                >
+                    <Field
+                        label="Nombre"
+                        value={lobbyNameValue}
+                        onChange={v => onLobbyNameChange(v)}
+                        placeholder="Buscar por nombre..."
+                    />
 
-                    <MenuItem as="div">
-                        <p className="ml-3 mb-1 mt-2 font-bold text-sm">Nombre</p>
-                        <input
-                            type="string"
-                            value={lobbyNameValue}
-                            onChange={e => onLobbyNameChange(e.target.value)}
-                            onClick={e => e.preventDefault()}
-                            placeholder="Nombre de la sala"
-                            className="px-3 py-1.5 rounded-lg bg-black/50 ml-2 text-sm/6 text-white"
-                        />
-                    </MenuItem>
+                    <Slider
+                        playerCountRange={playerCountRange}
+                        onPlayerCountRangeChange={onPlayerCountRangeChange}
+                    />
 
-                    <MenuItem as="div" className="ml-3">
-                        <Slider
-                            playerCountRange={playerCountRange}
-                            onPlayerCountRangeChange={onPlayerCountRangeChange}
-                        />
-                    </MenuItem>
+                    <div className="flex flex-row w-full">
+                        <MenuItem as="div" className="grow">
+                            <TextButton className="w-full">
+                                Cerrar
+                            </TextButton>
+                        </MenuItem>
 
-                    <MenuItem
-                        as="div"
-                        className="m-2"
-                        onClick={e => e.preventDefault()}>
-                        <FilledButton onClick={onClearFilters}>Eliminar Filtros</FilledButton>
-                    </MenuItem>
+                        <FilledButton onClick={onClearFilters} className="grow">
+                            Limpiar filtros
+                        </FilledButton>
+                    </div>
                 </MenuItems>
             </Menu>
         </div>
