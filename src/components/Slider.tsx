@@ -11,7 +11,10 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
                 className="mb-0 mx-2 w-full cursor-pointer custom-slider"
                 type="range"
                 value={playerCountRange[0]}
-                onChange={e => onPlayerCountRangeChange([parseInt(e.target.value), playerCountRange[1]])}
+                onChange={e => {
+                    const newMin = parseInt(e.target.value);
+                    onPlayerCountRangeChange([newMin, Math.max(newMin, playerCountRange[1])]);
+                }}
                 onClick={e => e.preventDefault()}
                 min={1}
                 max={3}
@@ -27,7 +30,10 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
                 className="mb-0 mx-2 w-full cursor-pointer custom-slider"
                 type="range"
                 value={playerCountRange[1]}
-                onChange={e => onPlayerCountRangeChange([playerCountRange[0], parseInt(e.target.value)])}
+                onChange={e => {
+                    const newMax = parseInt(e.target.value);
+                    onPlayerCountRangeChange([Math.min(newMax, playerCountRange[0]), newMax]);
+                }}
                 onClick={e => e.preventDefault()}
                 min={1}
                 max={3}
