@@ -9,10 +9,8 @@ type FilterProps = SliderProps & {
 }
 
 function LobbysFilter({
-    minPlayerCountValue,
-    maxPlayerCountValue,
-    onMinPlayerCountChange,
-    onMaxPlayerCountChange,
+    playerCountRange,
+    onPlayerCountRangeChange,
     lobbyNameValue,
     onLobbyNameChange,
     onClearFilters,
@@ -42,10 +40,8 @@ function LobbysFilter({
 
                     <MenuItem as="div" className="ml-3">
                         <Slider
-                            minPlayerCountValue={minPlayerCountValue}
-                            maxPlayerCountValue={maxPlayerCountValue}
-                            onMinPlayerCountChange={onMinPlayerCountChange}
-                            onMaxPlayerCountChange={onMaxPlayerCountChange}
+                            playerCountRange={playerCountRange}
+                            onPlayerCountRangeChange={onPlayerCountRangeChange}
                         />
                     </MenuItem>
 

@@ -1,22 +1,20 @@
 import React from "react";
 
 export type SliderProps = {
-    minPlayerCountValue: number;
-    maxPlayerCountValue: number;
-    onMinPlayerCountChange: (value: number) => void;
-    onMaxPlayerCountChange: (value: number) => void;
+    playerCountRange: [number, number];
+    onPlayerCountRangeChange: (playerCountRange: [number, number]) => void;
 };
 
 const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
-    function Slider({ minPlayerCountValue, maxPlayerCountValue, onMinPlayerCountChange, onMaxPlayerCountChange }, ref) {
+    function Slider({ playerCountRange, onPlayerCountRangeChange }, ref) {
         return (
             <div className="self-end mr-4" ref={ref}>
                 <label className="text-sm font-normal">Jugadores en sala (min)</label>
                 <input
                     className="mb-0 mx-2 w-full cursor-pointer custom-slider"
                     type="range"
-                    value={minPlayerCountValue}
-                    onChange={e => onMinPlayerCountChange(parseInt(e.target.value))}
+                    value={playerCountRange[0]}
+                    onChange={e => onPlayerCountRangeChange([parseInt(e.target.value), playerCountRange[1]])}
                     onClick={e => e.preventDefault()}
                     min={0}
                     max={3}
@@ -31,8 +29,8 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 <input
                     className="mb-0 mx-2 w-full cursor-pointer custom-slider"
                     type="range"
-                    value={maxPlayerCountValue}
-                    onChange={e => onMaxPlayerCountChange(parseInt(e.target.value))}
+                    value={playerCountRange[1]}
+                    onChange={e => onPlayerCountRangeChange([playerCountRange[0], parseInt(e.target.value)])}
                     onClick={e => e.preventDefault()}
                     min={0}
                     max={3}

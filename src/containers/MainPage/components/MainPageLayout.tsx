@@ -6,11 +6,9 @@ import LobbysFilter from "./LobbysFilter";
 
 interface MainPageLayoutProps {
     searchQuery: string;
-    minPlayerCountQuery: number;
-    maxPlayerCountQuery: number;
+    playerCountRange: [number, number];
     onSearchQueryChange: (searchQuery: string) => void;
-    onMinPlayerCountQueryChange: (query: number) => void;
-    onMaxPlayerCountQueryChange: (query: number) => void;
+    onPlayerCountRangeChange: (playerCountRange: [number, number]) => void;
     onClearFilters: () => void;
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
@@ -20,11 +18,9 @@ interface MainPageLayoutProps {
 
 function MainPageLayout({
     searchQuery,
-    minPlayerCountQuery,
-    maxPlayerCountQuery,
+    playerCountRange,
     onSearchQueryChange,
-    onMinPlayerCountQueryChange,
-    onMaxPlayerCountQueryChange,
+    onPlayerCountRangeChange,
     onClearFilters,
     onSubmitLobbyForm,
     lobbies,
@@ -52,10 +48,8 @@ function MainPageLayout({
                 </div>
             </div>
             <LobbysFilter
-                minPlayerCountValue={minPlayerCountQuery}
-                maxPlayerCountValue={maxPlayerCountQuery}
-                onMinPlayerCountChange={onMinPlayerCountQueryChange}
-                onMaxPlayerCountChange={onMaxPlayerCountQueryChange}
+                playerCountRange={playerCountRange}
+                onPlayerCountRangeChange={onPlayerCountRangeChange}
                 lobbyNameValue={searchQuery}
                 onLobbyNameChange={onSearchQueryChange}
                 onClearFilters={onClearFilters}

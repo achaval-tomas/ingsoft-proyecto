@@ -24,8 +24,7 @@ function MainPage() {
     const navigate = useNavigate();
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [minPlayerCountQuery, setMinPlayerCountQuery] = useState<number>(0);
-    const [maxPlayerCountQuery, setMaxPlayerCountQuery] = useState<number>(3);
+    const [playerCountRange, setPlayerCountRange] = useState<[number, number]>([0, 3]);
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -38,8 +37,8 @@ function MainPage() {
     const filteredLobbies = useMemo(
         () => lobbies
             .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .filter(l => minPlayerCountQuery <= l.player_amount && l.player_amount <= maxPlayerCountQuery),
-        [lobbies, searchQuery, minPlayerCountQuery, maxPlayerCountQuery],
+            .filter(l => playerCountRange[0] <= l.player_amount && l.player_amount <= playerCountRange[1]),
+        [lobbies, searchQuery, playerCountRange],
     );
 
     async function handleSubmit(state: CreateLobbyFormState) {
@@ -75,8 +74,7 @@ function MainPage() {
 
     function handleClearFilters() {
         setSearchQuery("");
-        setMinPlayerCountQuery(0);
-        setMaxPlayerCountQuery(3);
+        setPlayerCountRange([0, 3]);
     }
 
     async function joinHandler(lobbyId: string) {
@@ -109,11 +107,9 @@ function MainPage() {
     return (
         <MainPageLayout
             searchQuery={searchQuery}
-            minPlayerCountQuery={minPlayerCountQuery}
-            maxPlayerCountQuery={maxPlayerCountQuery}
+            playerCountRange={playerCountRange}
             onSearchQueryChange={setSearchQuery}
-            onMinPlayerCountQueryChange={setMinPlayerCountQuery}
-            onMaxPlayerCountQueryChange={setMaxPlayerCountQuery}
+            onPlayerCountRangeChange={setPlayerCountRange}
             onClearFilters={handleClearFilters}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}
