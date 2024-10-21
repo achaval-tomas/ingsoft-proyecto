@@ -1,8 +1,9 @@
 import { Input as HuiInput, InputProps as HuiInputProps } from "@headlessui/react";
 import { classNames } from "../util";
+
 type InputProps = Omit<HuiInputProps, "value" | "onChange"> & {
-    value: string | number;
-    onChange: (value: string | number) => void;
+    value: string;
+    onChange: (value: string) => void;
     padding?: string | null;
     borderRadius?: string | null;
     backgroundColor?: string | null;
@@ -10,6 +11,7 @@ type InputProps = Omit<HuiInputProps, "value" | "onChange"> & {
     fontColor?: string | null;
     className?: string;
 };
+
 function Input({
     value,
     onChange,
@@ -28,4 +30,5 @@ function Input({
         {...props}
     />;
 }
+
 export default Input;

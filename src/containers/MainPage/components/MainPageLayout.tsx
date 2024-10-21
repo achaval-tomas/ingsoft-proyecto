@@ -5,10 +5,10 @@ import LobbyList, { LobbyElement } from "./LobbyList";
 import LobbysFilter from "./LobbysFilter";
 
 interface MainPageLayoutProps {
-    searchByNameQuery: string;
+    searchQuery: string;
     minPlayerCountQuery: number;
     maxPlayerCountQuery: number;
-    onSearchNameQueryChange: (query: string) => void;
+    onSearchQueryChange: (searchQuery: string) => void;
     onMinPlayerCountQueryChange: (query: number) => void;
     onMaxPlayerCountQueryChange: (query: number) => void;
     onResetQuerys: () => void;
@@ -19,10 +19,10 @@ interface MainPageLayoutProps {
 }
 
 function MainPageLayout({
-    searchByNameQuery,
+    searchQuery,
     minPlayerCountQuery,
     maxPlayerCountQuery,
-    onSearchNameQueryChange,
+    onSearchQueryChange,
     onMinPlayerCountQueryChange,
     onMaxPlayerCountQueryChange,
     onResetQuerys,
@@ -56,8 +56,8 @@ function MainPageLayout({
                 maxPlayerCountValue={maxPlayerCountQuery}
                 onMinPlayerCountChange={onMinPlayerCountQueryChange}
                 onMaxPlayerCountChange={onMaxPlayerCountQueryChange}
-                lobbyNameValue={searchByNameQuery}
-                onLobbyNameChange={onSearchNameQueryChange}
+                lobbyNameValue={searchQuery}
+                onLobbyNameChange={onSearchQueryChange}
                 onResetQuerys={onResetQuerys}
             />
             <LobbyList
