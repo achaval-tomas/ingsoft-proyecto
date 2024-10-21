@@ -4,14 +4,14 @@ import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
 import LobbysFilter from "./LobbysFilter";
 
-
-
 interface MainPageLayoutProps {
     searchByNameQuery: string;
-    searchByPlayerCQuery: number;
+    minPlayerCountQuery: number;
+    maxPlayerCountQuery: number;
     onSearchNameQueryChange: (query: string) => void;
-    onSearchPlayerQueryChange: (query: number) => void;
-    onResetQuerys: () => void
+    onMinPlayerCountQueryChange: (query: number) => void;
+    onMaxPlayerCountQueryChange: (query: number) => void;
+    onResetQuerys: () => void;
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
@@ -20,9 +20,11 @@ interface MainPageLayoutProps {
 
 function MainPageLayout({
     searchByNameQuery,
-    searchByPlayerCQuery,
+    minPlayerCountQuery,
+    maxPlayerCountQuery,
     onSearchNameQueryChange,
-    onSearchPlayerQueryChange,
+    onMinPlayerCountQueryChange,
+    onMaxPlayerCountQueryChange,
     onResetQuerys,
     onSubmitLobbyForm,
     lobbies,
@@ -50,8 +52,10 @@ function MainPageLayout({
                 </div>
             </div>
             <LobbysFilter
-                playerCountValue={searchByPlayerCQuery}
-                onPlayerCountChange={onSearchPlayerQueryChange}
+                minPlayerCountValue={minPlayerCountQuery}
+                maxPlayerCountValue={maxPlayerCountQuery}
+                onMinPlayerCountChange={onMinPlayerCountQueryChange}
+                onMaxPlayerCountChange={onMaxPlayerCountQueryChange}
                 lobbyNameValue={searchByNameQuery}
                 onLobbyNameChange={onSearchNameQueryChange}
                 onResetQuerys={onResetQuerys}

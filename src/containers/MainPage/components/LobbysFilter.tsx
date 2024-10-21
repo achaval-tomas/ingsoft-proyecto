@@ -1,5 +1,5 @@
-import { Menu, MenuButton, MenuItem, MenuItems, MenuSeparator } from "@headlessui/react"
-import Slider, { SliderProps } from "../../../components/Slider"
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import Slider, { SliderProps } from "../../../components/Slider";
 import FilledButton from "../../../components/FilledButton";
 
 type FilterProps = SliderProps & {
@@ -9,23 +9,27 @@ type FilterProps = SliderProps & {
 }
 
 function LobbysFilter({
-    playerCountValue,
-    onPlayerCountChange,
+    minPlayerCountValue,
+    maxPlayerCountValue,
+    onMinPlayerCountChange,
+    onMaxPlayerCountChange,
     lobbyNameValue,
     onLobbyNameChange,
-    onResetQuerys }: FilterProps) {
+    onResetQuerys,
+}: FilterProps) {
     return (
         <div className="self-end">
             <Menu>
                 <MenuButton className="rounded-lg bg-primary-600 hover:bg-primary-500 data-[active]:bg-primary-500 transition-colors px-4 py-2 mx-2 mb-3">
                     Filtros
-                    <i className="fa-solid fa-chevron-down ml-2" />
+                    <i className="fa-solid fa-sliders ml-2" />
                 </MenuButton>
                 <MenuItems
                     anchor="bottom end"
                     className="bg-zinc-700/90 w-80 [--anchor-gap:2px] rounded-lg">
+
                     <MenuItem as="div">
-                        <h3 className="ml-3 mb-2 mt-2 font-bold">Nombre</h3>
+                        <p className="ml-3 mb-1 mt-2 font-bold text-sm">Nombre</p>
                         <input
                             type="string"
                             value={lobbyNameValue}
@@ -35,27 +39,26 @@ function LobbysFilter({
                             className="px-3 py-1.5 rounded-lg bg-black/50 ml-2 text-sm/6 text-white"
                         />
                     </MenuItem>
-                    <MenuSeparator className="m-3 h-0.5 rounded-lg bg-white/80" />
-                    <MenuItem as="div">
-                        <h3 className="ml-3 mb-2 mt-2 font-bold">
-                            Cantidad de Jugadores
-                        </h3>
+
+                    <MenuItem as="div" className="ml-3">
                         <Slider
-                            playerCountValue={playerCountValue}
-                            onPlayerCountChange={onPlayerCountChange}
+                            minPlayerCountValue={minPlayerCountValue}
+                            maxPlayerCountValue={maxPlayerCountValue}
+                            onMinPlayerCountChange={onMinPlayerCountChange}
+                            onMaxPlayerCountChange={onMaxPlayerCountChange}
                         />
                     </MenuItem>
-                    <MenuSeparator className="m-3 h-0.5 rounded-lg bg-white/80" />
+
                     <MenuItem
                         as="div"
                         className="m-2"
                         onClick={e => e.preventDefault()}>
-                        <FilledButton onClick={onResetQuerys}> Eliminar Filtros </FilledButton>
+                        <FilledButton onClick={onResetQuerys}>Eliminar Filtros</FilledButton>
                     </MenuItem>
                 </MenuItems>
             </Menu>
         </div>
     );
-};
+}
 
-export default LobbysFilter
+export default LobbysFilter;

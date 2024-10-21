@@ -24,8 +24,8 @@ function MainPage() {
     const navigate = useNavigate();
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
     const [searchByNameQuery, setSearchByNameQuery] = useState<string>("")
-    const [searchByPlayerCQuery, setSearchByPlayerCQuery] = useState<number>(0)
-
+    const [minPlayerCountQuery, setMinPlayerCountQuery] = useState<number>(0);
+    const [maxPlayerCountQuery, setMaxPlayerCountQuery] = useState<number>(3);
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
     }
@@ -36,26 +36,39 @@ function MainPage() {
 
     function handleResetQuerys() {
         setSearchByNameQuery("");
-        setSearchByPlayerCQuery(0);
+        setMinPlayerCountQuery(0);
+        setMaxPlayerCountQuery(3);
     }
 
-    const filteredLobbies = useMemo(
-        () => {
-            if (searchByNameQuery && !searchByPlayerCQuery) {
-                return lobbies.filter(l => l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()))
-            } else if (!searchByNameQuery && searchByPlayerCQuery) {
-                return lobbies.filter(l => l.player_amount == searchByPlayerCQuery)
-            } else if (searchByNameQuery && searchByPlayerCQuery) {
-                return lobbies.filter(l => l.lobby_name.toLowerCase().includes(searchByNameQuery) && l.player_amount == searchByPlayerCQuery)
-            } else {
-                return lobbies
-            }
-        },
-        [lobbies, searchByPlayerCQuery, searchByNameQuery]
-    );
+    const filteredLobbies = useMemo(() => {
+
+        if (!searchByNameQuery && minPlayerCountQuery === 0 && maxPlayerCountQuery === 3) {
+            return lobbies;
+        }
+        if (searchByNameQuery && minPlayerCountQuery === 0 && maxPlayerCountQuery === 3) {
+            return lobbies.filter(l =>
+                l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()))
+        }
+
+        if (searchByNameQuery && minPlayerCountQuery >= 0 && maxPlayerCountQuery >= 0) {
+            return lobbies.filter(l =>
+                l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()) &&
+                l.player_amount >= minPlayerCountQuery &&
+                l.player_amount <= maxPlayerCountQuery
+            );
+        }
+        if (minPlayerCountQuery >= 0 && maxPlayerCountQuery >= 0) {
+            return lobbies.filter(l =>
+                l.player_amount >= minPlayerCountQuery &&
+                l.player_amount <= maxPlayerCountQuery
+            );
+        }
+
+        return lobbies;
+    }, [lobbies, minPlayerCountQuery, maxPlayerCountQuery, searchByNameQuery]);
+
 
     async function handleSubmit(state: CreateLobbyFormState) {
-
         try {
             const playerId = urlParams.get("player") ?? "";
 
@@ -86,8 +99,6 @@ function MainPage() {
         }
     }
 
-
-
     async function joinHandler(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
         const res = await lobbyService.joinLobby(playerId, lobbyId);
@@ -116,12 +127,13 @@ function MainPage() {
     }
 
     return (
-
         <MainPageLayout
             searchByNameQuery={searchByNameQuery}
-            searchByPlayerCQuery={searchByPlayerCQuery}
+            minPlayerCountQuery={minPlayerCountQuery}
+            maxPlayerCountQuery={maxPlayerCountQuery}
             onSearchNameQueryChange={setSearchByNameQuery}
-            onSearchPlayerQueryChange={setSearchByPlayerCQuery}
+            onMinPlayerCountQueryChange={setMinPlayerCountQuery}
+            onMaxPlayerCountQueryChange={setMaxPlayerCountQuery}
             onResetQuerys={handleResetQuerys}
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={filteredLobbies}
