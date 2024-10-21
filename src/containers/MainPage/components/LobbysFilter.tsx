@@ -20,9 +20,9 @@ function LobbysFilter({
     return (
         <div className="self-end">
             <Menu>
-                <MenuButton className="rounded-lg bg-primary-600 hover:bg-primary-500 data-[active]:bg-primary-500 transition-colors px-4 py-2 mx-2 mb-3">
+                <MenuButton className="flex items-center rounded-lg bg-primary-600 hover:bg-primary-500 data-[active]:bg-primary-500 transition-colors px-4 py-2 m-4">
                     Filtros
-                    <i className="fa-solid fa-sliders ml-2" />
+                    <span className="material-symbols-outlined ml-2">tune</span>
                 </MenuButton>
                 <MenuItems
                     anchor="bottom end"
