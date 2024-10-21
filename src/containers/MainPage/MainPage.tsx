@@ -42,30 +42,10 @@ function MainPage() {
     }
 
     const filteredLobbies = useMemo(() => {
-        if (!searchQuery && minPlayerCountQuery === 0 && maxPlayerCountQuery === 3) {
-            return lobbies;
-        }
-        if (searchQuery && minPlayerCountQuery === 0 && maxPlayerCountQuery === 3) {
-            return lobbies.filter(l =>
-                l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()));
-        }
-
-        if (searchQuery && minPlayerCountQuery >= 0 && maxPlayerCountQuery >= 0) {
-            return lobbies.filter(l =>
-                l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                l.player_amount >= minPlayerCountQuery &&
-                l.player_amount <= maxPlayerCountQuery,
-            );
-        }
-        if (minPlayerCountQuery >= 0 && maxPlayerCountQuery >= 0) {
-            return lobbies.filter(l =>
-                l.player_amount >= minPlayerCountQuery &&
-                l.player_amount <= maxPlayerCountQuery,
-            );
-        }
-
-        return lobbies;
-    }, [lobbies, minPlayerCountQuery, maxPlayerCountQuery, searchQuery]);
+        return lobbies
+            .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
+            .filter(l => minPlayerCountQuery <= l.player_amount && l.player_amount <= maxPlayerCountQuery);
+    }, [lobbies, searchQuery, minPlayerCountQuery, maxPlayerCountQuery]);
 
     async function handleSubmit(state: CreateLobbyFormState) {
         try {
