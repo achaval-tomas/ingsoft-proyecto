@@ -4,7 +4,7 @@ import Input from "./Input";
 
 export interface FieldProps {
     value: string | number;
-    onChange: (value: string | number) => void;
+    onChange: (value: string) => void;
     label: string;
     placeholder?: string;
     error?: string;
