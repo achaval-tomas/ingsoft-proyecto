@@ -41,11 +41,12 @@ function MainPage() {
         setMaxPlayerCountQuery(3);
     }
 
-    const filteredLobbies = useMemo(() => {
-        return lobbies
+    const filteredLobbies = useMemo(
+        () => lobbies
             .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .filter(l => minPlayerCountQuery <= l.player_amount && l.player_amount <= maxPlayerCountQuery);
-    }, [lobbies, searchQuery, minPlayerCountQuery, maxPlayerCountQuery]);
+            .filter(l => minPlayerCountQuery <= l.player_amount && l.player_amount <= maxPlayerCountQuery),
+        [lobbies, searchQuery, minPlayerCountQuery, maxPlayerCountQuery],
+    );
 
     async function handleSubmit(state: CreateLobbyFormState) {
         try {
