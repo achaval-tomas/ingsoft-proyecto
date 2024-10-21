@@ -23,7 +23,7 @@ function MainPage() {
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
-    const [searchByNameQuery, setSearchByNameQuery] = useState<string>("")
+    const [searchByNameQuery, setSearchByNameQuery] = useState<string>("");
     const [minPlayerCountQuery, setMinPlayerCountQuery] = useState<number>(0);
     const [maxPlayerCountQuery, setMaxPlayerCountQuery] = useState<number>(3);
     async function fetchAndSaveLobbies() {
@@ -47,20 +47,20 @@ function MainPage() {
         }
         if (searchByNameQuery && minPlayerCountQuery === 0 && maxPlayerCountQuery === 3) {
             return lobbies.filter(l =>
-                l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()))
+                l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()));
         }
 
         if (searchByNameQuery && minPlayerCountQuery >= 0 && maxPlayerCountQuery >= 0) {
             return lobbies.filter(l =>
                 l.lobby_name.toLowerCase().includes(searchByNameQuery.toLowerCase()) &&
                 l.player_amount >= minPlayerCountQuery &&
-                l.player_amount <= maxPlayerCountQuery
+                l.player_amount <= maxPlayerCountQuery,
             );
         }
         if (minPlayerCountQuery >= 0 && maxPlayerCountQuery >= 0) {
             return lobbies.filter(l =>
                 l.player_amount >= minPlayerCountQuery &&
-                l.player_amount <= maxPlayerCountQuery
+                l.player_amount <= maxPlayerCountQuery,
             );
         }
 

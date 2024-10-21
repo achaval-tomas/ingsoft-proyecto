@@ -44,7 +44,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 </div>
             </div>
         );
-    }
+    },
 );
 
 export default Slider;
