@@ -24,7 +24,7 @@ function MainPage() {
     const navigate = useNavigate();
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [playerCountRange, setPlayerCountRange] = useState<[number, number]>([0, 3]);
+    const [playerCountRange, setPlayerCountRange] = useState<[number, number]>([1, 3]);
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -74,7 +74,7 @@ function MainPage() {
 
     function handleClearFilters() {
         setSearchQuery("");
-        setPlayerCountRange([0, 3]);
+        setPlayerCountRange([1, 3]);
     }
 
     async function joinHandler(lobbyId: string) {

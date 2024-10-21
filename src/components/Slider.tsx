@@ -13,11 +13,11 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
                 value={playerCountRange[0]}
                 onChange={e => onPlayerCountRangeChange([parseInt(e.target.value), playerCountRange[1]])}
                 onClick={e => e.preventDefault()}
-                min={0}
+                min={1}
                 max={3}
             />
             <div className="flex justify-between mx-2 mt-0 mb-2 w-full text-xs font-normal">
-                {[0, 1, 2, 3].map((amount) => (
+                {[1, 2, 3].map((amount) => (
                     <span key={amount}>{amount}</span>
                 ))}
             </div>
@@ -29,11 +29,11 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
                 value={playerCountRange[1]}
                 onChange={e => onPlayerCountRangeChange([playerCountRange[0], parseInt(e.target.value)])}
                 onClick={e => e.preventDefault()}
-                min={0}
+                min={1}
                 max={3}
             />
             <div className="flex justify-between mx-2 mt-0 mb-2 w-full text-xs font-normal">
-                {[0, 1, 2, 3].map((amount) => (
+                {[1, 2, 3].map((amount) => (
                     <span key={amount}>{amount}</span>
                 ))}
             </div>
