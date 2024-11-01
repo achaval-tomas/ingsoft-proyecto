@@ -11,6 +11,8 @@ export interface ButtonProps {
     borderRadius?: string | null;
     foregroundColor?: string | null;
     backgroundColor?: string | null;
+    enabled?: boolean;
+    title?: string;
     testId?: string;
 }
 
@@ -25,6 +27,8 @@ function Button({
     borderRadius = "rounded-lg",
     foregroundColor = null,
     backgroundColor = null,
+    enabled = true,
+    title,
 }: ButtonProps) {
     const computedClassName = classNames([
         className,
@@ -32,7 +36,7 @@ function Button({
         borderRadius,
         padding,
         foregroundColor,
-        backgroundColor,
+        enabled ? backgroundColor : "bg-white/5",
         " transition-colors",
     ]);
 
@@ -42,6 +46,8 @@ function Button({
             className={computedClassName}
             type={type}
             data-testid={testId}
+            disabled={!enabled}
+            title={title}
         >
             {children}
         </button>
