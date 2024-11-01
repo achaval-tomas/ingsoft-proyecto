@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
-import { toLobby } from "../../navigation/destinations";
+import { toHome, toLobby } from "../../navigation/destinations";
 import { MovementTarget } from "../../domain/Movement";
 import { boardIndexToPosition, Position, positionsEqual, positionToBoardIndex } from "../../domain/Position";
 import { GameState, getPlayerById, PlayerId } from "../../domain/GameState";
@@ -191,7 +191,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             />
             <WinnerDialog
                 winnerName={uiState.winnerName}
-                onClose={() => navigate(toLobby(playerId))}
+                onClose={() => navigate(toHome(playerId))}
             />
         </>
     );

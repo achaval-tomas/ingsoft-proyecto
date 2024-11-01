@@ -9,6 +9,7 @@ test("It passes the name on submit", async () => {
     render(
         <PlayerNameForm
             onSubmit={n => { name = n; }}
+            submitError={null}
         />,
     );
 
@@ -25,7 +26,10 @@ test("It only enables submit when name isn't empty", async () => {
     const onSubmit = vi.fn();
 
     render(
-        <PlayerNameForm onSubmit={onSubmit} />,
+        <PlayerNameForm
+            onSubmit={onSubmit}
+            submitError={null}
+        />,
     );
 
     const button = screen.getByTestId("button-play");
