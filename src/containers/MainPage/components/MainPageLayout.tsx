@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import LobbyList, { LobbyElement } from "./LobbyList";
@@ -6,12 +6,9 @@ import LobbysFilter from "./LobbysFilter";
 import TextButton from "../../../components/TextButton";
 import { classNames } from "../../../util";
 
+const defaultPlayerCountRange: [number, number] = [1, 3];
+
 interface MainPageLayoutProps {
-    searchQuery: string;
-    playerCountRange: [number, number];
-    onSearchQueryChange: (searchQuery: string) => void;
-    onPlayerCountRangeChange: (playerCountRange: [number, number]) => void;
-    onClearFilters: () => void;
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[];
     refreshHandler: () => void;
@@ -19,11 +16,6 @@ interface MainPageLayoutProps {
 }
 
 function MainPageLayout({
-    searchQuery,
-    playerCountRange,
-    onSearchQueryChange,
-    onPlayerCountRangeChange,
-    onClearFilters,
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
@@ -31,6 +23,21 @@ function MainPageLayout({
 }: MainPageLayoutProps) {
     const [showCreateLobbyDialog, setShowCreateLobbyDialog] = useState<boolean>(false);
     const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(null);
+
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [playerCountRange, setPlayerCountRange] = useState<[number, number]>(defaultPlayerCountRange);
+
+    const filteredLobbies = useMemo(
+        () => lobbies
+            .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
+            .filter(l => playerCountRange[0] <= l.player_amount && l.player_amount <= playerCountRange[1]),
+        [lobbies, searchQuery, playerCountRange],
+    );
+
+    function handleClearFilters() {
+        setSearchQuery("");
+        setPlayerCountRange(defaultPlayerCountRange);
+    }
 
     return (
         <>
@@ -55,7 +62,7 @@ function MainPageLayout({
                                 </tr>
                             </thead>
                             <tbody>
-                                {lobbies.map(l => (
+                                {filteredLobbies.map(l => (
                                     <tr
                                         key={l.lobby_id}
                                         className={classNames(["px-6 py-2", selectedLobbyId === l.lobby_id ? "bg-white/35" : "hover:bg-white/25"])}
@@ -75,16 +82,17 @@ function MainPageLayout({
                             <h2 className="text-2xl">Filtros</h2>
                             <TextButton
                                 padding="py-2"
+                                onClick={handleClearFilters}
                             >
                                 Limpiar
                             </TextButton>
                         </div>
 
                         <LobbysFilter
-                            playerCountRange={[0, 3]}
-                            onPlayerCountRangeChange={() => {}}
-                            lobbyNameValue=""
-                            onLobbyNameChange={() => {}}
+                            playerCountRange={playerCountRange}
+                            onPlayerCountRangeChange={setPlayerCountRange}
+                            lobbyNameValue={searchQuery}
+                            onLobbyNameChange={setSearchQuery}
                             className="w-full"
                         />
                         <div className="grow"></div>

@@ -1,7 +1,7 @@
 import MainPageLayout from "./components/MainPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { LobbyElement } from "./components/LobbyList";
 import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
@@ -22,9 +22,8 @@ async function getLobbies(): Promise<LobbyElement[]> {
 function MainPage() {
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
+
     const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [playerCountRange, setPlayerCountRange] = useState<[number, number]>([1, 3]);
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -33,13 +32,6 @@ function MainPage() {
     useEffect(() => {
         void fetchAndSaveLobbies();
     }, []);
-
-    const filteredLobbies = useMemo(
-        () => lobbies
-            .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .filter(l => playerCountRange[0] <= l.player_amount && l.player_amount <= playerCountRange[1]),
-        [lobbies, searchQuery, playerCountRange],
-    );
 
     async function handleSubmit(state: CreateLobbyFormState) {
         try {
@@ -72,11 +64,6 @@ function MainPage() {
         }
     }
 
-    function handleClearFilters() {
-        setSearchQuery("");
-        setPlayerCountRange([1, 3]);
-    }
-
     async function joinHandler(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
         const res = await lobbyService.joinLobby(playerId, lobbyId);
@@ -106,14 +93,10 @@ function MainPage() {
 
     return (
         <MainPageLayout
-            searchQuery={searchQuery}
-            playerCountRange={playerCountRange}
-            onSearchQueryChange={setSearchQuery}
-            onPlayerCountRangeChange={setPlayerCountRange}
-            onClearFilters={handleClearFilters}
             onSubmitLobbyForm={s => void handleSubmit(s)}
-            lobbies={filteredLobbies}
+            lobbies={lobbies}
             refreshHandler={() => {
+                setLobbies([]);
                 void fetchAndSaveLobbies();
             }}
             joinHandler={lobbyId => void joinHandler(lobbyId)}
