@@ -44,7 +44,7 @@ function MainPageLayout({
     return (
         <>
             <div className="flex w-screen h-screen justify-center items-center">
-                <div className="flex flex-row bg-surface min-w-[60%] min-h-[75%] rounded-xl border border-border">
+                <div className="flex flex-row bg-surface min-w-[60%] h-[75%] rounded-xl border border-border">
                     <div className="flex flex-col grow-[1] border-r border-border">
                         <div className="flex flex-row w-full justify-between items-center pt-6 px-6">
                             <h2 className="text-2xl">Lista de salas</h2>
@@ -55,7 +55,7 @@ function MainPageLayout({
                                 Refrescar
                             </TextButton>
                         </div>
-                        <div className="flex w-full grow justify-center items-start">
+                        <div className="flex w-full grow justify-center items-start overflow-y-auto">
                             {filteredLobbies == null ? (
                                 <p className="animate-pulse self-center">Cargando salas...</p>
                             ) : (filteredLobbies.length === 0) ? (
