@@ -10,7 +10,7 @@ type FilterProps = {
     className: string;
 }
 
-function LobbysFilter({
+function LobbyFilters({
     playerCountRange,
     onPlayerCountRangeChange,
     lobbyNameValue,
@@ -46,4 +46,4 @@ function LobbysFilter({
     );
 }
 
-export default LobbysFilter;
+export default LobbyFilters;

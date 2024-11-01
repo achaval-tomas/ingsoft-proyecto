@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
 import { LobbyElement } from "./LobbyList";
-import LobbysFilter from "./LobbysFilter";
+import LobbyFilters from "./LobbyFilters";
 import TextButton from "../../../components/TextButton";
 import { classNames } from "../../../util";
 
@@ -88,7 +88,7 @@ function MainPageLayout({
                             </TextButton>
                         </div>
 
-                        <LobbysFilter
+                        <LobbyFilters
                             playerCountRange={playerCountRange}
                             onPlayerCountRangeChange={setPlayerCountRange}
                             lobbyNameValue={searchQuery}
