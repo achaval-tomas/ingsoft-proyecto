@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import FilledButton from "../../components/FilledButton";
-import { LobbyElement } from "./components/LobbyList";
 import LobbyFilters from "./components/LobbyFilters";
 import TextButton from "../../components/TextButton";
 import { classNames } from "../../util";
+import { LobbyElement } from "../../services/lobbyService";
 
 const defaultPlayerCountRange: [number, number] = [1, 3];
 

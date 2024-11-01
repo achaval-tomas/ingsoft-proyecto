@@ -1,6 +1,15 @@
-import { LobbyElement } from "../containers/LobbyListPage/components/LobbyList";
 import { httpServerUrl } from "./config";
 import { get, post } from "./util";
+
+export interface LobbyElement {
+    min_players: number;
+    max_players: number;
+    lobby_owner: string;
+    players: string;
+    lobby_id: string;
+    lobby_name: string;
+    player_amount: number;
+}
 
 async function getJoinableLobbies(): Promise<LobbyElement[]> {
     const res = await get(`${httpServerUrl}/lobby`);

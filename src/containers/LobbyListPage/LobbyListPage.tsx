@@ -2,9 +2,8 @@ import LobbyListPageLayout from "./LobbyListPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { LobbyElement } from "./components/LobbyList";
 import { toInitial, toLobby } from "../../navigation/destinations";
-import lobbyService from "../../services/lobbyService";
+import lobbyService, { LobbyElement } from "../../services/lobbyService";
 
 
 export interface LobbyForm {

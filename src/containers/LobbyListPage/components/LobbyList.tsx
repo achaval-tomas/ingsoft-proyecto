@@ -1,12 +1,4 @@
-export interface LobbyElement {
-    min_players: number;
-    max_players: number;
-    lobby_owner: string;
-    players: string;
-    lobby_id: string;
-    lobby_name: string;
-    player_amount: number;
-}
+import { LobbyElement } from "../../../services/lobbyService";
 
 interface LobbyListProps {
     joinHandler: (id: string) => void;

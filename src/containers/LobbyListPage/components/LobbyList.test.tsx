@@ -1,7 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import { expect, test } from "vitest";
 import { userEvent } from "@testing-library/user-event";
-import LobbyList, { LobbyElement } from "../components/LobbyList";
+import LobbyList from "../components/LobbyList";
+import { LobbyElement } from "../../../services/lobbyService";
 
 test("It correctly renders all elements", () => {
 
