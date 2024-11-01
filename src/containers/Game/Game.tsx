@@ -54,7 +54,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
 
     const handleLeaveGame = () => {
         void gameService.leaveGame(playerId);
-        navigate(toLobby(playerId));
+        navigate(toLobbyList(playerId));
     };
 
     const handleClickShapeCard = (playerId: PlayerId, shapeCardIndex: number) => {
