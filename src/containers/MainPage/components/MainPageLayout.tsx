@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 import FilledButton from "../../../components/FilledButton";
-import LobbyList, { LobbyElement } from "./LobbyList";
+import { LobbyElement } from "./LobbyList";
 import LobbysFilter from "./LobbysFilter";
 import TextButton from "../../../components/TextButton";
 import { classNames } from "../../../util";
