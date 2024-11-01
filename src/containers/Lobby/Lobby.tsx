@@ -2,7 +2,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import LobbyLayout from "./components/LobbyLayout";
 import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
-import { toHome, toInitial, toPlay } from "../../navigation/destinations";
+import { toLobbyList, toInitial, toPlay } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 import gameService from "../../services/gameService";
 
@@ -35,7 +35,7 @@ function Lobby() {
             }
 
             if (res.type === "LobbyNotFound" || res.type === "Ok") {
-                navigate(toHome(playerId));
+                navigate(toLobbyList(playerId));
                 return;
             }
         } catch {
@@ -57,7 +57,7 @@ function Lobby() {
             }
 
             if (res.type === "LobbyNotFound") {
-                navigate(toHome(playerId));
+                navigate(toLobbyList(playerId));
             }
 
             if (res.type === "Ok") {

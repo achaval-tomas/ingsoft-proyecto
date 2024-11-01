@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { PlayerId } from "../../../domain/GameState";
 import { LobbyMessageInSchema } from "../../../domain/LobbyMessage";
 import { useNavigate } from "react-router-dom";
-import { toHome, toPlay } from "../../../navigation/destinations";
+import { toLobbyList, toPlay } from "../../../navigation/destinations";
 import { wsServerUrl } from "../../../services/config";
 
 type PlayerObject = {
@@ -50,7 +50,7 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         break;
                     case "lobby-state":
                         if (message.players.find(p => p.id === playerId) === undefined) {
-                            navigate(toHome(playerId));
+                            navigate(toLobbyList(playerId));
                         }
                         setLobbyId(message.id);
                         setPlayers(message.players);
@@ -58,11 +58,11 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
                         setLobbyName(message.name);
                         break;
                     case "destroy-lobby":
-                        navigate(toHome(playerId));
+                        navigate(toLobbyList(playerId));
                         break;
                 }
             } catch {
-                navigate(toHome(playerId));
+                navigate(toLobbyList(playerId));
             }
 
         };

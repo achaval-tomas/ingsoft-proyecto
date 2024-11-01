@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import PlayerNameForm from "./components/PlayerNameForm";
 import { useState } from "react";
-import { toHome } from "../../navigation/destinations";
+import { toLobbyList } from "../../navigation/destinations";
 import playerService from "../../services/playerService";
 
 function InitialPage() {
@@ -12,7 +12,7 @@ function InitialPage() {
         try {
             const playerId = await playerService.createPlayer(playerName);
 
-            navigate(toHome(playerId));
+            navigate(toLobbyList(playerId));
         } catch {
             setServerError("Hubo un error en el servidor. Por favor intente más tarde.");
         }
