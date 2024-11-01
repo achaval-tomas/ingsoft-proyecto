@@ -1,5 +1,6 @@
-import Slider from "../../../components/Slider";
 import Field from "../../../components/Field";
+import RangeSlider from "react-range-slider-input";
+import "react-range-slider-input/dist/style.css";
 
 type FilterProps = {
     playerCountRange: [number, number];
@@ -17,7 +18,7 @@ function LobbysFilter({
     className,
 }: FilterProps) {
     return (
-        <div className={`${className} flex flex-col gap-2`}>
+        <div className={`${className} flex flex-col gap-4`}>
             <Field
                 label="Nombre"
                 value={lobbyNameValue}
@@ -25,11 +26,22 @@ function LobbysFilter({
                 placeholder="Buscar por nombre"
             />
 
-            <Slider
-                playerCountRange={playerCountRange}
-                onPlayerCountRangeChange={onPlayerCountRangeChange}
-                className="w-full"
-            />
+            <div className="flex flex-col">
+                <div>Jugadores en sala</div>
+                <RangeSlider
+                    min={1}
+                    max={3}
+                    value={playerCountRange}
+                    onInput={onPlayerCountRangeChange}
+                    className="my-4"
+                />
+                <div className="flex justify-between px-2 w-full text-xs">
+                    {[1, 2, 3].map((amount) => (
+                        <span key={amount}>{amount}</span>
+                    ))}
+                </div>
+            </div>
+
         </div>
     );
 }
