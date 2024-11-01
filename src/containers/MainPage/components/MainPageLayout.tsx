@@ -10,7 +10,7 @@ const defaultPlayerCountRange: [number, number] = [1, 3];
 
 interface MainPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
-    lobbies: LobbyElement[];
+    lobbies: LobbyElement[] | null;
     refreshHandler: () => void;
     joinHandler: (lobbyId: string) => void;
 }
@@ -28,9 +28,11 @@ function MainPageLayout({
     const [playerCountRange, setPlayerCountRange] = useState<[number, number]>(defaultPlayerCountRange);
 
     const filteredLobbies = useMemo(
-        () => lobbies
-            .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .filter(l => playerCountRange[0] <= l.player_amount && l.player_amount <= playerCountRange[1]),
+        () => (lobbies != null)
+            ? lobbies
+                .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
+                .filter(l => playerCountRange[0] <= l.player_amount && l.player_amount <= playerCountRange[1])
+            : null,
         [lobbies, searchQuery, playerCountRange],
     );
 
@@ -43,7 +45,7 @@ function MainPageLayout({
         <>
             <div className="flex w-screen h-screen justify-center items-center">
                 <div className="flex flex-row bg-surface min-w-[60%] min-h-[75%] rounded-xl border border-border">
-                    <div className="grow-[1] border-r border-border">
+                    <div className="flex flex-col grow-[1] border-r border-border">
                         <div className="flex flex-row w-full justify-between items-center pt-6 px-6">
                             <h2 className="text-2xl">Lista de salas</h2>
                             <TextButton
@@ -53,29 +55,37 @@ function MainPageLayout({
                                 Refrescar
                             </TextButton>
                         </div>
-                        <table className="w-full mt-2">
-                            <thead>
-                                <tr>
-                                    <th className="px-6 py-2 text-start w-full">Nombre</th>
-                                    <th className="px-6 py-2 whitespace-nowrap">Jugadores</th>
-                                    <th className="px-6 py-2 whitespace-nowrap">Tipo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredLobbies.map(l => (
-                                    <tr
-                                        key={l.lobby_id}
-                                        className={classNames(["px-6 py-2", selectedLobbyId === l.lobby_id ? "bg-white/35" : "hover:bg-white/25"])}
-                                        onClick={() => setSelectedLobbyId(id => id === l.lobby_id ? null : l.lobby_id)}
-                                        onDoubleClick={() => joinHandler(l.lobby_id)}
-                                    >
-                                        <td className="px-6 py-2 ">{l.lobby_name}</td>
-                                        <td className="px-6 py-2 text-center">{l.player_amount} / {l.max_players}</td>
-                                        <td className="px-6 py-2 text-center">Pública</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <div className="flex w-full grow justify-center items-start">
+                            {filteredLobbies == null ? (
+                                <p className="animate-pulse self-center">Cargando salas...</p>
+                            ) : (filteredLobbies.length === 0) ? (
+                                <p className="self-center">No se encontró ninguna sala.</p>
+                            ) : (
+                                <table className="w-full mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th className="px-6 py-2 text-start w-full">Nombre</th>
+                                            <th className="px-6 py-2 whitespace-nowrap">Jugadores</th>
+                                            <th className="px-6 py-2 whitespace-nowrap">Tipo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredLobbies.map(l => (
+                                            <tr
+                                                key={l.lobby_id}
+                                                className={classNames(["px-6 py-2", selectedLobbyId === l.lobby_id ? "bg-white/35" : "hover:bg-white/25"])}
+                                                onClick={() => setSelectedLobbyId(id => id === l.lobby_id ? null : l.lobby_id)}
+                                                onDoubleClick={() => joinHandler(l.lobby_id)}
+                                            >
+                                                <td className="px-6 py-2 ">{l.lobby_name}</td>
+                                                <td className="px-6 py-2 text-center">{l.player_amount} / {l.max_players}</td>
+                                                <td className="px-6 py-2 text-center">Pública</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
                     </div>
                     <div className="w-[30%] flex flex-col p-6 gap-4">
                         <div className="flex flex-row w-full justify-between items-center">
