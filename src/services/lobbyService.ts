@@ -1,4 +1,4 @@
-import { LobbyElement } from "../containers/MainPage/components/LobbyList";
+import { LobbyElement } from "../containers/LobbyListPage/components/LobbyList";
 import { httpServerUrl } from "./config";
 import { get, post } from "./util";
 

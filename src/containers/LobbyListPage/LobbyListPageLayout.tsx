@@ -1,26 +1,26 @@
 import { useMemo, useState } from "react";
-import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
-import FilledButton from "../../../components/FilledButton";
-import { LobbyElement } from "./LobbyList";
-import LobbyFilters from "./LobbyFilters";
-import TextButton from "../../../components/TextButton";
-import { classNames } from "../../../util";
+import CreateLobbyDialog, { CreateLobbyFormState } from "./components/CreateLobbyDialog";
+import FilledButton from "../../components/FilledButton";
+import { LobbyElement } from "./components/LobbyList";
+import LobbyFilters from "./components/LobbyFilters";
+import TextButton from "../../components/TextButton";
+import { classNames } from "../../util";
 
 const defaultPlayerCountRange: [number, number] = [1, 3];
 
-interface MainPageLayoutProps {
+interface LobbyListPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[] | null;
     refreshHandler: () => void;
     joinHandler: (lobbyId: string) => void;
 }
 
-function MainPageLayout({
+function LobbyListPageLayout({
     onSubmitLobbyForm,
     lobbies,
     refreshHandler,
     joinHandler,
-}: MainPageLayoutProps) {
+}: LobbyListPageLayoutProps) {
     const [showCreateLobbyDialog, setShowCreateLobbyDialog] = useState<boolean>(false);
     const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(null);
 
@@ -137,4 +137,4 @@ function MainPageLayout({
     );
 }
 
-export default MainPageLayout;
+export default LobbyListPageLayout;

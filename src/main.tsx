@@ -8,7 +8,7 @@ import {
 import ErrorPage from "./containers/ErrorPage/ErrorPage.tsx";
 import GamePage from "./containers/Game/GamePage.tsx";
 import InitialPage from "./containers/InitialPage/InitialPage.tsx";
-import MainPage from "./containers/MainPage/MainPage.tsx";
+import LobbyListPage from "./containers/LobbyListPage/LobbyListPage.tsx";
 import Lobby from "./containers/Lobby/Lobby.tsx";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/home",
-        element: <MainPage />,
+        element: <LobbyListPage />,
         errorElement: <ErrorPage />,
     },
     {

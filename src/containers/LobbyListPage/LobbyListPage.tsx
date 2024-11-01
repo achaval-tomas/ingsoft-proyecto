@@ -1,4 +1,4 @@
-import MainPageLayout from "./components/MainPageLayout";
+import LobbyListPageLayout from "./LobbyListPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ async function getLobbies(): Promise<LobbyElement[]> {
     }
 }
 
-function MainPage() {
+function LobbyListPage() {
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -92,7 +92,7 @@ function MainPage() {
     }
 
     return (
-        <MainPageLayout
+        <LobbyListPageLayout
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={lobbies}
             refreshHandler={() => {
@@ -104,4 +104,4 @@ function MainPage() {
     );
 }
 
-export default MainPage;
+export default LobbyListPage;
