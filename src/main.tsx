@@ -19,21 +19,25 @@ import { GameMessageIn } from "./domain/GameMessage.ts";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <InitialPage />,
         errorElement: <ErrorPage />,
-    },
-    {
-        path: "/lobbies",
-        element: <LobbyListPage />,
-    },
-    {
-        path: "/lobby",
-        element: <Lobby />,
-        errorElement: <ErrorPage />,
-    },
-    {
-        path: "/play",
-        element: <GamePage />,
+        children: [
+            {
+                index: true,
+                element: <InitialPage />,
+            },
+            {
+                path: "lobbies",
+                element: <LobbyListPage />,
+            },
+            {
+                path: "lobby",
+                element: <Lobby />,
+            },
+            {
+                path: "play",
+                element: <GamePage />,
+            },
+        ],
     },
 ]);
 
