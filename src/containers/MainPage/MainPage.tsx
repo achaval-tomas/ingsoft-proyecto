@@ -23,7 +23,7 @@ function MainPage() {
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const [lobbies, setLobbies] = useState<LobbyElement[]>([]);
+    const [lobbies, setLobbies] = useState<LobbyElement[] | null>(null);
 
     async function fetchAndSaveLobbies() {
         setLobbies(await getLobbies());
@@ -96,7 +96,7 @@ function MainPage() {
             onSubmitLobbyForm={s => void handleSubmit(s)}
             lobbies={lobbies}
             refreshHandler={() => {
-                setLobbies([]);
+                setLobbies(null);
                 void fetchAndSaveLobbies();
             }}
             joinHandler={lobbyId => void joinHandler(lobbyId)}
