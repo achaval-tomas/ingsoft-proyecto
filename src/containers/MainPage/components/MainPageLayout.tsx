@@ -59,7 +59,12 @@ function MainPageLayout({
                             {filteredLobbies == null ? (
                                 <p className="animate-pulse self-center">Cargando salas...</p>
                             ) : (filteredLobbies.length === 0) ? (
-                                <p className="self-center">No se encontró ninguna sala.</p>
+                                <p className="self-center">
+                                    {(lobbies!.length === 0)
+                                        ? "No se encontró ninguna sala."
+                                        : "Ninguna sala coincide con los filtros."
+                                    }
+                                </p>
                             ) : (
                                 <table className="w-full mt-2">
                                     <thead>
