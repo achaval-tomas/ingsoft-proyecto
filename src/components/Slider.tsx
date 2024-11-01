@@ -1,12 +1,13 @@
 export type SliderProps = {
     playerCountRange: [number, number];
     onPlayerCountRangeChange: (playerCountRange: [number, number]) => void;
+    className: string;
 };
 
-function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
+function Slider({ playerCountRange, onPlayerCountRangeChange, className }: SliderProps) {
     return (
-        <div className="self-end">
-            <label>Jugadores en sala (min)</label>
+        <div className={className}>
+            <label>Jugadores en sala (desde)</label>
             <input
                 className="w-full cursor-pointer custom-slider mt-2"
                 type="range"
@@ -27,7 +28,7 @@ function Slider({ playerCountRange, onPlayerCountRangeChange }: SliderProps) {
 
             <div className="h-2" />
 
-            <label>Jugadores en sala (max)</label>
+            <label>Jugadores en sala (hasta)</label>
             <input
                 className="w-full cursor-pointer custom-slider mt-2"
                 type="range"
