@@ -3,6 +3,7 @@ import TextButton from "../../components/TextButton";
 import { PlayerId } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
 import Board from "./components/Board";
+import Chat, { ChatMessage } from "./components/Chat";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
 import ShapeCardHand from "./components/ShapeCardHand";
@@ -10,6 +11,8 @@ import { GameUiState } from "./GameUiState";
 
 type GameLayoutProps = {
     uiState: GameUiState;
+    messages: ChatMessage[];
+    onSendMessage: (message: ChatMessage) => void;
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
     onClickShapeCard: (playerId: PlayerId, shapeCardIndex: number) => void;
@@ -18,7 +21,7 @@ type GameLayoutProps = {
     onClickCancelMovement: () => void;
 };
 
-function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCard, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
+function GameLayout({ uiState, messages, onSendMessage, onClickEndTurn, onClickLeaveGame, onClickShapeCard, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
     const { selfPlayerUiState, otherPlayersUiState, boardUiState } = uiState;
 
     return (
@@ -26,6 +29,9 @@ function GameLayout({ uiState, onClickEndTurn, onClickLeaveGame, onClickShapeCar
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
             style={{ gridTemplateRows: "5fr 2fr", gridTemplateColumns: "1fr" }}
         >
+            <div className="self-end absolute w-[24em]">
+                <Chat messages={messages} onSendMessage={onSendMessage} selfPlayerName={selfPlayerUiState.name} />
+            </div>
             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
                 <div className="flex flex-row w-full h-full ">
                     <div className="grid w-full h-full" style={{ gridTemplateRows: "1fr 4fr 1fr", gridTemplateColumns: "1fr 4fr 1fr" }}>
