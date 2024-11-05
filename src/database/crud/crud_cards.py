@@ -274,21 +274,24 @@ def use_shape_card(
 
     player_shape_cards = validate_shape_cards(player_cards.shape_cards_in_hand)
 
-    player_usable_shapes = [s for s in player_shape_cards if not s.isBlocked]
+    if target_id == player_id and len(player_shape_cards) == 1:
+        player_usable_shapes = player_shape_cards
+    else:
+        if target_id != player_id and any(s.isBlocked for s in player_shape_cards):
+            return 6
+
+        player_usable_shapes = [s for s in player_shape_cards if not s.isBlocked]
 
     matched_shape = match_shape_to_player_card(
         shape_cards=player_usable_shapes,
         target_shape=shape,
     )
     if not matched_shape:
-        return 6
+        return 7
 
     if target_id == player_id:
         player_shape_cards.remove(matched_shape)
-
     else:
-        if any(s.isBlocked for s in player_shape_cards):
-            return 7
         matched_shape.isBlocked = True
 
     player_cards.shape_cards_in_hand = dump_shape_cards(player_shape_cards)
