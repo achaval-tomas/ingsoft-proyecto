@@ -242,16 +242,21 @@ def currently_used_movement_cards(db: Session, player_id: str):
     return cards
 
 
-def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
-    player = get_player(player_id=player_id, db=db)
+def use_shape_card(
+    db: Session,
+    player_id: str,
+    target_id: str,
+    req: UseShapeCardSchema,
+):
+    player = get_player(player_id=target_id, db=db)
     if player is None:
         return 1
 
-    game = crud_game.get_game_from_player(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=target_id)
     if game is None:
         return 2
 
-    player_cards = get_player_cards(db=db, player_id=player_id)
+    player_cards = get_player_cards(db=db, player_id=target_id)
     if player_cards is None:
         return 3
 
@@ -278,16 +283,22 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
     if not matched_shape:
         return 6
 
-    player_shape_cards.remove(matched_shape)
-    player_cards.shape_cards_in_hand = dump_shape_cards(player_shape_cards)
+    if target_id == player_id:
+        player_shape_cards.remove(matched_shape)
 
+    else:
+        if any(s.isBlocked for s in player_shape_cards):
+            return 7
+        matched_shape.isBlocked = True
+
+    player_cards.shape_cards_in_hand = dump_shape_cards(player_shape_cards)
     game.blocked_color = shape_color
     db.commit()
 
+    if not player_shape_cards and not deserialize(player_cards.shape_cards_deck):
+        return 8
+
     if crud_game.confirm_movements(db=db, player_id=player_id) == 1:
         return 3
-
-    if not player_shape_cards and not deserialize(player_cards.shape_cards_deck):
-        return 7
 
     return 0

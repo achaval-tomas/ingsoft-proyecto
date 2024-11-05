@@ -13,7 +13,12 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
     req = UseShapeCardSchema.model_validate_json(data)
     assert req.type == 'use-shape-card'
 
-    rc = use_shape_card(player_id=player_id, db=db, req=req)
+    rc = use_shape_card(
+        player_id=player_id,
+        target_id=req.targetPlayerId,
+        db=db,
+        req=req,
+    )
 
     match rc:
         case 1:
@@ -28,6 +33,8 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
             return error_message(detail=errors.INVALID_COLOR)
         case 6:
             return error_message(detail=errors.INVALID_CARD)
+        case 7:
+            return error_message(detail=errors.ALREADY_BLOCKED)
 
     msg = ShapeCardUsedSchema(
         position=req.position,
@@ -41,7 +48,7 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
         message=msg,
     )
 
-    if rc == 7:
+    if rc == 8:
         await handle_announce_winner(winner_id=player_id, db=db)
 
     return None
