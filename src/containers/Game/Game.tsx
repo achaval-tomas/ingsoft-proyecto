@@ -13,6 +13,7 @@ import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
 import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 import { getShapeAtOrNull } from "../../domain/Board";
+import { ChatMessage } from "./components/Chat";
 
 type GameProps = {
     playerId: string;
@@ -21,6 +22,14 @@ type GameProps = {
 }
 
 function Game({ playerId, gameState, sendMessage }: GameProps) {
+
+    // TODO: move this outta here
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+
+    const handleSendMessage = (message: ChatMessage) => {
+        setChatMessages([...chatMessages, message]);
+    };
+
     const navigate = useNavigate();
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
@@ -173,6 +182,8 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         <>
             <GameLayout
                 uiState={uiState}
+                messages={chatMessages}
+                onSendMessage={handleSendMessage}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickShapeCard={handleClickShapeCard}
