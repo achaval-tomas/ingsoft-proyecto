@@ -15,11 +15,9 @@ export default function LobbyList({ lobbies, selectedLobbyId, isFiltered, onSele
             {lobbies == null ? (
                 <p className="animate-pulse self-center" data-testid="lobby-list-loading">Cargando salas...</p>
             ) : (lobbies.length === 0) ? (
-                <p className="self-center" data-testid="lobby-list-no-lobbies">
-                    {isFiltered
-                        ? "Ninguna sala coincide con los filtros."
-                        : "No se encontró ninguna sala."}
-                </p>
+                isFiltered
+                    ? <p className="self-center" data-testid="lobby-list-no-matches">Ninguna sala coincide con los filtros.</p>
+                    : <p className="self-center" data-testid="lobby-list-no-lobbies">No se encontró ninguna sala.</p>
             ) : (
                 <table className="w-full mt-2">
                     <thead>

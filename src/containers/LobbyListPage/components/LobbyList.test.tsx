@@ -115,3 +115,17 @@ test("No lobbies label is shown when there are no lobbies", () => {
     screen.getByTestId("lobby-list-no-lobbies");
 });
 
+test("No lobbies label is shown when there are no matches", () => {
+    render(
+        <LobbyList
+            lobbies={[]}
+            selectedLobbyId={null}
+            isFiltered={true}
+            onJoinLobby={() => {}}
+            onSelectLobby={() => {}}
+        />,
+    );
+
+    screen.getByTestId("lobby-list-no-matches");
+});
+
