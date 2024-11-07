@@ -6,10 +6,6 @@ import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService, { LobbyElement } from "../../services/lobbyService";
 
 
-export interface LobbyForm {
-    name: string;
-}
-
 async function getLobbies(): Promise<LobbyElement[]> {
     try {
         return await lobbyService.getJoinableLobbies();
