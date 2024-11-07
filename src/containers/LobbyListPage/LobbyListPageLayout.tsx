@@ -58,6 +58,7 @@ function LobbyListPageLayout({
                         <LobbyList
                             lobbies={filteredLobbies}
                             selectedLobbyId={selectedLobbyId}
+                            isFiltered={filteredLobbies?.length !== lobbies?.length}
                             onSelectLobby={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
                             onJoinLobby={lid => joinHandler(lid)}
                         />

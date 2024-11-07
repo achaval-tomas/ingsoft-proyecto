@@ -4,21 +4,21 @@ import { classNames } from "../../../util";
 interface LobbyListProps {
     lobbies: LobbyElement[] | null;
     selectedLobbyId: string | null;
+    isFiltered: boolean;
     onSelectLobby: (id: string) => void;
     onJoinLobby: (id: string) => void;
 }
 
-export default function LobbyList({ lobbies, selectedLobbyId, onSelectLobby, onJoinLobby }: LobbyListProps) {
+export default function LobbyList({ lobbies, selectedLobbyId, isFiltered, onSelectLobby, onJoinLobby }: LobbyListProps) {
     return (
         <div className="flex w-full grow justify-center items-start overflow-y-auto" data-testid="lobby-list">
             {lobbies == null ? (
-                <p className="animate-pulse self-center">Cargando salas...</p>
+                <p className="animate-pulse self-center" data-testid="lobby-list-loading">Cargando salas...</p>
             ) : (lobbies.length === 0) ? (
-                <p className="self-center">
-                    {(lobbies.length === 0)
-                        ? "No se encontró ninguna sala."
-                        : "Ninguna sala coincide con los filtros."
-                    }
+                <p className="self-center" data-testid="lobby-list-no-lobbies">
+                    {isFiltered
+                        ? "Ninguna sala coincide con los filtros."
+                        : "No se encontró ninguna sala."}
                 </p>
             ) : (
                 <table className="w-full mt-2">
