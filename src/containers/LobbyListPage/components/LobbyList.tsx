@@ -1,38 +1,50 @@
 import { LobbyElement } from "../../../services/lobbyService";
+import { classNames } from "../../../util";
 
 interface LobbyListProps {
-    joinHandler: (id: string) => void;
-    lobbyList: LobbyElement[];
+    lobbies: LobbyElement[] | null;
+    selectedLobbyId: string | null;
+    onSelectLobby: (id: string) => void;
+    onJoinLobby: (id: string) => void;
 }
 
-export default function LobbyList({ lobbyList, joinHandler }: LobbyListProps) {
-    const items = lobbyList.map(lobby =>
-        <tr
-            className="my-2 p-2 border"
-            key={lobby.lobby_id}
-        >
-            <td className="text-center">{lobby.lobby_name}</td>
-            <td className="text-center">{lobby.player_amount}</td>
-            <td>
-                <button
-                    className="p-1 rounded bg-primary-600 hover:bg-primary-500"
-                    onClick={() => joinHandler(lobby.lobby_id)}
-                >
-                    Unirse
-                </button>
-            </td>
-        </tr>,
+export default function LobbyList({ lobbies, selectedLobbyId, onSelectLobby, onJoinLobby }: LobbyListProps) {
+    return (
+        <div className="flex w-full grow justify-center items-start overflow-y-auto">
+            {lobbies == null ? (
+                <p className="animate-pulse self-center">Cargando salas...</p>
+            ) : (lobbies.length === 0) ? (
+                <p className="self-center">
+                    {(lobbies.length === 0)
+                        ? "No se encontró ninguna sala."
+                        : "Ninguna sala coincide con los filtros."
+                    }
+                </p>
+            ) : (
+                <table className="w-full mt-2">
+                    <thead>
+                        <tr>
+                            <th className="px-6 py-2 text-start w-full">Nombre</th>
+                            <th className="px-6 py-2 whitespace-nowrap">Jugadores</th>
+                            <th className="px-6 py-2 whitespace-nowrap">Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {lobbies.map(l => (
+                            <tr
+                                key={l.lobby_id}
+                                className={classNames(["px-6 py-2", selectedLobbyId === l.lobby_id ? "bg-white/35" : "hover:bg-white/25"])}
+                                onClick={() => onSelectLobby(l.lobby_id)}
+                                onDoubleClick={() => onJoinLobby(l.lobby_id)}
+                            >
+                                <td className="px-6 py-2 ">{l.lobby_name}</td>
+                                <td className="px-6 py-2 text-center">{l.player_amount} / {l.max_players}</td>
+                                <td className="px-6 py-2 text-center">Pública</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
     );
-
-    return <table className="w-screen">
-        <thead>
-            <tr>
-                <th>Nombre de la sala</th>
-                <th>Cantidad de jugadores</th>
-            </tr>
-        </thead>
-        <tbody>
-            {items}
-        </tbody>
-    </table>;
 }
