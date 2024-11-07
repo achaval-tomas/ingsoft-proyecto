@@ -11,15 +11,15 @@ const defaultPlayerCountRange: [number, number] = [1, 3];
 interface LobbyListPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
     lobbies: LobbyElement[] | null;
-    refreshHandler: () => void;
-    joinHandler: (lobbyId: string) => void;
+    onRefresh: () => void;
+    onJoinLobby: (lobbyId: string) => void;
 }
 
 function LobbyListPageLayout({
     onSubmitLobbyForm,
     lobbies,
-    refreshHandler,
-    joinHandler,
+    onRefresh,
+    onJoinLobby,
 }: LobbyListPageLayoutProps) {
     const [showCreateLobbyDialog, setShowCreateLobbyDialog] = useState<boolean>(false);
     const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(null);
@@ -49,7 +49,7 @@ function LobbyListPageLayout({
                         <div className="flex flex-row w-full justify-between items-center pt-6 px-6">
                             <h2 className="text-2xl">Lista de salas</h2>
                             <TextButton
-                                onClick={refreshHandler}
+                                onClick={onRefresh}
                                 padding="py-2"
                             >
                                 Refrescar
@@ -60,7 +60,7 @@ function LobbyListPageLayout({
                             selectedLobbyId={selectedLobbyId}
                             isFiltered={filteredLobbies?.length !== lobbies?.length}
                             onSelectLobby={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
-                            onJoinLobby={lid => joinHandler(lid)}
+                            onJoinLobby={onJoinLobby}
                         />
                     </div>
                     <div className="w-[30%] flex flex-col p-6 gap-4">
@@ -86,7 +86,7 @@ function LobbyListPageLayout({
                         <FilledButton
                             onClick={() => {
                                 if (selectedLobbyId != null) {
-                                    joinHandler(selectedLobbyId);
+                                    onJoinLobby(selectedLobbyId);
                                 }
                             }}
                             enabled={selectedLobbyId != null}

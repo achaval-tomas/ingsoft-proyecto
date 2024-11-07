@@ -32,7 +32,7 @@ function LobbyListPage() {
         void fetchAndSaveLobbies();
     }, []);
 
-    async function handleSubmit(state: CreateLobbyFormState) {
+    async function handleSubmitLobby(state: CreateLobbyFormState) {
         try {
             const playerId = urlParams.get("player") ?? "";
 
@@ -63,7 +63,12 @@ function LobbyListPage() {
         }
     }
 
-    async function joinHandler(lobbyId: string) {
+    function handleRefreshLobbies() {
+        setLobbies(null);
+        void fetchAndSaveLobbies();
+    }
+
+    async function handleJoinLobby(lobbyId: string) {
         const playerId = urlParams.get("player") ?? "";
         const res = await lobbyService.joinLobby(playerId, lobbyId);
 
@@ -92,13 +97,10 @@ function LobbyListPage() {
 
     return (
         <LobbyListPageLayout
-            onSubmitLobbyForm={s => void handleSubmit(s)}
+            onSubmitLobbyForm={s => void handleSubmitLobby(s)}
             lobbies={lobbies}
-            refreshHandler={() => {
-                setLobbies(null);
-                void fetchAndSaveLobbies();
-            }}
-            joinHandler={lobbyId => void joinHandler(lobbyId)}
+            onRefresh={handleRefreshLobbies}
+            onJoinLobby={lobbyId => void handleJoinLobby(lobbyId)}
         />
     );
 }
