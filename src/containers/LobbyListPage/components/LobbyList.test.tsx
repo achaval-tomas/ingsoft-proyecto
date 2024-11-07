@@ -39,6 +39,7 @@ test("All lobbies are rendered", () => {
         <LobbyList
             lobbies={mockItems}
             selectedLobbyId={null}
+            isFiltered={false}
             onJoinLobby={() => {}}
             onSelectLobby={() => {}}
         />,
@@ -61,6 +62,7 @@ test("Can join by double clicking", async () => {
         <LobbyList
             lobbies={mockItems}
             selectedLobbyId={null}
+            isFiltered={false}
             onJoinLobby={id => {
                 if (clickedIds[id]) {
                     clickedIds[id] += 1;
@@ -84,3 +86,32 @@ test("Can join by double clicking", async () => {
         expect(clickedIds[e.lobby_id]).toBe(3);
     });
 });
+
+test("Loading label is shown while loading", () => {
+    render(
+        <LobbyList
+            lobbies={null}
+            selectedLobbyId={null}
+            isFiltered={false}
+            onJoinLobby={() => {}}
+            onSelectLobby={() => {}}
+        />,
+    );
+
+    screen.getByTestId("lobby-list-loading");
+});
+
+test("No lobbies label is shown when there are no lobbies", () => {
+    render(
+        <LobbyList
+            lobbies={[]}
+            selectedLobbyId={null}
+            isFiltered={false}
+            onJoinLobby={() => {}}
+            onSelectLobby={() => {}}
+        />,
+    );
+
+    screen.getByTestId("lobby-list-no-lobbies");
+});
+
