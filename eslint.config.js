@@ -8,7 +8,7 @@ import stylistic from "@stylistic/eslint-plugin";
 import stylisticJsx from "@stylistic/eslint-plugin-jsx";
 
 export default tseslint.config(
-    { ignores: ["dist"] },
+    { ignores: ["dist", "coverage/"] },
     {
         extends: [
             js.configs.recommended,
