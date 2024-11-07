@@ -4,112 +4,80 @@ import { userEvent } from "@testing-library/user-event";
 import LobbyList from "../components/LobbyList";
 import { LobbyElement } from "../../../services/lobbyService";
 
-test("It correctly renders all elements", () => {
+const mockItems: LobbyElement[] = [
+    {
+        lobby_id: "1",
+        lobby_name: "my first lobby",
+        player_amount: 1,
+        min_players: 2,
+        max_players: 4,
+        lobby_owner: "",
+        players: "",
+    },
+    {
+        lobby_id: "2",
+        lobby_name: "jorge's room",
+        player_amount: 3,
+        min_players: 2,
+        max_players: 4,
+        lobby_owner: "",
+        players: "",
+    },
+    {
+        lobby_id: "3",
+        lobby_name: "excuse me, only friends",
+        player_amount: 2,
+        min_players: 2,
+        max_players: 4,
+        lobby_owner: "",
+        players: "",
+    },
+];
 
-    const mockItems: LobbyElement[] = [
-        {
-            lobby_id: "1",
-            lobby_name: "my first lobby",
-            player_amount: 1,
-            min_players: 2,
-            max_players: 4,
-            lobby_owner: "",
-            players: "",
-        },
-        {
-            lobby_id: "2",
-            lobby_name: "jorge's room",
-            player_amount: 3,
-            min_players: 2,
-            max_players: 4,
-            lobby_owner: "",
-            players: "",
-        },
-        {
-            lobby_id: "3",
-            lobby_name: "excuse me, only friends",
-            player_amount: 2,
-            min_players: 2,
-            max_players: 4,
-            lobby_owner: "",
-            players: "",
-        },
-    ];
-
+test("All lobbies are rendered", () => {
     render(
         <LobbyList
-            lobbyList={mockItems}
-            joinHandler={() => {}}
+            lobbies={mockItems}
+            selectedLobbyId={null}
+            onJoinLobby={() => {}}
+            onSelectLobby={() => {}}
         />,
     );
 
-    const rows = screen.getAllByRole("row");
+    const rows = screen.getAllByTestId("lobby-item");
 
-    // + 1 to count the header row
-    expect(rows).toHaveLength(mockItems.length + 1);
+    expect(rows).toHaveLength(mockItems.length);
 
     mockItems.forEach((element, index) => {
-        const tdName = within(rows[index + 1]).queryByText(element.lobby_name);
-        expect(tdName).not.toBeNull();
-
-        const tdNumPlayers = within(rows[index + 1]).queryByText(element.player_amount);
-        expect(tdNumPlayers).not.toBeNull();
+        within(rows[index]).getByText(element.lobby_name);
+        within(rows[index]).getByText(element.player_amount, { exact: false });
     });
 });
 
-test("It correctly handles join button", async () => {
-    const mockItems: LobbyElement[] = [
-        {
-            lobby_id: "1",
-            lobby_name: "my first lobby",
-            player_amount: 1,
-            min_players: 2,
-            max_players: 4,
-            lobby_owner: "",
-            players: "",
-        },
-        {
-            lobby_id: "2",
-            lobby_name: "jorge's room",
-            player_amount: 3,
-            min_players: 2,
-            max_players: 4,
-            lobby_owner: "",
-            players: "",
-        },
-        {
-            lobby_id: "3",
-            lobby_name: "excuse me, only friends",
-            player_amount: 2,
-            min_players: 2,
-            max_players: 4,
-            lobby_owner: "",
-            players: "",
-        },
-    ];
-
-    const clickedIds: { [key: string]: number } = {
-    };
+test("Can join by double clicking", async () => {
+    const clickedIds: { [key: string]: number } = {};
 
     render(
         <LobbyList
-            lobbyList={mockItems}
-            joinHandler={id => {
+            lobbies={mockItems}
+            selectedLobbyId={null}
+            onJoinLobby={id => {
                 if (clickedIds[id]) {
                     clickedIds[id] += 1;
                 } else {
                     clickedIds[id] = 1;
                 }
             }}
+            onSelectLobby={() => {}}
         />,
     );
 
-    const buttons = screen.getAllByText("Unirse");
+    const lobbyItems = screen.getAllByTestId("lobby-item");
 
-    for (let i = 0; i < buttons.length; i++) {
-        await userEvent.click(buttons[i]);
-        await userEvent.click(buttons[i]);
-        await userEvent.click(buttons[i]);
+    for (const lobbyItem of lobbyItems) {
+        await userEvent.dblClick(lobbyItem);
+        await userEvent.dblClick(lobbyItem);
+        await userEvent.dblClick(lobbyItem);
     }
 
     mockItems.forEach(e => {

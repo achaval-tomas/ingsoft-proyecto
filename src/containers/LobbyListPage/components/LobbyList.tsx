@@ -10,7 +10,7 @@ interface LobbyListProps {
 
 export default function LobbyList({ lobbies, selectedLobbyId, onSelectLobby, onJoinLobby }: LobbyListProps) {
     return (
-        <div className="flex w-full grow justify-center items-start overflow-y-auto">
+        <div className="flex w-full grow justify-center items-start overflow-y-auto" data-testid="lobby-list">
             {lobbies == null ? (
                 <p className="animate-pulse self-center">Cargando salas...</p>
             ) : (lobbies.length === 0) ? (
@@ -36,6 +36,7 @@ export default function LobbyList({ lobbies, selectedLobbyId, onSelectLobby, onJ
                                 className={classNames(["px-6 py-2", selectedLobbyId === l.lobby_id ? "bg-white/35" : "hover:bg-white/25"])}
                                 onClick={() => onSelectLobby(l.lobby_id)}
                                 onDoubleClick={() => onJoinLobby(l.lobby_id)}
+                                data-testid="lobby-item"
                             >
                                 <td className="px-6 py-2 ">{l.lobby_name}</td>
                                 <td className="px-6 py-2 text-center">{l.player_amount} / {l.max_players}</td>
