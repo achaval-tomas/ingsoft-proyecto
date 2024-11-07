@@ -76,9 +76,9 @@ function LobbyListPageLayout({
 
                         <LobbyFilters
                             playerCountRange={playerCountRange}
-                            onPlayerCountRangeChange={setPlayerCountRange}
-                            lobbyNameValue={searchQuery}
-                            onLobbyNameChange={setSearchQuery}
+                            onChangePlayerCountRange={setPlayerCountRange}
+                            lobbyName={searchQuery}
+                            onChangeLobbyName={setSearchQuery}
                             className="w-full"
                         />
                         <div className="grow"></div>

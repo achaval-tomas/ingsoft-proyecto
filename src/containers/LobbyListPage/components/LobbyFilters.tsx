@@ -2,27 +2,27 @@ import Field from "../../../components/Field";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
 
-type FilterProps = {
+type LobbyFilterProps = {
     playerCountRange: [number, number];
-    onPlayerCountRangeChange: (playerCountRange: [number, number]) => void;
-    lobbyNameValue: string;
-    onLobbyNameChange: (value: string) => void;
+    onChangePlayerCountRange: (playerCountRange: [number, number]) => void;
+    lobbyName: string;
+    onChangeLobbyName: (value: string) => void;
     className: string;
 }
 
 function LobbyFilters({
     playerCountRange,
-    onPlayerCountRangeChange,
-    lobbyNameValue,
-    onLobbyNameChange,
+    onChangePlayerCountRange,
+    lobbyName,
+    onChangeLobbyName,
     className,
-}: FilterProps) {
+}: LobbyFilterProps) {
     return (
         <div className={`${className} flex flex-col gap-4`}>
             <Field
                 label="Nombre"
-                value={lobbyNameValue}
-                onChange={v => onLobbyNameChange(v)}
+                value={lobbyName}
+                onChange={v => onChangeLobbyName(v)}
                 placeholder="Buscar por nombre"
             />
 
@@ -32,7 +32,7 @@ function LobbyFilters({
                     min={1}
                     max={3}
                     value={playerCountRange}
-                    onInput={onPlayerCountRangeChange}
+                    onInput={onChangePlayerCountRange}
                     className="my-4"
                 />
                 <div className="flex justify-between px-2 w-full text-xs">
@@ -41,7 +41,6 @@ function LobbyFilters({
                     ))}
                 </div>
             </div>
-
         </div>
     );
 }
