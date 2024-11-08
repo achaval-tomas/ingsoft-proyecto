@@ -6,26 +6,23 @@ import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService, { LobbyElement } from "../../services/lobbyService";
 
 
-async function getLobbies(): Promise<LobbyElement[]> {
-    try {
-        return await lobbyService.getJoinableLobbies();
-    } catch {
-        return [];
-    }
-}
-
 function LobbyListPage() {
     const [urlParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [lobbies, setLobbies] = useState<LobbyElement[] | null>(null);
 
-    async function fetchAndSaveLobbies() {
-        setLobbies(await getLobbies());
+    async function fetchLobbies() {
+        try {
+            const lobbies = await lobbyService.getJoinableLobbies();
+            setLobbies(lobbies);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     useEffect(() => {
-        void fetchAndSaveLobbies();
+        void fetchLobbies();
     }, []);
 
     async function handleSubmitLobby(state: CreateLobbyFormState) {
@@ -61,7 +58,7 @@ function LobbyListPage() {
 
     function handleRefreshLobbies() {
         setLobbies(null);
-        void fetchAndSaveLobbies();
+        void fetchLobbies();
     }
 
     async function handleJoinLobby(lobbyId: string) {
