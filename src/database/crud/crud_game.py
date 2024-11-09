@@ -4,9 +4,8 @@ from random import shuffle
 from sqlalchemy.orm import Session
 
 from src.cards.card_utils import coord_to_index
-from src.database.crud import crud_cards
+from src.database.crud import crud_cards, crud_user
 from src.database.crud.crud_lobby import get_lobby
-from src.database.crud.crud_user import get_player
 from src.database.models import Game, Lobby
 from src.schemas.card_schemas import Coordinate
 from src.tools.jsonify import deserialize, serialize
@@ -58,7 +57,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
 
     game_id = db_game.game_id
     for id in player_order:
-        player = get_player(db=db, player_id=id)
+        player = crud_user.get_player(db=db, player_id=id)
         if player is None:
             return 4
 
@@ -118,7 +117,7 @@ def get_game(db: Session, game_id: str):
 
 
 def get_game_from_player(db: Session, player_id: str):
-    player = get_player(db=db, player_id=player_id)
+    player = crud_user.get_player(db=db, player_id=player_id)
     if not player or not player.game_id:
         return None
     return get_game(db=db, game_id=player.game_id)
@@ -167,7 +166,7 @@ def leave_game(db: Session, player_id: str):
     game.current_turn = players.index(new_current_player)
     db.commit()
 
-    player = get_player(db=db, player_id=player_id)
+    player = crud_user.get_player(db=db, player_id=player_id)
     if not player:
         return 2, None
 
@@ -188,7 +187,7 @@ def delete_game(db: Session, game_id: str):
         return
 
     for player_id in deserialize(game.player_order):
-        db_player = get_player(db=db, player_id=player_id)
+        db_player = crud_user.get_player(db=db, player_id=player_id)
 
         if not db_player:
             continue

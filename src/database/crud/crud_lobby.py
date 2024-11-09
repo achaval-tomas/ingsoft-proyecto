@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.database.crud.crud_user import create_player, get_player, get_user
+from src.database.crud import crud_user
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
@@ -9,11 +9,11 @@ from src.tools.jsonify import deserialize, serialize
 
 
 def create_lobby(db: Session, lobby: LobbyCreateSchema):
-    user = get_user(db=db, user_id=lobby.lobby_owner)
+    user = crud_user.get_user(db=db, user_id=lobby.lobby_owner)
     if not user:
         return 1
 
-    player = create_player(
+    player = crud_user.create_player(
         db=db,
         user_id=lobby.lobby_owner,
         player=PlayerCreateSchema(
@@ -43,15 +43,17 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
 
 
 def join_lobby(db: Session, lobby_id: str, player_id: str):
-    user = get_user(db, player_id)
+    user = crud_user.get_user(db, player_id)
     if not user:
         return 1
 
-    user_players = [get_player(db, id) for id in deserialize(user.active_players)]
+    user_players = [
+        crud_user.get_player(db, id) for id in deserialize(user.active_players)
+    ]
     if any(p.lobby_id == lobby_id for p in user_players if p is not None):
         return 2
 
-    player = create_player(
+    player = crud_user.create_player(
         db=db,
         user_id=player_id,
         player=PlayerCreateSchema(
@@ -78,7 +80,7 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
 
 
 def leave_lobby(db: Session, player_id: str):
-    player = get_player(db, player_id)
+    player = crud_user.get_player(db, player_id)
     if not player:
         return 1
 
@@ -107,7 +109,7 @@ def get_lobby(db: Session, lobby_id: str):
 
 
 def get_lobby_by_player_id(db: Session, player_id: str):
-    player = get_player(player_id=player_id, db=db)
+    player = crud_user.get_player(player_id=player_id, db=db)
     if not player or not player.lobby_id:
         return None
     return get_lobby(db=db, lobby_id=player.lobby_id)
@@ -123,7 +125,7 @@ def delete_lobby(db: Session, lobby_id: str):
         return
 
     for player_id in deserialize(lobby.players):
-        db_player = get_player(db=db, player_id=player_id)
+        db_player = crud_user.get_player(db=db, player_id=player_id)
         if not db_player:
             continue
         db_player.lobby_id = None

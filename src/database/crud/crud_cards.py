@@ -8,7 +8,7 @@ from src.cards.card_utils import (
     match_shape_to_player_card,
 )
 from src.cards.movement_card import movement_data, rotate_movement
-from src.database.crud.crud_user import get_player
+from src.database.crud import crud_user
 from src.database.models import PlayerCards
 from src.schemas.card_schemas import (
     UseMovementCardSchema,
@@ -82,7 +82,7 @@ def refill_cards(db: Session, player_id: str):
         2 -> Player is not currently in a game
         3 -> There is a winner (player_id) because he has no more cards available
     """
-    player = get_player(db=db, player_id=player_id)
+    player = crud_user.get_player(db=db, player_id=player_id)
     if player is None:
         return 1, None, None
 
@@ -124,7 +124,7 @@ def refill_cards(db: Session, player_id: str):
 
 
 def use_movement_card(db: Session, player_id: str, req: UseMovementCardSchema):
-    player = get_player(player_id=player_id, db=db)
+    player = crud_user.get_player(player_id=player_id, db=db)
     if player is None:
         return 1
 
