@@ -32,7 +32,7 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
                     style={{ scrollbarWidth: "none" }}
                 >
                     {messages.toReversed().map((message, i) => (
-                        <div key={length - i} className={"my-[0.3%]" + (message.type === "system-message" ? " text-yellow-600" : "")}>
+                        <div key={length - i} className={(message.type === "system-message" ? "text-primary-500" : "")}>
                             { message.sender != null && <strong>{message.sender}:</strong> } {message.text}
                         </div>
                     ))}
