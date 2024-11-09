@@ -13,20 +13,21 @@ import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
 import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 import { getShapeAtOrNull } from "../../domain/Board";
-import ChatMessage from "../../domain/ChatMessage";
 import { post } from "../../services/util";
 import { httpServerUrl } from "../../services/config";
+import { useSelector } from "react-redux";
+import AppState from "../../domain/AppState";
 
 type GameProps = {
     playerId: string;
     gameState: GameState;
-    chatMessages: ChatMessage[];
     sendMessage: (message: GameMessageOut) => void;
 }
 
-function Game({ playerId, gameState, chatMessages, sendMessage }: GameProps) {
-
+function Game({ playerId, gameState, sendMessage }: GameProps) {
     const navigate = useNavigate();
+
+    const chatMessages = useSelector((state: AppState) => state.chatMessages);
 
     const [showLeaveGameDialog, setShowLeaveGameDialog] = useState(false);
 
