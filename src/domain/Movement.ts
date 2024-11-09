@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Position, positionAdd, positionRotate, positionsEqual } from "./Position";
+import { Position, positionAdd, positionRotate, positionsEqual, positionToBoardIndex } from "./Position";
 import { allRotations, Rotation } from "./Rotation";
 
 export const MovementSchema = z.enum([
@@ -43,6 +43,17 @@ export type MovementTarget = {
     position: Position;
     movementRotation: Rotation;
 };
+
+export function sortMovementTargets(movementTargets: readonly MovementTarget[]): MovementTarget[] {
+    return movementTargets.toSorted((lhs, rhs) => {
+        const positionDiff = positionToBoardIndex(lhs.position) - positionToBoardIndex(rhs.position);
+        if (positionDiff !== 0) {
+            return positionDiff;
+        } else {
+            return lhs.movementRotation.localeCompare(rhs.movementRotation);
+        }
+    });
+}
 
 export function getPossibleTargetsInBoard(movement: Movement, source: Position): MovementTarget[] {
     const movementData = getMovementData(movement);
