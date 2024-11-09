@@ -29,35 +29,32 @@ function LobbyLayout({ players, playerId, lobbyName, canStart, quitHandler, star
         </div>
     ));
 
-    return <div className="flex justify-center w-screen">
-        <div className="w-7/12 bg-surface rounded-lg border border-border flex flex-col items-center gap-7 p-8 shadow-xl shadow-surface">
+    return <div className="w-full h-full grid place-content-center">
+        <div className="flex flex-col min-w-96 items-center gap-6 p-6 bg-surface border border-border rounded-lg">
             <h2 className="text-2xl font-bold">
                 {lobbyName}
             </h2>
             <div>
                 <p>Jugadores:</p>
-                { playerList }
+                {playerList}
             </div>
-            { !isOwner &&
-                <p className="text-sm text-gray-500">
-                    Esperando a que el host inicie la partida
-                </p>
-            }
-            <div className="flex gap-6 w-full px-14">
+            {!isOwner && <p className="text-sm text-gray-500">
+                Esperando a que el host inicie la partida
+            </p>}
+            <div className="flex gap-6 w-full">
                 <FilledButton
                     onClick={quitHandler}
-                    className="px-2 flex-1"
+                    className="flex-1"
                 >
                     Salir
                 </FilledButton>
-                { canStart &&
-                    <FilledButton
-                        onClick={startHandler}
-                        className="px-2 flex-1"
-                    >
-                        Iniciar juego
-                    </FilledButton>
-                }
+                {isOwner && <FilledButton
+                    onClick={startHandler}
+                    className="flex-1"
+                    enabled={canStart}
+                >
+                    Iniciar juego
+                </FilledButton>}
             </div>
         </div>
     </div>;
