@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.database.crud.crud_player import create_player, get_player
-from src.database.crud.crud_user import get_user
+from src.database.crud.crud_user import create_player, get_player, get_user
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
@@ -10,13 +9,19 @@ from src.tools.jsonify import deserialize, serialize
 
 
 def create_lobby(db: Session, lobby: LobbyCreateSchema):
-    player = get_player(db=db, player_id=lobby.lobby_owner)
-    if player is None:
+    user = get_user(db=db, user_id=lobby.lobby_owner)
+    if not user:
         return 1
-    if player.lobby_id or player.game_id:
-        return 2
 
-    player_list = [lobby.lobby_owner]
+    player = create_player(
+        db=db,
+        user_id=lobby.lobby_owner,
+        player=PlayerCreateSchema(
+            player_name=user.user_name,
+        ),
+    )
+
+    player_list = [player.player_id]
 
     db_lobby = Lobby(
         lobby_id=create_uuid(),

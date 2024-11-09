@@ -41,8 +41,6 @@ def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
 
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
-    elif res == 2:
-        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
 
     return LobbyIdSchema(lobby_id=res)
 
