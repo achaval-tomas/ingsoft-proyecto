@@ -40,7 +40,7 @@ function GameLayout({
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
             style={{ gridTemplateRows: "5fr 2fr", gridTemplateColumns: "1fr" }}
         >
-            <div className="self-end absolute w-[24em] h-[50vh] flex items-end">
+            <div className="row-start-1 row-span-2 col-start-1 self-end w-[25%] h-[50%]">
                 <Chat messages={chatMessages} onSendMessage={onSendChatMessage} />
             </div>
             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
