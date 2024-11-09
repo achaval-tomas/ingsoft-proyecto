@@ -26,6 +26,12 @@ class Game(GameBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GameListItemSchema(BaseModel):
+    id: str
+    playerCount: str
+    name: str
+
+
 class PlayerBaseSchema(BaseModel):
     id: str
     roundOrder: int
