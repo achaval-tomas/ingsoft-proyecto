@@ -32,7 +32,7 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
         case 5:
             return error_message(detail=errors.INVALID_COLOR)
         case 6:
-            return error_message(detail=errors.ALREADY_BLOCKED)
+            return error_message(detail=errors.CANNOT_BLOCK)
         case 7:
             return error_message(detail=errors.INVALID_CARD)
 
