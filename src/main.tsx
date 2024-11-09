@@ -15,10 +15,12 @@ import { createStore } from "redux";
 import rootReducer from "./reducers/rootReducer.ts";
 import AppState from "./domain/AppState.ts";
 import { GameMessageIn } from "./domain/GameMessage.ts";
+import Root from "./containers/Root/Root.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
+        element: <Root />,
         errorElement: <ErrorPage />,
         children: [
             {
