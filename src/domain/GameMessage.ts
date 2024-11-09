@@ -3,6 +3,7 @@ import { GameStateSchema, PlayerIdSchema, ShapeCardStateSchema } from "./GameSta
 import { RotationSchema } from "./Rotation";
 import { MovementSchema } from "./Movement";
 import { PositionSchema } from "./Position";
+import { ChatMessageSchema } from "./ChatMessage";
 
 // Messages received from the backend
 export const GameMessageInSchema = z.discriminatedUnion("type", [
@@ -49,6 +50,10 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("error"), // Received when the server has detected an error.
         message: z.string().optional(), // Display message for the error.
+    }),
+    z.object({
+        type: z.literal("chat-message"),
+        message: ChatMessageSchema,
     }),
 ]);
 
