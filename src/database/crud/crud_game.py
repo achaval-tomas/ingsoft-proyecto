@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from random import shuffle
 
 from sqlalchemy.orm import Session
@@ -43,6 +44,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     db_game = Game(
         player_order=serialize(player_order),
         current_turn=current_turn,
+        turn_start=datetime.now(timezone.utc).isoformat(),
         board=serialize(board),
         blocked_color=None,
         temp_switches=serialize([]),
@@ -230,6 +232,7 @@ def end_game_turn(db: Session, player_id: str):
         return 4, None, None
 
     game.current_turn = (game.current_turn + 1) % len(player_order)
+    game.turn_start = datetime.now(timezone.utc).isoformat()
     db.commit()
 
     return 0, mov_cards, shape_cards
