@@ -38,7 +38,7 @@ function TurnTimer({ turnStart }: TurnTimerProps) {
             : "border-border";
 
     return (
-        <div className={`text-7xl text-center p-8 border rounded-lg ${dynamicClassName}`}>
+        <div className={`text-7xl text-center p-8 border rounded-lg tabular-nums ${dynamicClassName}`}>
             {remainingMinutes.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
             :
             {remainingMinuteSeconds.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
