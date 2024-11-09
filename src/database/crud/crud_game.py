@@ -42,6 +42,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
 
     # create game
     db_game = Game(
+        game_id=lobby_id,
         player_order=serialize(player_order),
         current_turn=current_turn,
         turn_start=datetime.now(timezone.utc).isoformat(),
@@ -111,7 +112,7 @@ def clamp_val(val: int):
     return max(0, min(val, 5))
 
 
-def get_game(db: Session, game_id: int):
+def get_game(db: Session, game_id: str):
     return db.get(Game, game_id)
 
 
@@ -122,7 +123,7 @@ def get_game_from_player(db: Session, player_id: str):
     return get_game(db=db, game_id=player.game_id)
 
 
-def get_game_players(db: Session, game_id: int):
+def get_game_players(db: Session, game_id: str):
     game = get_game(db=db, game_id=game_id)
     if game is None:
         return []

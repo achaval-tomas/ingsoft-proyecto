@@ -15,7 +15,7 @@ class Player(Base):
     player_id = Column(String, primary_key=True)
     player_name = Column(String)
     lobby_id = Column(String, ForeignKey('lobbies.lobby_id'), nullable=True)
-    game_id = Column(Integer, ForeignKey('games.game_id'), nullable=True)
+    game_id = Column(String, ForeignKey('games.game_id'), nullable=True)
 
 
 class Lobby(Base):
@@ -31,7 +31,7 @@ class Lobby(Base):
 
 class Game(Base):
     __tablename__ = 'games'
-    game_id = Column(Integer, primary_key=True, autoincrement=True)
+    game_id = Column(String, primary_key=True)
     player_order = Column(String)
     current_turn = Column(Integer)
     turn_start = Column(String)
