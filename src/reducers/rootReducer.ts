@@ -8,6 +8,7 @@ import { getShapeAtOrNull } from "../domain/Board";
 import Action from "./Action";
 import { GameMessageIn } from "../domain/GameMessage";
 import Notification from "../domain/Notification";
+import ChatMessage from "../domain/ChatMessage";
 
 let nextNotificationId: number = 0;
 
@@ -255,6 +256,45 @@ function filterFirst<T>(arr: readonly T[], p: (t: T) => boolean): T[] {
     return arr.filter((_, i) => i !== firstIndex);
 }
 
+function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMessage[], action: Action): ChatMessage[] {
+    if (gameState == null) {
+        return chatMessages;
+    }
+
+    const currentPlayerName = getAllPlayers(gameState).find(p => p.roundOrder === gameState.currentRoundPlayer)?.name ?? "Alguien";
+
+    const nextPlayerName = getAllPlayers(gameState).find(p => p.roundOrder === computeNextPlayer(gameState))?.name ?? "Alguien";
+
+    const createSystemMessage = (text: string): ChatMessage => ({
+        type: "system-message",
+        text: text,
+    });
+
+    const newChatMessages = [...chatMessages];
+
+    switch (action.type) {
+        case "movement-card-used":
+            newChatMessages.push(createSystemMessage(`${currentPlayerName} hizo un movimiento.`));
+            break;
+        case "movement-cancelled":
+            newChatMessages.push(createSystemMessage(`${currentPlayerName} canceló un movimiento.`));
+            break;
+        case "shape-card-used":
+            newChatMessages.push(createSystemMessage(`${currentPlayerName} descartó una carta figura.`));
+            break;
+        case "player-left":
+            newChatMessages.push(createSystemMessage(`${currentPlayerName} abandonó la partida.`));
+            break;
+        case "turn-ended":
+            newChatMessages.push(createSystemMessage(`Terminó el turno de ${currentPlayerName}, ahora es el turno de ${nextPlayerName}.`));
+            break;
+        default:
+            break;
+    }
+
+    return newChatMessages;
+}
+
 function rootReducer(state: AppState | undefined, action: Action): AppState {
     if (state == null) { // we provide an initial value for state, so it should never be null.
         throw new Error(`store state is ${state}`);
@@ -284,7 +324,15 @@ function rootReducer(state: AppState | undefined, action: Action): AppState {
         return { ...state, gameState: null };
     }
 
-    return { ...state, gameState: gameStateReducer(state.gameState, action) };
+    if (action.type === "new-message") {
+        return { ...state, chatMessages: [...state.chatMessages, action.message] };
+    }
+
+    return {
+        ...state,
+        gameState: gameStateReducer(state.gameState, action),
+        chatMessages: chatMessagesReducer(state.gameState, state.chatMessages, action),
+    };
 }
 
 export default rootReducer;

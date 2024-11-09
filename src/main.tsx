@@ -46,6 +46,7 @@ const router = createBrowserRouter([
 const initialAppState: AppState = {
     gameState: null,
     notifications: [],
+    chatMessages: [],
 };
 
 const store = createStore<AppState, GameMessageIn>(rootReducer, initialAppState);
