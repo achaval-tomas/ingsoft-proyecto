@@ -36,8 +36,12 @@ function useGameUiState(
     );
 
     const shapeWhitelist = useMemo(
-        () => selfPlayerState.shapeCardsInHand.filter(sc => !sc.isBlocked)
-            .concat(otherPlayersState.map(p => p.shapeCardsInHand.filter(sc => !sc.isBlocked)).flat())
+        () => selfPlayerState.shapeCardsInHand
+            .filter(sc => !sc.isBlocked || selfPlayerState.shapeCardsInHand.length === 1)
+            .concat(otherPlayersState
+                .map(p => p.shapeCardsInHand
+                    .filter(sc => !sc.isBlocked || p.shapeCardsInHand.length === 1),
+                ).flat())
             .map(s => s.shape),
         [selfPlayerState, otherPlayersState],
     );
