@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from src.database.crud.crud_game import get_game
 from src.database.crud.crud_player import get_player
 from src.routers.helpers.connection_manager import game_manager
-from src.schemas.game_schemas import ChatMessage
+from src.schemas.game_schemas import ChatMessage, NewChatMessageSchema
 
 
 async def handle_chat_message(msg: ChatMessage, db: Session, **_):
@@ -15,8 +15,12 @@ async def handle_chat_message(msg: ChatMessage, db: Session, **_):
     if not game:
         return 2
 
+    message = NewChatMessageSchema(
+        msg=msg,
+    ).model_dump_json()
+
     await game_manager.broadcast_in_game(
-        message=msg.model_dump_json(),
+        message=message,
         game_id=player.game_id,
         db=db,
     )

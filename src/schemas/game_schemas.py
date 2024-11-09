@@ -76,3 +76,8 @@ class TurnEndedMessageSchema(MessageSchema):
 class ChatMessage(BaseModel):
     player_id: str
     msg: str
+
+
+class NewChatMessageSchema(BaseModel):
+    type: str = 'new-message'
+    msg: ChatMessage
