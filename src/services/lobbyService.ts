@@ -11,8 +11,8 @@ export interface LobbyElement {
     player_amount: number;
 }
 
-async function getJoinableLobbies(): Promise<LobbyElement[]> {
-    const res = await get(`${httpServerUrl}/lobby`);
+async function getLobbies(playerId: string): Promise<LobbyElement[]> {
+    const res = await get(`${httpServerUrl}/lobby?player_id=${playerId}`);
 
     const data = await res.json() as LobbyElement[];
 
@@ -124,7 +124,7 @@ async function leaveLobby(playerId: string, lobbyId: string): Promise<LeaveLobby
 }
 
 const lobbyService = {
-    getJoinableLobbies,
+    getLobbies,
     createLobby,
     joinLobby,
     leaveLobby,

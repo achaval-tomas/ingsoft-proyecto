@@ -1,34 +1,39 @@
 import LobbyListPageLayout from "./LobbyListPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService, { LobbyElement } from "../../services/lobbyService";
+import useUrlPlayerId from "../../hooks/useUrlPlayerId";
 
 
 function LobbyListPage() {
-    const [urlParams] = useSearchParams();
     const navigate = useNavigate();
+    const playerId = useUrlPlayerId();
 
     const [lobbies, setLobbies] = useState<LobbyElement[] | null>(null);
 
-    async function fetchLobbies() {
+    const fetchLobbies = useCallback(async () => {
+        if (playerId == null) {
+            return;
+        }
+
         try {
-            const lobbies = await lobbyService.getJoinableLobbies();
+            const lobbies = await lobbyService.getLobbies(playerId);
             setLobbies(lobbies);
         } catch (error) {
             console.error(error);
         }
-    }
+    }, [playerId]);
 
-    useEffect(() => {
-        void fetchLobbies();
-    }, []);
+    useEffect(() => void fetchLobbies(), [fetchLobbies]);
 
-    async function handleSubmitLobby(state: CreateLobbyFormState) {
+    const handleSubmitLobby = useCallback(async (state: CreateLobbyFormState) => {
+        if (playerId == null) {
+            return;
+        }
+
         try {
-            const playerId = urlParams.get("player") ?? "";
-
             const res = await lobbyService.createLobby(
                 playerId,
                 state.name,
@@ -54,15 +59,18 @@ function LobbyListPage() {
         } catch {
             alert("Error al comunicarse con el servidor, intente de nuevo más tarde.");
         }
-    }
+    }, [navigate, playerId]);
 
-    function handleRefreshLobbies() {
+    const handleRefreshLobbies = useCallback(() => {
         setLobbies(null);
         void fetchLobbies();
-    }
+    }, [fetchLobbies]);
 
-    async function handleJoinLobby(lobbyId: string) {
-        const playerId = urlParams.get("player") ?? "";
+    const handleJoinLobby = useCallback(async (lobbyId: string) => {
+        if (playerId == null) {
+            return;
+        }
+
         const res = await lobbyService.joinLobby(playerId, lobbyId);
 
         if (res.type === "Ok") {
@@ -82,9 +90,9 @@ function LobbyListPage() {
         }
 
         alert(res.message);
-    }
+    }, [navigate, playerId]);
 
-    if (urlParams.get("player") == null) {
+    if (playerId == null) {
         return <Navigate to={toInitial()} replace />;
     }
 
