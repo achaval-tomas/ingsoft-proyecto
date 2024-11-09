@@ -96,7 +96,7 @@ function GameLayout({
                 onClickMovementCard={onClickMovementCard}
                 onClickCancelMovement={selfPlayerUiState.canCancelMovement ? onClickCancelMovement : null}
             />
-            <div className="row-start-2 col-start-1 justify-self-end self-end flex flex-col gap-2">
+            <div className="row-start-2 col-start-1 justify-self-end self-end flex flex-col gap-4">
                 <TurnTimer turnStart={uiState.turnStart} className="min-w-64" />
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
             </div>
