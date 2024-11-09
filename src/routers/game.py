@@ -40,7 +40,7 @@ async def start_game(body: game_schemas.GameCreate, db: SessionDep):
 
 
 @game_router.post('/game/chat', status_code=200)
-async def send_chat_message(message: game_schemas.ChatMessage, db: SessionDep):
+async def send_chat_message(message: game_schemas.SendChatMessage, db: SessionDep):
     rc = await handle_chat_message(msg=message, db=db)
 
     if rc == 1:

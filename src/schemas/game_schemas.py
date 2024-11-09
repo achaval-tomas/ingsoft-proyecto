@@ -73,9 +73,14 @@ class TurnEndedMessageSchema(MessageSchema):
     newMovementCards: Optional[list[str]] = []
 
 
-class ChatMessage(BaseModel):
+class SendChatMessage(BaseModel):
     player_id: str
     msg: str
+
+
+class ChatMessage(BaseModel):
+    player_name: str
+    text: str
 
 
 class NewChatMessageSchema(BaseModel):
