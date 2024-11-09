@@ -23,12 +23,13 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
     return (
         <div className="h-full flex flex-col justify-end">
             <div
-                className="h-full mb-2 justify-end overflow-y-auto"
+                className="h-full mb-2 flex flex-col justify-end"
                 style={{ "WebkitMaskImage": "linear-gradient(0deg, #000 80%, transparent)" }}
             >
-                <div className="flex flex-col break-words">
-                    {messages.map((message, i) => (
-                        <div key={i}>
+                {/* We reverse two times for "automatic scrolling" to most recent message */}
+                <div className="flex flex-col-reverse overflow-y-auto break-words">
+                    {messages.toReversed().map((message, i) => (
+                        <div key={length - i}>
                             <strong>{message.sender}:</strong> {message.text}
                         </div>
                     ))}
