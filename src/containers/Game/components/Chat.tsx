@@ -25,8 +25,8 @@ const Chat = ({ messages, selfPlayerName, onSendMessage }: ChatProps) => {
     };
 
     return (
-        <div className="max-h-full">
-            <div className="pt-14 max-h-screen overflow-y-auto break-words flex flex-col-reverse">
+        <div className="max-h-full flex flex-col">
+            <div className="mb-2 overflow-y-auto break-words flex flex-col-reverse max-h-full">
                 {[...messages].reverse().map((message, i) => (
                     <div key={messages.length - i - 1} className="max-w-inherit">
                         <strong>{message.sender}:</strong> {message.msg}

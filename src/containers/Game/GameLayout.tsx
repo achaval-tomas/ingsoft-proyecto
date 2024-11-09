@@ -30,7 +30,7 @@ function GameLayout({ uiState, messages, onSendMessage, onClickEndTurn, onClickL
             className="grid w-screen h-screen max-w-screen max-h-screen justify-center p-4"
             style={{ gridTemplateRows: "5fr 2fr", gridTemplateColumns: "1fr" }}
         >
-            <div className="self-end absolute w-[24em]">
+            <div className="self-end absolute w-[24em] h-[50vh] flex items-end">
                 <Chat messages={messages} onSendMessage={onSendMessage} selfPlayerName={selfPlayerUiState.name} />
             </div>
             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
