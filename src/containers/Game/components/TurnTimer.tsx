@@ -4,10 +4,9 @@ const turnLengthInSeconds = 120;
 
 type TurnTimerProps = {
     turnStart: string; // ISO 8601
-    className: string;
 }
 
-function TurnTimer({ turnStart, className }: TurnTimerProps) {
+function TurnTimer({ turnStart }: TurnTimerProps) {
     const turnStartDate = useMemo(() => new Date(turnStart), [turnStart]);
     const [, triggerRerender] = useState(0);
 
@@ -33,7 +32,7 @@ function TurnTimer({ turnStart, className }: TurnTimerProps) {
             : "border-border";
 
     return (
-        <div className={`${className} text-7xl text-center p-8 border rounded-lg ${dynamicClassName}`}>
+        <div className={`text-7xl text-center p-8 border rounded-lg ${dynamicClassName}`}>
             {remainingMinutes.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
             :
             {remainingMinuteSeconds.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
