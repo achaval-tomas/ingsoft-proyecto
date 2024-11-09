@@ -8,7 +8,7 @@ from src.cards.card_utils import (
     match_shape_to_player_card,
 )
 from src.cards.movement_card import movement_data, rotate_movement
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.database.models import PlayerCards
 from src.schemas.card_schemas import (
     UseMovementCardSchema,

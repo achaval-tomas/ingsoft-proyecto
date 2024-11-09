@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_active_player_id_from_lobby, get_player
 from src.database.db import SessionDep
 from src.routers.handlers.lobby.leave_lobby import handle_leave_lobby
 from src.routers.handlers.lobby.lobbystate import handle_lobbystate
@@ -60,8 +60,9 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
     elif res == 4:
         raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
 
+    player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     await share_player_list(
-        player_id=body.player_id,
+        player_id=player_id,
         lobby_id=body.lobby_id,
         db=db,
         broadcast=True,

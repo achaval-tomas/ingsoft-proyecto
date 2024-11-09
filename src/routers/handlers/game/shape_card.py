@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_cards import use_shape_card
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.routers.handlers.game.announce_winner import handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import ShapeCardUsedSchema, UseShapeCardSchema

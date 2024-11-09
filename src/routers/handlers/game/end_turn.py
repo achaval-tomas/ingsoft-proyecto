@@ -9,7 +9,7 @@ from src.database.crud.crud_game import (
     get_game_from_player,
     get_game_players,
 )
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.routers.handlers.game.announce_winner import handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.game_schemas import TurnEndedMessageSchema

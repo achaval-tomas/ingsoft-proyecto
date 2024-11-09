@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.database.crud import crud_game
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.player_schemas import WinnerMessageSchema
 

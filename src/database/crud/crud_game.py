@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.cards.card_utils import coord_to_index
 from src.database.crud import crud_cards
 from src.database.crud.crud_lobby import get_lobby
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.database.models import Game, Lobby
 from src.schemas.card_schemas import Coordinate
 from src.tools.jsonify import deserialize, serialize

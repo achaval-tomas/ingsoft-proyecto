@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game_from_player
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.database.models import Game
 from src.schemas.card_schemas import validate_shape_cards
 from src.schemas.game_schemas import (

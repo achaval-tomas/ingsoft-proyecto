@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_lobby import get_lobby, get_lobby_by_player_id
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.schemas.lobby_schemas import LobbyStateMessageSchema
 from src.schemas.message_schema import error_message
 from src.schemas.player_schemas import PlayerInfoSchema
