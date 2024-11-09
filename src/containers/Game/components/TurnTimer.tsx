@@ -26,7 +26,9 @@ function TurnTimer({ turnStart, className }: TurnTimerProps) {
 
     return (
         <div className={`${className} text-7xl text-center p-8 border border-border rounded-lg`}>
-            {remainingMinutes.toLocaleString(undefined, { minimumIntegerDigits: 2 })}:{remainingMinuteSeconds.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
+            {remainingMinutes.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
+            :
+            {remainingMinuteSeconds.toLocaleString(undefined, { minimumIntegerDigits: 2 })}
         </div>
     );
 }
