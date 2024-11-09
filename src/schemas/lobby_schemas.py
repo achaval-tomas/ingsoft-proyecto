@@ -26,6 +26,10 @@ class LobbySchema(LobbyBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class LobbyListItemSchema(LobbySchema):
+    joined: bool
+
+
 class LobbyJoinSchema(BaseModel):
     player_id: str
     lobby_id: str
