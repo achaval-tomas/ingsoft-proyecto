@@ -260,6 +260,10 @@ function rootReducer(state: AppState | undefined, action: Action): AppState {
         throw new Error(`store state is ${state}`);
     }
 
+    if (action.type === "clear-notification") {
+        return { ...state, notifications: state.notifications.filter(n => n.id !== action.notificationId) };
+    }
+
     return { ...state, gameState: gameStateReducer(state.gameState, action) };
 }
 
