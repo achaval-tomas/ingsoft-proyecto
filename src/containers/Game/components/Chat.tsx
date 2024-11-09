@@ -38,11 +38,11 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
             <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }}>
                 <Input
                     type="text"
-                    placeholder="Escribí un mensaje"
+                    placeholder="Enviar mensaje..."
                     value={input}
                     onChange={(text) => setInput(text)}
+                    className="w-full"
                 />
-                <FilledButton className="text-sm mx-2" type="submit">Enviar</FilledButton>
             </form>
         </div>
     );
