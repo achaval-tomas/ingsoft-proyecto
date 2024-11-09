@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
+const turnLengthInSeconds = 120;
+
 type TurnTimerProps = {
     turnStart: string; // ISO 8601
     className: string;
@@ -18,7 +20,7 @@ function TurnTimer({ turnStart, className }: TurnTimerProps) {
     }, [turnStart]);
 
     const elapsedMillis = (new Date()).getTime() - turnStartDate.getTime();
-    const remainingMillis = Math.max((120 * 1000) - elapsedMillis, 0);
+    const remainingMillis = Math.max((turnLengthInSeconds * 1000) - elapsedMillis, 0);
     const remainingSeconds = Math.ceil(remainingMillis / 1000);
 
     const remainingMinutes = Math.floor(remainingSeconds / 60);
