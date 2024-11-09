@@ -3,6 +3,13 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from src.database.db import Base
 
 
+class User(Base):
+    __tablename__ = 'users'
+    user_id = Column(String, primary_key=True)
+    user_name = Column(String)
+    active_players = Column(String)
+
+
 class Player(Base):
     __tablename__ = 'players'
     player_id = Column(String, primary_key=True)
