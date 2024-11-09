@@ -70,11 +70,6 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
-        // For now, only allow selecting self shape cards
-        if (playerId !== gameState.selfPlayerState.id) {
-            return;
-        }
-
         if (selectionState?.type === "shape-card" && selectionState.playerId === playerId && selectionState.shapeCardIndex === shapeCardIndex) {
             setSelectionState(null);
             return;
@@ -117,6 +112,11 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
 
                 const shapePlayer = getPlayerById(gameState, selectionState.playerId);
                 if (shapePlayer == null) {
+                    return;
+                }
+
+                // if trying to block anothers player shape card but that player already has a blocked card
+                if (selectionState.playerId !== gameState.selfPlayerState.id && shapePlayer.shapeCardsInHand.find(s => s.isBlocked) != null) {
                     return;
                 }
 
