@@ -1,12 +1,7 @@
 import { useState } from "react";
 import FilledButton from "../../../components/FilledButton";
 import Input from "../../../components/Input";
-
-export type ChatMessage = {
-    text: string;
-    sender: string;
-    date: number;
-};
+import { ChatMessage } from "../../../domain/ChatMessage";
 
 export interface ChatProps {
    messages: ChatMessage[];
@@ -21,8 +16,7 @@ const Chat = ({ messages, selfPlayerName, onSendMessage }: ChatProps) => {
         if (input.trim() === "") { return; }
 
         const newMessage = {
-            date: Date.now(),
-            text: input,
+            msg: input,
             sender: selfPlayerName,
         };
 
@@ -33,9 +27,9 @@ const Chat = ({ messages, selfPlayerName, onSendMessage }: ChatProps) => {
     return (
         <div className="max-h-full">
             <div className="pt-14 max-h-screen overflow-y-auto break-words flex flex-col-reverse">
-                {[...messages].reverse().map((message) => (
-                    <div key={message.date} className="max-w-inherit">
-                        <strong>{message.sender}:</strong> {message.text}
+                {[...messages].reverse().map((message, i) => (
+                    <div key={messages.length - i - 1} className="max-w-inherit">
+                        <strong>{message.sender}:</strong> {message.msg}
                     </div>
                 ))}
             </div>

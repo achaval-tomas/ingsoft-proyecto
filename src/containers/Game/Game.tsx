@@ -13,7 +13,7 @@ import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
 import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 import { getShapeAtOrNull } from "../../domain/Board";
-import { ChatMessage } from "./components/Chat";
+import { ChatMessage } from "../../domain/ChatMessage";
 
 type GameProps = {
     playerId: string;

@@ -1,9 +1,10 @@
 import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
+import { ChatMessage } from "../../domain/ChatMessage";
 import { PlayerId } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
 import Board from "./components/Board";
-import Chat, { ChatMessage } from "./components/Chat";
+import Chat from "./components/Chat";
 import MovementCardDeck from "./components/MovementCardDeck";
 import MovementCardHand from "./components/MovementCardHand";
 import ShapeCardHand from "./components/ShapeCardHand";
