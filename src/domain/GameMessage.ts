@@ -55,7 +55,7 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         message: z.string().optional(), // Display message for the error.
     }),
     z.object({
-        type: z.literal("chat-message"),
+        type: z.literal("new-message"),
         message: ChatMessageSchema,
     }),
 ]);
