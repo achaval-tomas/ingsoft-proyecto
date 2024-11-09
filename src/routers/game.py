@@ -1,7 +1,10 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from src.constants import errors
-from src.database.crud.crud_user import get_active_player_id_from_game
+from src.database.crud.crud_user import (
+    get_active_player_id_from_game,
+    get_active_player_id_from_lobby,
+)
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movement import handle_cancel_movement
 from src.routers.handlers.game.chat_message import handle_chat_message
@@ -21,9 +24,10 @@ game_router = APIRouter()
 
 @game_router.post('/game', status_code=200)
 async def start_game(body: game_schemas.GameCreate, db: SessionDep):
+    player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     rc = await handle_game_start(
         db=db,
-        player_id=body.player_id,
+        player_id=player_id,
         lobby_id=body.lobby_id,
     )
 
