@@ -79,7 +79,8 @@ class SendChatMessage(BaseModel):
 
 
 class ChatMessage(BaseModel):
-    player_name: str
+    type: str = 'player-message'
+    sender: str
     text: str
 
 

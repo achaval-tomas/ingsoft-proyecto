@@ -17,7 +17,7 @@ async def handle_chat_message(msg: SendChatMessage, db: Session, **_):
 
     message = NewChatMessageSchema(
         msg=ChatMessage(
-            player_name=player.player_name,
+            sender=player.player_name,
             text=msg.msg,
         ),
     ).model_dump_json()
