@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from src.constants import errors
 from src.database.crud.crud_user import (
+    get_active_player_games,
     get_active_player_id_from_game,
     get_active_player_id_from_lobby,
 )
@@ -20,6 +21,20 @@ from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
 
 game_router = APIRouter()
+
+
+@game_router.get('/game', status_code=200)
+def get_active_games(player_id: str, db: SessionDep):
+    return [
+        game_schemas.GameListItemSchema(
+            id=game.game_id,
+            name=game.game_name,
+            playerCount=len(
+                deserialize(game.player_order),
+            ),
+        )
+        for game in get_active_player_games(db=db, user_id=player_id)
+    ]
 
 
 @game_router.post('/game', status_code=200)

@@ -2,8 +2,9 @@ from contextlib import suppress
 
 from sqlalchemy.orm import Session
 
+from src.database.crud.crud_game import get_game_from_player
 from src.database.crud.id_gen import create_uuid
-from src.database.models import Player, User
+from src.database.models import Game, Player, User
 from src.schemas.player_schemas import PlayerCreateSchema
 from src.tools.jsonify import deserialize, serialize
 
@@ -24,6 +25,20 @@ def get_user(db: Session, user_id: str):
     return db.get(User, user_id)
 
 
+def get_active_player_games(db: Session, user_id: str):
+    games: list[Game] = []
+    user = get_user(db, user_id)
+    if not user:
+        return games
+
+    for id in deserialize(user.active_players):
+        game = get_game_from_player(db, id)
+        if game:
+            games.append()
+
+    return games
+
+
 def get_active_player_id_from_game(db: Session, user_id: str, game_id: str):
     user = get_user(db, user_id)
     for id in deserialize(user.active_players):
@@ -37,6 +52,9 @@ def get_active_player_id_from_game(db: Session, user_id: str, game_id: str):
 
 def get_active_player_id_from_lobby(db: Session, user_id: str, lobby_id: str):
     user = get_user(db, user_id)
+    if not user:
+        return None
+
     for id in deserialize(user.active_players):
         player = get_player(db, id)
         if not player:
@@ -48,6 +66,9 @@ def get_active_player_id_from_lobby(db: Session, user_id: str, lobby_id: str):
 
 def delete_active_player(db: Session, user_id: str, player_id: str):
     db_user = get_user(user_id=user_id, db=db)
+    if not db_user:
+        return
+
     user_players = deserialize(db_user.active_players)
 
     with suppress(ValueError):
