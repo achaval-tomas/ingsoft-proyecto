@@ -75,8 +75,12 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
-        // don't select blocked shape cards
-        if (targetPlayer.shapeCardsInHand[shapeCardIndex].isBlocked) {
+        // don't select blocked shape cards, unless it is own shape card and the only one remaining in hand
+        if (targetPlayer.shapeCardsInHand[shapeCardIndex].isBlocked
+           && !(
+               playerId === gameState.selfPlayerState.id
+               && gameState.selfPlayerState.shapeCardsInHand.length === 1
+           )) {
             return;
         }
 
