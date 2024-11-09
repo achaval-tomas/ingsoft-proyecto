@@ -12,6 +12,7 @@ function GamePage() {
     const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
 
     const gameState = useSelector((state: AppState) => state.gameState);
+    const chatMessages = useSelector((state: AppState) => state.chatMessages);
 
     const dispatch = useDispatch<Dispatch<Action>>();
     const sendMessage = useGameWebSocket(playerId, dispatch);
@@ -31,6 +32,7 @@ function GamePage() {
             playerId={playerId}
             gameState={gameState}
             sendMessage={sendMessage}
+            chatMessages={chatMessages}
         />
     );
 }

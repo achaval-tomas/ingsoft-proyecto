@@ -14,27 +14,17 @@ import useMovementTargets from "./hooks/useMovementTargets";
 import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 import { getShapeAtOrNull } from "../../domain/Board";
 import ChatMessage from "../../domain/ChatMessage";
+import { post } from "../../services/util";
+import { httpServerUrl } from "../../services/config";
 
 type GameProps = {
     playerId: string;
     gameState: GameState;
     sendMessage: (message: GameMessageOut) => void;
+    chatMessages: ChatMessage[];
 }
 
-function Game({ playerId, gameState, sendMessage }: GameProps) {
-
-    // TODO: move this outta here
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-
-    const handleSendChatMessage = (text: string) => {
-        const message: ChatMessage = {
-            type: "player-message",
-            text,
-            sender: gameState.selfPlayerState.name,
-        };
-
-        setChatMessages([...chatMessages, message]);
-    };
+function Game({ playerId, gameState, sendMessage, chatMessages }: GameProps) {
 
     const navigate = useNavigate();
 
@@ -181,6 +171,21 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
                 setSelectionState(null);
                 return;
             }
+        }
+    };
+
+    const handleSendChatMessage = async (text: string) => {
+        try {
+            const res = await post(`${httpServerUrl}/game/chat`, {
+                player_id: gameState.selfPlayerState.id,
+                message: text,
+            });
+
+            if (!res.ok) {
+                console.log(await res.json());
+            }
+        } catch (e) {
+            console.log(e);
         }
     };
 
