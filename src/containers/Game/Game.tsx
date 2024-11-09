@@ -15,8 +15,9 @@ import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 import { getShapeAtOrNull } from "../../domain/Board";
 import { post } from "../../services/util";
 import { httpServerUrl } from "../../services/config";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AppState from "../../domain/AppState";
+import { createErrorNotification } from "../../reducers/Action";
 
 type GameProps = {
     playerId: string;
@@ -26,6 +27,7 @@ type GameProps = {
 
 function Game({ playerId, gameState, sendMessage }: GameProps) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const chatMessages = useSelector((state: AppState) => state.chatMessages);
 
@@ -182,12 +184,16 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
                 message: text,
             });
 
-            if (!res.ok) {
-                console.log(await res.json());
+            if (res.ok) {
+                return;
             }
+
+            console.log(await res.json());
         } catch (e) {
             console.log(e);
         }
+
+        dispatch(createErrorNotification("Ocurrió un error al enviar el mensaje."));
     };
 
     return (
