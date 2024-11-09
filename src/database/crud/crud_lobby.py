@@ -1,9 +1,11 @@
 from sqlalchemy.orm import Session
 
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_player import create_player, get_player
+from src.database.crud.crud_user import get_user
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
+from src.schemas.player_schemas import PlayerCreateSchema
 from src.tools.jsonify import deserialize, serialize
 
 
@@ -36,19 +38,27 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
 
 
 def join_lobby(db: Session, lobby_id: str, player_id: str):
-    player = get_player(db, player_id)
-    if not player:
+    user = get_user(db, player_id)
+    if not user:
         return 1
-    if player.lobby_id == lobby_id:
+
+    user_players = [get_player(db, id) for id in deserialize(user.active_players)]
+    if any(p.lobby_id == lobby_id for p in user_players if p is not None):
         return 2
-    if player.lobby_id or player.game_id:
-        return 3
+
+    player = create_player(
+        db=db,
+        user_id=player_id,
+        player=PlayerCreateSchema(
+            player_name=user.user_name,
+        ),
+    )
 
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
-        return 4
+        return 3
     elif lobby.player_amount == lobby.max_players:
-        return 5
+        return 4
 
     player.lobby_id = lobby.lobby_id
 
