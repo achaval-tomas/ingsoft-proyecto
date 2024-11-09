@@ -23,11 +23,11 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
     return (
         <div className="h-full flex flex-col justify-end">
             <div
-                className="mb-2 overflow-y-auto break-words flex flex-col-reverse max-h-full"
+                className="mb-2 overflow-y-auto break-words flex flex-col-reverse h-full"
                 style={{ "WebkitMaskImage": "linear-gradient(0deg, #000 80%, transparent)" }}
             >
                 {messages.toReversed().map((message, i) => (
-                    <div key={messages.length - i - 1} className="max-w-inherit">
+                    <div key={messages.length - i}>
                         <strong>{message.sender}:</strong> {message.text}
                     </div>
                 ))}
