@@ -40,7 +40,7 @@ function NotificationPanel() {
     return (
         <div className="m-4 gap-4 flex flex-col">
             {notifications.map(n => (
-                <div key={n.id} className={`flex flex-row rounded-lg w-96 shadow shadow-black ${notificationTypeToBackgroundColor(n.type)}`}>
+                <div key={n.id} className={`flex flex-row rounded-lg w-96 shadow shadow-black ${notificationTypeToBackgroundColor(n.type)} z-[999999]`}>
                     <p className="grow ps-4 py-4">{n.message}</p>
                     <div
                         className="flex p-4 cursor-pointer hover:bg-white/5 items-center"
