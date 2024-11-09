@@ -41,12 +41,12 @@ const router = createBrowserRouter([
     },
 ]);
 
-const store = createStore<AppState, GameMessageIn>(
-    rootReducer,
-    {
-        gameState: null,
-    },
-);
+const initialAppState: AppState = {
+    gameState: null,
+    notifications: [],
+};
+
+const store = createStore<AppState, GameMessageIn>(rootReducer, initialAppState);
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
