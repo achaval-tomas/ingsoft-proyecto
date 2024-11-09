@@ -43,6 +43,7 @@ def create_game(db: Session, lobby_id: str, player_id: str):
     # create game
     db_game = Game(
         game_id=lobby_id,
+        game_name=lobby.lobby_name,
         player_order=serialize(player_order),
         current_turn=current_turn,
         turn_start=datetime.now(timezone.utc).isoformat(),

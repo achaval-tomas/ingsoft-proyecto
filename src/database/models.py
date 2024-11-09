@@ -32,6 +32,7 @@ class Lobby(Base):
 class Game(Base):
     __tablename__ = 'games'
     game_id = Column(String, primary_key=True)
+    game_name = Column(String)
     player_order = Column(String)
     current_turn = Column(Integer)
     turn_start = Column(String)
