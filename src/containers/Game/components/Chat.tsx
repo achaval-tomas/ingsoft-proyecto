@@ -24,7 +24,7 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
         <div className="h-full flex flex-col justify-end">
             <div
                 className="h-full mb-2 flex flex-col justify-end"
-                style={{ "WebkitMaskImage": "linear-gradient(0deg, #000 80%, transparent)" }}
+                style={{ maskImage: "linear-gradient(0deg, #000 80%, transparent)" }}
             >
                 {/* We reverse two times for "automatic scrolling" to most recent message */}
                 <div className="flex flex-col-reverse overflow-y-auto break-words">
