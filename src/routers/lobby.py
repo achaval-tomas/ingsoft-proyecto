@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
-from src.database.crud.crud_user import get_active_player_id_from_lobby, get_player
+from src.database.crud.crud_user import get_active_player_id_from_lobby
 from src.database.db import SessionDep
 from src.routers.handlers.lobby.leave_lobby import handle_leave_lobby
 from src.routers.handlers.lobby.lobbystate import handle_lobbystate
@@ -86,21 +86,21 @@ async def leave_lobby(body: LobbyLeaveSchema, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
 
 
-@lobby_router.websocket('/lobby/{player_id}')
+@lobby_router.websocket('/lobby/{lobby_id}')
 async def lobby_websocket(
+    lobby_id: str,
     player_id: str,
     ws: WebSocket,
     db: SessionDep,
 ):
-    player = get_player(db=db, player_id=player_id)
-    assert player is not None
+    subplayer_id = get_active_player_id_from_lobby(db, player_id, lobby_id)
 
-    await lobby_manager.connect(ws, player_id)
+    await lobby_manager.connect(ws, subplayer_id)
 
     try:
         await share_player_list(
-            player_id=player_id,
-            lobby_id=player.lobby_id,
+            player_id=subplayer_id,
+            lobby_id=lobby_id,
             db=db,
             broadcast=False,
         )
@@ -113,7 +113,7 @@ async def lobby_websocket(
             response = (
                 await message_handlers[request['type']](
                     db=db,
-                    player_id=player_id,
+                    player_id=subplayer_id,
                     data=received,
                 )
                 if request['type'] in message_handlers
@@ -121,10 +121,10 @@ async def lobby_websocket(
             )
 
             if response is not None:
-                await lobby_manager.send_personal_message(response, player_id)
+                await lobby_manager.send_personal_message(response, subplayer_id)
 
     except WebSocketDisconnect:
-        lobby_manager.disconnect(player_id=player_id, websocket=ws)
+        lobby_manager.disconnect(player_id=subplayer_id, websocket=ws)
         return
 
 
