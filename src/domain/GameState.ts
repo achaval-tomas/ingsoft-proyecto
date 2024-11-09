@@ -78,7 +78,3 @@ export function getAllPlayers(gameState: GameState): CommonPlayerState[] {
 export function getPlayerById(gameState: GameState, playerId: PlayerId): CommonPlayerState | undefined {
     return getAllPlayers(gameState).find(p => p.id === playerId);
 }
-
-export function getPlayerByRoundOrder(gameState: GameState, roundOrder: number): CommonPlayerState | undefined {
-    return getAllPlayers(gameState).find(p => p.roundOrder === roundOrder);
-}

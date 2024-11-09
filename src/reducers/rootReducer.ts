@@ -1,6 +1,6 @@
 import AppState, { clockSyncOffsetInMillis } from "../domain/AppState";
 import { Color } from "../domain/Color";
-import { BoardState, GameState, GameStatePatch, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
+import { BoardState, GameState, GameStatePatch, getAllPlayers, getPlayerById, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
 import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
 import { Position, positionToBoardIndex } from "../domain/Position";
 import { Rotation } from "../domain/Rotation";
@@ -324,7 +324,16 @@ function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMess
             break;
         }
         case "shape-card-used": {
-            newChatMessage = `${currentPlayer.name} descartó una carta de figura.`;
+            if (currentPlayer.id === action.targetPlayerId) {
+                newChatMessage = `${currentPlayer.name} descartó una carta de figura.`;
+            } else {
+                const targetPlayer = getPlayerById(gameState, action.targetPlayerId);
+                if (targetPlayer == null) {
+                    return chatMessages;
+                }
+
+                newChatMessage = `${currentPlayer.name} bloqueó una carta figura de ${targetPlayer.name}.`;
+            }
             break;
         }
         case "player-left": {
