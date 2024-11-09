@@ -256,43 +256,56 @@ function filterFirst<T>(arr: readonly T[], p: (t: T) => boolean): T[] {
     return arr.filter((_, i) => i !== firstIndex);
 }
 
+function createSystemMessage(text: string): ChatMessage {
+    return {
+        type: "system-message",
+        text: text,
+    };
+};
+
 function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMessage[], action: Action): ChatMessage[] {
     if (gameState == null) {
         return chatMessages;
     }
 
-    const currentPlayerName = getAllPlayers(gameState).find(p => p.roundOrder === gameState.currentRoundPlayer)?.name ?? "Alguien";
-
-    const nextPlayerName = getAllPlayers(gameState).find(p => p.roundOrder === computeNextPlayer(gameState))?.name ?? "Alguien";
-
-    const createSystemMessage = (text: string): ChatMessage => ({
-        type: "system-message",
-        text: text,
-    });
-
-    const newChatMessages = [...chatMessages];
-
-    switch (action.type) {
-        case "movement-card-used":
-            newChatMessages.push(createSystemMessage(`${currentPlayerName} hizo un movimiento.`));
-            break;
-        case "movement-cancelled":
-            newChatMessages.push(createSystemMessage(`${currentPlayerName} canceló un movimiento.`));
-            break;
-        case "shape-card-used":
-            newChatMessages.push(createSystemMessage(`${currentPlayerName} descartó una carta figura.`));
-            break;
-        case "player-left":
-            newChatMessages.push(createSystemMessage(`${currentPlayerName} abandonó la partida.`));
-            break;
-        case "turn-ended":
-            newChatMessages.push(createSystemMessage(`Terminó el turno de ${currentPlayerName}, ahora es el turno de ${nextPlayerName}.`));
-            break;
-        default:
-            break;
+    const currentPlayer = getAllPlayers(gameState).find(p => p.roundOrder === gameState.currentRoundPlayer);
+    if (currentPlayer == null) {
+        return chatMessages;
     }
 
-    return newChatMessages;
+    let newChatMessage: string;
+    switch (action.type) {
+        case "movement-card-used": {
+            newChatMessage = `${currentPlayer.name} hizo un movimiento.`;
+            break;
+        }
+        case "movement-cancelled": {
+            newChatMessage = `${currentPlayer.name} canceló un movimiento.`;
+            break;
+        }
+        case "shape-card-used": {
+            newChatMessage = `${currentPlayer.name} descartó una carta de figura.`;
+            break;
+        }
+        case "player-left": {
+            newChatMessage = `${currentPlayer.name} abandonó la partida.`;
+            break;
+        }
+        case "turn-ended": {
+            const nextPlayer = getAllPlayers(gameState).find(p => p.roundOrder === computeNextPlayer(gameState));
+            if (nextPlayer == null) {
+                return chatMessages;
+            }
+
+            newChatMessage = `Terminó el turno de ${currentPlayer.name}, ahora es el turno de ${nextPlayer.name}.`;
+            break;
+        }
+        default: {
+            return chatMessages;
+        }
+    }
+
+    return chatMessages.concat(createSystemMessage(newChatMessage));
 }
 
 function rootReducer(state: AppState | undefined, action: Action): AppState {
@@ -325,7 +338,7 @@ function rootReducer(state: AppState | undefined, action: Action): AppState {
     }
 
     if (action.type === "new-message") {
-        return { ...state, chatMessages: [...state.chatMessages, action.message] };
+        return { ...state, chatMessages: state.chatMessages.concat(action.message) };
     }
 
     return {
