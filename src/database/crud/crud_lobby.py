@@ -113,8 +113,8 @@ def get_lobby_by_player_id(db: Session, player_id: str):
     return get_lobby(db=db, lobby_id=player.lobby_id)
 
 
-def get_available_lobbies(db: Session, limit: int = 1000):
-    return db.query(Lobby).filter(Lobby.player_amount < Lobby.max_players).all()
+def get_lobbies(db: Session, limit: int = 1000):
+    return db.query(Lobby).all()
 
 
 def delete_lobby(db: Session, lobby_id: str):

@@ -79,8 +79,7 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
 @lobby_router.get('/lobby', response_model=list[LobbySchema])
 async def get_all_lobbies(db: SessionDep, player_id: str):
     return [
-        lobby_decoder(db, lobby, player_id)
-        for lobby in crud_lobby.get_available_lobbies(db=db)
+        lobby_decoder(db, lobby, player_id) for lobby in crud_lobby.get_lobbies(db=db)
     ]
 
 
