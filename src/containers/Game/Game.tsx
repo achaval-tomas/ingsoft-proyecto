@@ -20,11 +20,11 @@ import { httpServerUrl } from "../../services/config";
 type GameProps = {
     playerId: string;
     gameState: GameState;
-    sendMessage: (message: GameMessageOut) => void;
     chatMessages: ChatMessage[];
+    sendMessage: (message: GameMessageOut) => void;
 }
 
-function Game({ playerId, gameState, sendMessage, chatMessages }: GameProps) {
+function Game({ playerId, gameState, chatMessages, sendMessage }: GameProps) {
 
     const navigate = useNavigate();
 
@@ -194,7 +194,7 @@ function Game({ playerId, gameState, sendMessage, chatMessages }: GameProps) {
             <GameLayout
                 uiState={uiState}
                 chatMessages={chatMessages}
-                onSendChatMessage={handleSendChatMessage}
+                onSendChatMessage={text => void handleSendChatMessage(text)}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickShapeCard={handleClickShapeCard}
