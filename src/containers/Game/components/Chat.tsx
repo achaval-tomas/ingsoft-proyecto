@@ -23,7 +23,7 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
     return (
         <div className="h-full flex flex-col justify-end">
             <div
-                className="mb-2 overflow-y-auto break-words flex flex-col justify-end h-full"
+                className="h-full mb-2 flex flex-col justify-end overflow-y-auto break-words"
                 style={{ "WebkitMaskImage": "linear-gradient(0deg, #000 80%, transparent)" }}
             >
                 {messages.map((message, i) => (
