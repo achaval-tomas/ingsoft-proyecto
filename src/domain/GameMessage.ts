@@ -31,6 +31,9 @@ export const GameMessageInSchema = z.discriminatedUnion("type", [
         // rejected one of our messages.
         type: z.literal("game-state"),
         gameState: GameStateSchema,
+        // The time of the server clock when this message was sent.
+        // This is used to (roughly) synchronize the client clock with the server clock.
+        now: z.string().datetime(),
     }),
     z.object({
         // Received when a user makes a movement
