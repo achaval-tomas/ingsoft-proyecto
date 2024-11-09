@@ -16,4 +16,22 @@ type Action = GameMessageIn
         timeoutMillis: number | null;
     }
 
+export function createWarningNotification(message: string): Action {
+    return {
+        type: "create-notification",
+        notificationType: "warning",
+        message,
+        timeoutMillis: 5000,
+    };
+}
+
+export function createErrorNotification(message: string): Action {
+    return {
+        type: "create-notification",
+        notificationType: "warning",
+        message,
+        timeoutMillis: 30000,
+    };
+}
+
 export default Action;
