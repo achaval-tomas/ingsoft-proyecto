@@ -4,8 +4,8 @@ from src.database.crud.crud_player import get_player
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
-from src.tools.jsonify import deserialize, serialize
 from src.tools.hashingfy import hash_password
+from src.tools.jsonify import deserialize, serialize
 
 
 def create_lobby(db: Session, lobby: LobbyCreateSchema):
@@ -29,7 +29,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
         max_players=lobby.max_players,
         players=serialize(player_list),
         player_amount=1,
-        password=password
+        password=password,
     )
 
     player.lobby_id = db_lobby.lobby_id
