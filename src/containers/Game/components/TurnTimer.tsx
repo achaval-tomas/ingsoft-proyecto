@@ -7,21 +7,26 @@ type TurnTimerProps = {
     turnStart: string; // ISO 8601
 }
 
+function computeRemainingSeconds(turnStartDateInMillis: number): number {
+    const nowInMillis = (new Date()).getTime();
+    const elapsedMillis = (nowInMillis - clockSyncOffsetInMillis.value) - turnStartDateInMillis;
+    const remainingMillis = Math.max((turnLengthInSeconds * 1000) - elapsedMillis, 0);
+    const remainingSeconds = Math.ceil(remainingMillis / 1000);
+
+    return remainingSeconds;
+}
+
 function TurnTimer({ turnStart }: TurnTimerProps) {
-    const turnStartDate = useMemo(() => new Date(turnStart), [turnStart]);
-    const [, triggerRerender] = useState(0);
+    const turnStartDateInMillis = useMemo(() => (new Date(turnStart)).getTime(), [turnStart]);
+    const [remainingSeconds, setRemainingSeconds] = useState(computeRemainingSeconds(turnStartDateInMillis));
 
     useEffect(() => {
         const interval = setInterval(() => {
-            triggerRerender(i => i + 1);
-        }, 1000);
+            setRemainingSeconds(computeRemainingSeconds(turnStartDateInMillis));
+        }, 100);
 
         return () => clearInterval(interval);
-    }, [turnStart]);
-
-    const elapsedMillis = ((new Date()).getTime() - clockSyncOffsetInMillis.value) - turnStartDate.getTime();
-    const remainingMillis = Math.max((turnLengthInSeconds * 1000) - elapsedMillis, 0);
-    const remainingSeconds = Math.ceil(remainingMillis / 1000);
+    }, [turnStartDateInMillis]);
 
     const remainingMinutes = Math.floor(remainingSeconds / 60);
     const remainingMinuteSeconds = remainingSeconds % 60;
