@@ -8,4 +8,8 @@ type AppState = {
     chatMessages: ChatMessage[];
 }
 
+// This value is used to correct time desync between client and server.
+// It is computed as clientNow - serverNow.
+export const clockSyncOffsetInMillis = { value: 0 };
+
 export default AppState;

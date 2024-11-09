@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { clockSyncOffsetInMillis } from "../../../domain/AppState";
 
 const turnLengthInSeconds = 120;
 
@@ -18,7 +19,7 @@ function TurnTimer({ turnStart }: TurnTimerProps) {
         return () => clearInterval(interval);
     }, [turnStart]);
 
-    const elapsedMillis = (new Date()).getTime() - turnStartDate.getTime();
+    const elapsedMillis = ((new Date()).getTime() - clockSyncOffsetInMillis.value) - turnStartDate.getTime();
     const remainingMillis = Math.max((turnLengthInSeconds * 1000) - elapsedMillis, 0);
     const remainingSeconds = Math.ceil(remainingMillis / 1000);
 

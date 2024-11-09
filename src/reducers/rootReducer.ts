@@ -1,4 +1,4 @@
-import AppState from "../domain/AppState";
+import AppState, { clockSyncOffsetInMillis } from "../domain/AppState";
 import { Color } from "../domain/Color";
 import { BoardState, GameState, GameStatePatch, getAllPlayers, OtherPlayerState, SelfPlayerState } from "../domain/GameState";
 import { getTargetFromPositionClamped, Movement } from "../domain/Movement";
@@ -21,6 +21,7 @@ function computeNextPlayer(s: GameState): number {
 
 function gameStateReducer(gameState: GameState | null, action: GameMessageIn): GameState | null {
     if (action.type === "game-state") {
+        clockSyncOffsetInMillis.value = (new Date()).getTime() - (new Date(action.now)).getTime();
         return action.gameState;
     }
 
