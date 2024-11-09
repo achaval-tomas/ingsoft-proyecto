@@ -38,7 +38,7 @@ function NotificationPanel() {
     }, [notifications, dispatch]);
 
     return (
-        <div className="p-4 gap-4 flex flex-col max-h-screen overflow-scroll">
+        <div className="p-4 gap-4 flex flex-col max-h-screen overflow-auto">
             {notifications.map(n => (
                 <div key={n.id} className={`flex flex-row rounded-lg w-96 shadow shadow-black ${notificationTypeToBackgroundColor(n.type)} z-[999999]`}>
                     <p className="grow ps-4 py-4">{n.message}</p>
