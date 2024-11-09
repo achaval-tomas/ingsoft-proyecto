@@ -12,7 +12,7 @@ import { GameUiState } from "./GameUiState";
 
 type GameLayoutProps = {
     uiState: GameUiState;
-    messages: ChatMessage[];
+    chatMessages: ChatMessage[];
     onSendMessage: (message: string) => void;
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
@@ -24,7 +24,7 @@ type GameLayoutProps = {
 
 function GameLayout({
     uiState,
-    messages,
+    chatMessages,
     onSendMessage,
     onClickEndTurn,
     onClickLeaveGame,
@@ -41,7 +41,7 @@ function GameLayout({
             style={{ gridTemplateRows: "5fr 2fr", gridTemplateColumns: "1fr" }}
         >
             <div className="self-end absolute w-[24em] h-[50vh] flex items-end">
-                <Chat messages={messages} onSendMessage={onSendMessage} />
+                <Chat messages={chatMessages} onSendMessage={onSendMessage} />
             </div>
             <div className="row-start-1 col-start-1 h-full aspect-square justify-self-center self-center">
                 <div className="flex flex-row w-full h-full ">

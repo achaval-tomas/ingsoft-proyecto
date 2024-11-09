@@ -188,7 +188,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
         <>
             <GameLayout
                 uiState={uiState}
-                messages={chatMessages}
+                chatMessages={chatMessages}
                 onSendMessage={handleSendMessage}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
