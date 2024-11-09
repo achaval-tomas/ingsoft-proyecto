@@ -26,7 +26,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
     // TODO: move this outta here
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
-    const handleSendMessage = (text: string) => {
+    const handleSendChatMessage = (text: string) => {
         const message: ChatMessage = {
             type: "player-message",
             text,
@@ -189,7 +189,7 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             <GameLayout
                 uiState={uiState}
                 chatMessages={chatMessages}
-                onSendMessage={handleSendMessage}
+                onSendChatMessage={handleSendChatMessage}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
                 onClickShapeCard={handleClickShapeCard}
