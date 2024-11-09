@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from src.constants import errors
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movement import handle_cancel_movement
+from src.routers.handlers.game.chat_message import handle_chat_message
 from src.routers.handlers.game.end_turn import handle_end_turn
 from src.routers.handlers.game.gamestate import handle_gamestate
 from src.routers.handlers.game.leave_game import handle_leave_game
@@ -38,13 +39,23 @@ async def start_game(body: game_schemas.GameCreate, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.PLAYER_IS_MISSING)
 
 
+@game_router.post('/game/chat', status_code=200)
+async def send_chat_message(message: game_schemas.SendChatMessage, db: SessionDep):
+    rc = await handle_chat_message(msg=message, db=db)
+
+    if rc == 1:
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
+    elif rc == 2:
+        raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
+
+
 @game_router.post('/game/leave', status_code=200)
 async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
-    res = await handle_leave_game(player_id=body.playerId, db=db)
+    rc = await handle_leave_game(player_id=body.playerId, db=db)
 
-    if res == 1:
+    if rc == 1:
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
-    elif res == 2:
+    elif rc == 2:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
 
 

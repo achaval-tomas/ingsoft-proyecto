@@ -72,3 +72,19 @@ class TurnEndedMessageSchema(MessageSchema):
     playerId: str
     newShapeCards: list[card_schemas.ShapeCardSchema]
     newMovementCards: Optional[list[str]] = []
+
+
+class SendChatMessage(BaseModel):
+    player_id: str
+    message: str
+
+
+class ChatMessage(BaseModel):
+    type: str = 'player-message'
+    sender: str
+    text: str
+
+
+class NewChatMessageSchema(BaseModel):
+    type: str = 'new-message'
+    message: ChatMessage
