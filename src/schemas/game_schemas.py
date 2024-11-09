@@ -75,7 +75,7 @@ class TurnEndedMessageSchema(MessageSchema):
 
 class SendChatMessage(BaseModel):
     player_id: str
-    msg: str
+    message: str
 
 
 class ChatMessage(BaseModel):
@@ -86,4 +86,4 @@ class ChatMessage(BaseModel):
 
 class NewChatMessageSchema(BaseModel):
     type: str = 'new-message'
-    msg: ChatMessage
+    message: ChatMessage
