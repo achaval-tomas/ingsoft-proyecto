@@ -7,6 +7,9 @@ import { Rotation } from "../domain/Rotation";
 import { getShapeAtOrNull } from "../domain/Board";
 import Action from "./Action";
 import { GameMessageIn } from "../domain/GameMessage";
+import Notification from "../domain/Notification";
+
+let nextNotificationId: number = 0;
 
 function computeNextPlayer(s: GameState): number {
     const allPlayers = getAllPlayers(s).toSorted((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
@@ -259,6 +262,22 @@ function rootReducer(state: AppState | undefined, action: Action): AppState {
 
     if (action.type === "clear-notification") {
         return { ...state, notifications: state.notifications.filter(n => n.id !== action.notificationId) };
+    }
+
+    if (action.type === "create-notification") {
+        const newNotification: Notification = {
+            id: nextNotificationId,
+            type: action.notificationType,
+            message: action.message,
+            timeoutMillis: action.timeoutMillis,
+        };
+
+        nextNotificationId++;
+
+        return {
+            ...state,
+            notifications: state.notifications.concat(newNotification),
+        };
     }
 
     if (action.type === "clear-game-state") {
