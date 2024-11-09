@@ -6,6 +6,7 @@ import { Position, positionToBoardIndex } from "../domain/Position";
 import { Rotation } from "../domain/Rotation";
 import { getShapeAtOrNull } from "../domain/Board";
 import Action from "./Action";
+import { GameMessageIn } from "../domain/GameMessage";
 
 function computeNextPlayer(s: GameState): number {
     const allPlayers = getAllPlayers(s).toSorted((lhs, rhs) => lhs.roundOrder - rhs.roundOrder);
@@ -14,13 +15,9 @@ function computeNextPlayer(s: GameState): number {
     return nextPlayer.roundOrder;
 }
 
-function gameStateReducer(gameState: GameState | null, action: Action): GameState | null {
+function gameStateReducer(gameState: GameState | null, action: GameMessageIn): GameState | null {
     if (action.type === "game-state") {
         return action.gameState;
-    }
-
-    if (action.type === "clear-game-state") {
-        return null;
     }
 
     if (gameState == null) {
@@ -262,6 +259,10 @@ function rootReducer(state: AppState | undefined, action: Action): AppState {
 
     if (action.type === "clear-notification") {
         return { ...state, notifications: state.notifications.filter(n => n.id !== action.notificationId) };
+    }
+
+    if (action.type === "clear-game-state") {
+        return { ...state, gameState: null };
     }
 
     return { ...state, gameState: gameStateReducer(state.gameState, action) };
