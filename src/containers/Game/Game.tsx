@@ -26,7 +26,13 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
     // TODO: move this outta here
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
-    const handleSendMessage = (message: ChatMessage) => {
+    const handleSendMessage = (text: string) => {
+        const message: ChatMessage = {
+            type: "player-message",
+            text,
+            sender: gameState.selfPlayerState.name,
+        };
+
         setChatMessages([...chatMessages, message]);
     };
 

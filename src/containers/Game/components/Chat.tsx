@@ -5,23 +5,19 @@ import ChatMessage from "../../../domain/ChatMessage";
 
 export interface ChatProps {
    messages: ChatMessage[];
-   selfPlayerName: string;
-   onSendMessage: (message: ChatMessage) => void;
+   onSendMessage: (message: string) => void;
 };
 
-const Chat = ({ messages, selfPlayerName, onSendMessage }: ChatProps) => {
+const Chat = ({ messages, onSendMessage }: ChatProps) => {
     const [input, setInput] = useState("");
 
     const sendMessage = () => {
-        if (input.trim() === "") { return; }
+        const trimmedInput = input.trim();
+        if (trimmedInput === "") {
+            return;
+        }
 
-        const newMessage: ChatMessage = {
-            text: input,
-            sender: selfPlayerName,
-            type: "player-message",
-        };
-
-        onSendMessage(newMessage);
+        onSendMessage(trimmedInput);
         setInput("");
     };
 
