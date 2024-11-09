@@ -9,7 +9,6 @@ export const ChatMessageSchema = z.object({
     // It is separate from 'text' for styling purposes.
     sender: z.string().optional(),
     text: z.string(),
-    sender: z.string(),
 });
 
 type ChatMessage = z.infer<typeof ChatMessageSchema>;
