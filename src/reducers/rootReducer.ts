@@ -19,6 +19,10 @@ function computeNextPlayer(s: GameState): number {
     return nextPlayer.roundOrder;
 }
 
+function serverNowAsIsoString(): string {
+    return (new Date(Date.now() - clockSyncOffsetInMillis.value)).toISOString();
+}
+
 function gameStateReducer(gameState: GameState | null, action: GameMessageIn): GameState | null {
     if (action.type === "game-state") {
         clockSyncOffsetInMillis.value = (new Date()).getTime() - (new Date(action.now)).getTime();
@@ -55,6 +59,7 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
             }
 
             newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
+            newGameState.turnStart = serverNowAsIsoString();
 
             if (gameState.temporalMovements.length > 0) {
                 const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
@@ -89,6 +94,7 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
             const player = gameState.otherPlayersState.find(p => p.id === action.playerId);
             if (player != null && player.roundOrder === gameState.currentRoundPlayer) {
                 newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
+                newGameState.turnStart = serverNowAsIsoString();
             }
 
             return newGameState;
