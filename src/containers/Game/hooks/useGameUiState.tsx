@@ -84,7 +84,7 @@ function commonPlayerStateToUiState(state: CommonPlayerState, selectionState: Se
             shape: sc.shape,
             status: (i === selectedShapeCardIndex)
                 ? "selected"
-                : sc.isBlocked
+                : sc.isBlocked && state.shapeCardsInHand.length > 1
                     ? "blocked"
                     : "normal",
         })),
