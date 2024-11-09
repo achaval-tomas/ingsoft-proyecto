@@ -1,5 +1,4 @@
 import { useState } from "react";
-import FilledButton from "../../../components/FilledButton";
 import Input from "../../../components/Input";
 import ChatMessage from "../../../domain/ChatMessage";
 
