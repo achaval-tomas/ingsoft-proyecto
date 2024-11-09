@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.schemas.player_schemas import PlayerInfoSchema
@@ -11,7 +12,8 @@ class LobbyBase(BaseModel):
 
 
 class LobbyCreateSchema(LobbyBase):
-    pass
+    password: Optional[str] = None
+    
 
 
 class LobbyIdSchema(BaseModel):
