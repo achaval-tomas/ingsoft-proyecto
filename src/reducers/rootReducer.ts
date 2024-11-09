@@ -221,6 +221,9 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
 
             return newGameState;
         }
+        case "new-message": {
+            return gameState;
+        }
     }
 }
 
