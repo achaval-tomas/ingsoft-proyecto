@@ -22,7 +22,17 @@ type GameLayoutProps = {
     onClickCancelMovement: () => void;
 };
 
-function GameLayout({ uiState, messages, onSendMessage, onClickEndTurn, onClickLeaveGame, onClickShapeCard, onClickMovementCard, onClickTile, onClickCancelMovement }: GameLayoutProps) {
+function GameLayout({
+    uiState,
+    messages,
+    onSendMessage,
+    onClickEndTurn,
+    onClickLeaveGame,
+    onClickShapeCard,
+    onClickMovementCard,
+    onClickTile,
+    onClickCancelMovement,
+}: GameLayoutProps) {
     const { selfPlayerUiState, otherPlayersUiState, boardUiState } = uiState;
 
     return (
