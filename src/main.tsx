@@ -45,7 +45,26 @@ const router = createBrowserRouter([
 
 const initialAppState: AppState = {
     gameState: null,
-    notifications: [],
+    notifications: [
+        {
+            id: 0,
+            type: "error",
+            message: "this is an error",
+            timeoutMillis: null,
+        },
+        {
+            id: 1,
+            type: "warning",
+            message: "this is a warning",
+            timeoutMillis: null,
+        },
+        {
+            id: 2,
+            type: "error",
+            message: "this is another error",
+            timeoutMillis: null,
+        },
+    ],
 };
 
 const store = createStore<AppState, GameMessageIn>(rootReducer, initialAppState);
