@@ -62,7 +62,7 @@ export const GameStateSchema = z.object({
     selfPlayerState: SelfPlayerStateSchema,
     otherPlayersState: OtherPlayerStateSchema.array().max(3),
     boardState: BoardStateSchema,
-    // turnStart: z.string().datetime(),
+    turnStart: z.string().datetime(), // Time of turn start (ISO 8601)
     currentRoundPlayer: z.number().int().max(3),
     winner: PlayerIdSchema.optional(),
     temporalMovements: TemporalMovementSchema.array().max(3),
