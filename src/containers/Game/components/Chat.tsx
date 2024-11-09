@@ -27,7 +27,10 @@ const Chat = ({ messages, onSendMessage }: ChatProps) => {
                 style={{ maskImage: "linear-gradient(0deg, #000 80%, transparent)" }}
             >
                 {/* We reverse two times for "automatic scrolling" to most recent message */}
-                <div className="flex flex-col-reverse overflow-y-auto break-words">
+                <div
+                    className="flex flex-col-reverse overflow-y-auto break-words"
+                    style={{ scrollbarWidth: "none" }}
+                >
                     {messages.toReversed().map((message, i) => (
                         <div key={length - i}>
                             <strong>{message.sender}:</strong> {message.text}
