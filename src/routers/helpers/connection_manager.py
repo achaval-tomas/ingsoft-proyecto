@@ -40,7 +40,7 @@ class ConnectionManager:
 
 
 class GameConnectionManager(ConnectionManager):
-    async def broadcast_in_game(self, message: str, db: Session, game_id: int):
+    async def broadcast_in_game(self, message: str, db: Session, game_id: str):
         """broadcasts a message to everyone (currently connected) in a game"""
         game_players = crud_game.get_game_players(db=db, game_id=game_id)
 

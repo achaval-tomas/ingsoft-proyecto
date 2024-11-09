@@ -21,7 +21,7 @@ class GameCreate(BaseModel):
 
 
 class Game(GameBase):
-    game_id: int
+    game_id: str
 
     model_config = ConfigDict(from_attributes=True)
 

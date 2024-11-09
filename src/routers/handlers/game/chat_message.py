@@ -6,12 +6,12 @@ from src.routers.helpers.connection_manager import game_manager
 from src.schemas.game_schemas import ChatMessage, NewChatMessageSchema, SendChatMessage
 
 
-async def handle_chat_message(msg: SendChatMessage, db: Session, **_):
+async def handle_chat_message(game_id: str, msg: SendChatMessage, db: Session, **_):
     player = get_player(db=db, player_id=msg.player_id)
     if not player:
         return 1
 
-    game = get_game(game_id=player.game_id, db=db)
+    game = get_game(game_id=game_id, db=db)
     if not game:
         return 2
 
