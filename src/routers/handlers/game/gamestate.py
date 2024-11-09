@@ -98,8 +98,8 @@ async def handle_gamestate(player_id: str, db: Session, **_):
         selfPlayerState=selfPlayerState,
         otherPlayersState=otherPlayersState,
         boardState=boardState,
-        turnStart=0,
         currentRoundPlayer=game_data.current_turn,
+        turnStart=game_data.turn_start,
         temporalMovements=temporalMovements,
     )
 

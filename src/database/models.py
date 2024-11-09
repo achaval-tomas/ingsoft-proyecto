@@ -27,6 +27,7 @@ class Game(Base):
     game_id = Column(Integer, primary_key=True, autoincrement=True)
     player_order = Column(String)
     current_turn = Column(Integer)
+    turn_start = Column(String)
     board = Column(String)
     blocked_color = Column(String)
     temp_switches = Column(String)
