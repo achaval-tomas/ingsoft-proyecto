@@ -50,19 +50,19 @@ const initialAppState: AppState = {
             id: 0,
             type: "error",
             message: "this is an error",
-            timeoutMillis: null,
+            timeoutMillis: 5000,
         },
         {
             id: 1,
             type: "warning",
             message: "this is a warning",
-            timeoutMillis: null,
+            timeoutMillis: 7000,
         },
         {
             id: 2,
             type: "error",
             message: "this is another error",
-            timeoutMillis: null,
+            timeoutMillis: 2000,
         },
     ],
 };

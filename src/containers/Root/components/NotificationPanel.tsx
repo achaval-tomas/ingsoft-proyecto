@@ -3,6 +3,7 @@ import AppState from "../../../domain/AppState";
 import { NotificationType } from "../../../domain/Notification";
 import Action from "../../../reducers/Action";
 import { Dispatch } from "redux";
+import { useEffect, useRef } from "react";
 
 function notificationTypeToBackgroundColor(notificationType: NotificationType): string {
     switch (notificationType) {
@@ -14,6 +15,27 @@ function notificationTypeToBackgroundColor(notificationType: NotificationType): 
 function NotificationPanel() {
     const dispatch = useDispatch<Dispatch<Action>>();
     const notifications = useSelector((appState: AppState) => appState.notifications);
+    const notificationTimers = useRef<{ [nid: number]: number }>({});
+
+    useEffect(() => {
+        for (const notification of notifications) {
+            if (notification.timeoutMillis == null) {
+                continue;
+            }
+
+            if (notificationTimers.current[notification.id] !== undefined) {
+                continue;
+            }
+
+            notificationTimers.current[notification.id] = setTimeout(
+                () => {
+                    dispatch({ type: "clear-notification", notificationId: notification.id });
+                    delete notificationTimers.current[notification.id];
+                },
+                notification.timeoutMillis,
+            );
+        }
+    }, [notifications, dispatch]);
 
     return (
         <div className="m-4 gap-4 flex flex-col">
