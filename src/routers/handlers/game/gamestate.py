@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from src.constants import errors
@@ -105,6 +106,7 @@ async def handle_gamestate(player_id: str, db: Session, **_):
     response = GameStateMessageSchema(
         type='game-state',
         gameState=game_state,
+        now=datetime.now(timezone.utc).isoformat(),
     )
 
     return response.model_dump_json()
