@@ -70,6 +70,15 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
+        const targetPlayer = getPlayerById(gameState, playerId);
+        if (targetPlayer == null) {
+            return;
+        }
+
+        // don't select blocked shape cards
+        if (targetPlayer.shapeCardsInHand[shapeCardIndex].isBlocked) {
+            return;
+        }
         if (selectionState?.type === "shape-card" && selectionState.playerId === playerId && selectionState.shapeCardIndex === shapeCardIndex) {
             setSelectionState(null);
             return;
