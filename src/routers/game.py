@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from src.constants import errors
+from src.database.crud.crud_user import get_active_player_id_from_game
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movement import handle_cancel_movement
 from src.routers.handlers.game.chat_message import handle_chat_message
@@ -39,9 +40,17 @@ async def start_game(body: game_schemas.GameCreate, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.PLAYER_IS_MISSING)
 
 
-@game_router.post('/game/chat', status_code=200)
-async def send_chat_message(message: game_schemas.SendChatMessage, db: SessionDep):
-    rc = await handle_chat_message(msg=message, db=db)
+@game_router.post('/game/{game_id}/chat', status_code=200)
+async def send_chat_message(
+    message: game_schemas.SendChatMessage,
+    game_id: str,
+    db: SessionDep,
+):
+    rc = await handle_chat_message(
+        game_id=game_id,
+        msg=message,
+        db=db,
+    )
 
     if rc == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
@@ -49,9 +58,11 @@ async def send_chat_message(message: game_schemas.SendChatMessage, db: SessionDe
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
 
 
-@game_router.post('/game/leave', status_code=200)
-async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
-    rc = await handle_leave_game(player_id=body.playerId, db=db)
+@game_router.post('/game/{game_id}/leave', status_code=200)
+async def leave_game(body: player_schemas.PlayerId, game_id: str, db: SessionDep):
+    player_id = get_active_player_id_from_game(db, body.playerId, game_id)
+
+    rc = await handle_leave_game(player_id=player_id, db=db)
 
     if rc == 1:
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
@@ -59,12 +70,15 @@ async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
 
 
-@game_router.websocket('/game/{player_id}')
+@game_router.websocket('/game/{game_id}')
 async def game_websocket(
+    game_id: str,
     player_id: str,
     ws: WebSocket,
     db: SessionDep,
 ):
+    player_id = get_active_player_id_from_game(db, player_id, game_id)
+
     await game_manager.connect(ws, player_id)
 
     try:
