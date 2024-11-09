@@ -53,6 +53,8 @@ function useGameUiState(
         movementTargets,
     );
 
+    const turnStart = gameState.turnStart;
+
     const winner = useWinner(gameState);
     const winnerName = winner?.name;
 
@@ -61,9 +63,10 @@ function useGameUiState(
             selfPlayerUiState,
             otherPlayersUiState,
             boardUiState,
+            turnStart,
             winnerName,
         }),
-        [selfPlayerUiState, otherPlayersUiState, boardUiState, winnerName],
+        [selfPlayerUiState, otherPlayersUiState, boardUiState, turnStart, winnerName],
     );
 
     return uiState;

@@ -51,5 +51,6 @@ export type GameUiState = {
     selfPlayerUiState: SelfPlayerUiState;
     otherPlayersUiState: OtherPlayerUiState[];
     boardUiState: BoardUiState;
+    turnStart: string;
     winnerName: string | undefined;
 }
