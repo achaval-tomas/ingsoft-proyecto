@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import gameService from "../../services/gameService";
 import WinnerDialog from "./components/WinnerDialog";
-import { toLobbyList, toLobby } from "../../navigation/destinations";
+import { toLobbyList } from "../../navigation/destinations";
 import { MovementTarget } from "../../domain/Movement";
 import { boardIndexToPosition, Position, positionsEqual, positionToBoardIndex } from "../../domain/Position";
 import { GameState, getPlayerById, PlayerId } from "../../domain/GameState";
