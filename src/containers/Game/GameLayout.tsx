@@ -1,6 +1,6 @@
 import FilledButton from "../../components/FilledButton";
 import TextButton from "../../components/TextButton";
-import { ChatMessage } from "../../domain/ChatMessage";
+import ChatMessage from "../../domain/ChatMessage";
 import { PlayerId } from "../../domain/GameState";
 import { Position } from "../../domain/Position";
 import Board from "./components/Board";
