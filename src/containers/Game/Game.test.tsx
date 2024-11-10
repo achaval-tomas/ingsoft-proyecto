@@ -253,4 +253,66 @@ describe("Game", () => {
             });
         });
     });
+
+    describe("use movement card", () => {
+        async function genericUseMovementCardTest({
+            sourceTilePosition,
+            targetTilePosition,
+            targetMovementCardIndex,
+            expectedMessages,
+            gameState = testGameState,
+        }: {
+            sourceTilePosition: Position;
+            targetTilePosition: Position;
+            targetMovementCardIndex: number;
+            expectedMessages: GameMessageOut[];
+            gameState?: GameState;
+        }) {
+            let messageIndex = 0;
+            const sendMessage = vi.fn<(msg: GameMessageOut) => void>((message) => {
+                expect(messageIndex).toBeLessThan(expectedMessages.length);
+                expect(message).toStrictEqual(expectedMessages[messageIndex]);
+                messageIndex++;
+            });
+
+            render(
+                <Provider store={createTestStore()}>
+                    <Game
+                        gameState={gameState}
+                        sendMessage={sendMessage}
+                    />,
+                </Provider>,
+            );
+
+            const sourceTile = screen.getByTestId(`tile-${sourceTilePosition[0]}-${sourceTilePosition[1]}`);
+            const targetTile = screen.getByTestId(`tile-${targetTilePosition[0]}-${targetTilePosition[1]}`);
+            const targetMovementCard = screen.getByTestId(`movement-card-${targetMovementCardIndex}`);
+
+            expect(targetMovementCard).toBeVisible();
+            expect(sourceTile).toBeVisible();
+            expect(targetTile).toBeVisible();
+
+            await userEvent.click(targetMovementCard);
+            await userEvent.click(sourceTile);
+            await userEvent.click(targetTile);
+
+            expect(sendMessage).toHaveBeenCalledTimes(expectedMessages.length);
+        }
+
+        test("can correctly use movement card", async () => {
+            await genericUseMovementCardTest({
+                sourceTilePosition: [1, 4],
+                targetTilePosition: [2, 4],
+                targetMovementCardIndex: 0,
+                expectedMessages: [
+                    {
+                        type: "use-movement-card",
+                        movement: "straight-adjacent",
+                        position: [1, 4],
+                        rotation: "r0",
+                    },
+                ],
+            });
+        });
+    });
 });
