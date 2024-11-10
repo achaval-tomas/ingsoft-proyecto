@@ -14,10 +14,10 @@ import { createStore } from "redux";
 
 const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
     "rgbyry",
-    "rrrgbb",
-    "gyybry",
-    "ygbrrr",
-    "yryryr",
+    "rrrybb",
+    "gyygry",
+    "ygbggr",
+    "yryrgr",
     "rrrrrr",
 ])) as Color[];
 
@@ -169,6 +169,48 @@ describe("Game", () => {
 
             expect(sendMessage).toHaveBeenCalledOnce();
             expect(sendMessage).toBeCalledWith(expectedMessage);
+        });
+
+        test("their shape card", async () => {
+            vi.mock("react-router-dom", async () => {
+                const mod = await vi.importActual("react-router-dom");
+
+                return {
+                    ...mod,
+                    useNavigate: () => (() => {}),
+                };
+            });
+
+            const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
+
+            render(
+                <Provider store={createTestStore()}>
+                    <Game
+                        gameState={testGameState}
+                        sendMessage={sendMessage}
+                    />,
+                </Provider>,
+            );
+
+            const targetPlayerId = testGameState.otherPlayersState[1].id;
+
+            const targetTile = screen.getByTestId("tile-4-1");
+            const targetShapeCard = screen.getByTestId(`shape-card-${targetPlayerId}-0`);
+
+            expect(targetTile).toBeVisible();
+            expect(targetShapeCard).toBeVisible();
+
+            await userEvent.click(targetShapeCard);
+            await userEvent.click(targetTile);
+
+            const expectedMessage: GameMessageOut = {
+                type: "use-shape-card",
+                targetPlayerId,
+                position: [4, 1],
+            };
+
+            expect(sendMessage).toBeCalledWith(expectedMessage);
+            expect(sendMessage).toHaveBeenCalledOnce();
         });
     });
 });
