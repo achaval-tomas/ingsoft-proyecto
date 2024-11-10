@@ -145,7 +145,7 @@ function testAction(
 
 describe("rootReducer", () => {
     describe("turn-ended", () => {
-        test("no actions taken", () => {
+        test("self - no actions taken", () => {
             testAction(
                 testAppState,
                 {
@@ -161,6 +161,62 @@ describe("rootReducer", () => {
                     playerId: testGameState.selfPlayerState.id,
                     newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
                     newMovementCards: testGameState.selfPlayerState.movementCardsInHand,
+                },
+            );
+        });
+
+        test("self - with temporal movements", () => {
+            testAction(
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: testGameState.selfPlayerState.movementCardsInHand.toSpliced(0, 2),
+                        },
+                        temporalMovements: [
+                            {
+                                movement: "diagonal-adjacent",
+                                position: [1, 1],
+                                rotation: "r0",
+                            },
+                            {
+                                movement: "diagonal-adjacent",
+                                position: [2, 2],
+                                rotation: "r90",
+                            },
+                        ],
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: testGameState.selfPlayerState.movementCardsInHand.toSpliced(0, 2).concat("l-ccw", "diagonal-adjacent"),
+                        },
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyry",
+                                "rrrgbb",
+                                "gbybry",
+                                "ygrrrr",
+                                "yyyryr",
+                                "rrrrrr",
+                            ]),
+                        },
+                        currentRoundPlayer: 1,
+                    },
+                },
+                true,
+                {
+                    type: "turn-ended",
+                    playerId: testGameState.selfPlayerState.id,
+                    newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
+                    newMovementCards: testGameState.selfPlayerState.movementCardsInHand.toSpliced(0, 2).concat("l-ccw", "diagonal-adjacent"),
                 },
             );
         });
