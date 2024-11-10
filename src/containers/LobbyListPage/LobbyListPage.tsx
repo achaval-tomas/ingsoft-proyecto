@@ -5,28 +5,56 @@ import { useCallback, useEffect, useState } from "react";
 import { toInitial, toLobby } from "../../navigation/destinations";
 import lobbyService, { LobbyElement } from "../../services/lobbyService";
 import useUrlPlayerId from "../../hooks/useUrlPlayerId";
+import gameService, { JoinedGame } from "../../services/gameService";
+import { useDispatch } from "react-redux";
+import { createErrorNotification } from "../../reducers/Action";
 
 
 function LobbyListPage() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const playerId = useUrlPlayerId();
 
     const [lobbies, setLobbies] = useState<LobbyElement[] | null>(null);
+    const [joinedGames, setJoinedGames] = useState<JoinedGame[] | null>(null);
 
     const fetchLobbies = useCallback(async () => {
         if (playerId == null) {
             return;
         }
 
+        setLobbies(null);
+
         try {
             const lobbies = await lobbyService.getLobbies(playerId);
             setLobbies(lobbies);
         } catch (error) {
             console.error(error);
+            dispatch(createErrorNotification("Ocurrió un error al obtener la lista de salas."));
         }
-    }, [playerId]);
+    }, [dispatch, playerId]);
 
-    useEffect(() => void fetchLobbies(), [fetchLobbies]);
+    const fetchJoinedGames = useCallback(async () => {
+        if (playerId == null) {
+            return;
+        }
+
+        setJoinedGames(null);
+
+        try {
+            setJoinedGames(await gameService.getJoinedGames(playerId));
+        } catch (error) {
+            console.error(error);
+            dispatch(createErrorNotification("Ocurrió un error al obtener la lista de partidas."));
+        }
+    }, [dispatch, playerId]);
+
+    const fetchAll = useCallback(() => {
+        void fetchLobbies();
+        void fetchJoinedGames();
+    }, [fetchLobbies, fetchJoinedGames]);
+
+    useEffect(() => void fetchAll(), [fetchAll]);
 
     const handleSubmitLobby = useCallback(async (state: CreateLobbyFormState) => {
         if (playerId == null) {
@@ -55,10 +83,7 @@ function LobbyListPage() {
         }
     }, [navigate, playerId]);
 
-    const handleRefreshLobbies = useCallback(() => {
-        setLobbies(null);
-        void fetchLobbies();
-    }, [fetchLobbies]);
+    const handleRefreshLobbies = useCallback(() => void fetchAll(), [fetchAll]);
 
     const handleJoinLobby = useCallback(async (lobbyId: string) => {
         if (playerId == null) {
