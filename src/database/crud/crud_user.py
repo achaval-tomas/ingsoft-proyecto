@@ -34,7 +34,7 @@ def get_active_player_games(db: Session, user_id: str):
     for id in deserialize(user.active_players):
         game = get_game_from_player(db, id)
         if game:
-            games.append()
+            games.append(game)
 
     return games
 
