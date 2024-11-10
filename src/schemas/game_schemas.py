@@ -28,7 +28,7 @@ class Game(GameBase):
 
 class GameListItemSchema(BaseModel):
     id: str
-    playerCount: str
+    playerCount: int
     name: str
 
 
