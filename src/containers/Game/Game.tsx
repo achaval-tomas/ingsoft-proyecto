@@ -13,8 +13,6 @@ import useGameUiState from "./hooks/useGameUiState";
 import useMovementTargets from "./hooks/useMovementTargets";
 import { getMovementCardIndexOrNull, SelectionState } from "./SelectionState";
 import { getShapeAtOrNull } from "../../domain/Board";
-import { post } from "../../services/util";
-import { httpServerUrl } from "../../services/config";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../../domain/AppState";
 import { createErrorNotification } from "../../reducers/Action";
