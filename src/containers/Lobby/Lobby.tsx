@@ -58,7 +58,7 @@ function Lobby() {
             }
 
             if (res.type === "Ok") {
-                navigate(toPlay(playerId));
+                navigate(toPlay(lobbyId, playerId));
             }
         } catch {
             navigate(toInitial());

@@ -12,6 +12,6 @@ export function toLobbyList(playerId: PlayerId): string {
     return `/lobbies?player=${playerId}`;
 }
 
-export function toPlay(playerId: PlayerId): string {
-    return `/play?player=${playerId}`;
+export function toPlay(gameId: string, playerId: PlayerId): string {
+    return `/play/${gameId}?player=${playerId}`;
 }

@@ -53,7 +53,7 @@ function useLobbyWebsocket(lobbyId: string | null, playerId: string | null): Lob
                     setPlayers(message.players);
                     break;
                 case "game-started":
-                    navigate(toPlay(playerId));
+                    navigate(toPlay(lobbyId, playerId));
                     break;
                 case "lobby-state":
                     setPlayers(message.players);
