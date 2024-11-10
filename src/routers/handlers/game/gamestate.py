@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.constants import errors
 from src.database.crud.crud_cards import get_player_cards
 from src.database.crud.crud_game import get_game_from_player
-from src.database.crud.crud_user import decode_player_id, get_player
+from src.database.crud.crud_user import get_player
 from src.database.models import Game
 from src.schemas.card_schemas import validate_shape_cards
 from src.schemas.game_schemas import (
@@ -70,7 +70,7 @@ def extract_temporal_movements(game_data: Game):
     ]
 
 
-async def handle_gamestate(user_id: str, player_id: str, db: Session, **_):
+async def handle_gamestate(player_id: str, db: Session, **_):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
@@ -85,7 +85,7 @@ async def handle_gamestate(user_id: str, player_id: str, db: Session, **_):
         name=player_data.player_name,
     )
     extract_own_cards(db, selfPlayerState)
-    selfPlayerState.id = decode_player_id(user_id=user_id, player_id=player_id, db=db)
+    selfPlayerState.id = player_data.user_id
 
     boardState = BoardStateSchema(
         tiles=deserialize(game_data.board),

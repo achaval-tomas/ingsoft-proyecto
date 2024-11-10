@@ -51,16 +51,17 @@ async def share_player_list(
         )
         return
 
-    players = player_list(lobby=lobby, db=db, user_id=user_id)
     if broadcast:
-        await lobby_manager.broadcast_in_lobby(
-            lobby_id=lobby_id,
-            db=db,
-            message=players,
-        )
+        for id in deserialize(lobby.players):
+            player = get_player(db, id)
+            if player:
+                await lobby_manager.send_personal_message(
+                    player_id=id,
+                    message=player_list(lobby=lobby, db=db, user_id=player.user_id),
+                )
     else:
         await lobby_manager.send_personal_message(
             player_id=player_id,
-            message=players,
+            message=player_list(lobby=lobby, db=db, user_id=user_id),
         )
     return None

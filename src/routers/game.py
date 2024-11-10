@@ -110,7 +110,6 @@ async def game_websocket(
         await game_manager.send_personal_message(
             player_id=subplayer_id,
             message=await handle_gamestate(
-                user_id=player_id,
                 player_id=subplayer_id,
                 db=db,
             ),
