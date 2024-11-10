@@ -383,5 +383,53 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("other - current turn with temporal movements", () => {
+            const pidx = 1;
+
+            testAction(
+                {
+                    type: "player-left",
+                    playerId: testGameState.otherPlayersState[pidx].id,
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        temporalMovements: [
+                            {
+                                movement: "straight-adjacent",
+                                position: [0, 0],
+                                rotation: "r90",
+                            },
+                        ],
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.filter((_, i) => i !== pidx),
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyry",
+                                "rrrgbb",
+                                "gyybry",
+                                "ygbrrr",
+                                "rryryr",
+                                "yrrrrr",
+                            ]),
+                        },
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    shouldTurnStartChange: true,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
     });
 });
