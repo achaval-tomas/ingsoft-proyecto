@@ -61,10 +61,18 @@ async function leaveGame(gameId: string, playerId: PlayerId) {
     return post(`${httpServerUrl}/game/${gameId}/leave`, { playerId });
 }
 
+async function sendChatMessage(gameId: string, playerId: PlayerId, message: string) {
+    return post(`${httpServerUrl}/game/${gameId}/chat`, {
+        player_id: playerId,
+        message,
+    });
+}
+
 const gameService = {
     getJoinedGames,
     createGame,
     leaveGame,
+    sendChatMessage,
 };
 
 export default gameService;

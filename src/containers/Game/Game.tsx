@@ -200,10 +200,7 @@ function Game({ gameId, gameState, sendMessage }: GameProps) {
 
     const handleSendChatMessage = async (text: string) => {
         try {
-            const res = await post(`${httpServerUrl}/game/chat`, {
-                player_id: gameState.selfPlayerState.id,
-                message: text,
-            });
+            const res = await gameService.sendChatMessage(gameId, playerId, text);
 
             if (res.ok) {
                 return;
