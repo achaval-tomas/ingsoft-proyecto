@@ -112,6 +112,7 @@ async def lobby_websocket(
 
     try:
         await share_player_list(
+            user_id=player_id,
             player_id=subplayer_id,
             lobby_id=lobby_id,
             db=db,

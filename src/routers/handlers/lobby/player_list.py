@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_lobby import get_lobby
-from src.database.crud.crud_user import get_player
+from src.database.crud.crud_user import decode_player_id, get_player
 from src.database.models import Lobby
 from src.routers.helpers.connection_manager import lobby_manager
 from src.schemas.message_schema import error_message
@@ -10,7 +10,7 @@ from src.schemas.player_schemas import PlayerInfoSchema, PlayerListMessageSchema
 from src.tools.jsonify import deserialize
 
 
-def player_list(lobby: Lobby, db: Session):
+def player_list(lobby: Lobby, db: Session, user_id: str):
     players = []
     if lobby is not None:
         players = deserialize(lobby.players)
@@ -21,7 +21,11 @@ def player_list(lobby: Lobby, db: Session):
         if player:
             players_info.append(
                 PlayerInfoSchema(
-                    id=player.player_id,
+                    id=decode_player_id(
+                        db=db,
+                        player_id=player.player_id,
+                        user_id=user_id,
+                    ),
                     name=player.player_name,
                 ),
             )
@@ -33,6 +37,7 @@ def player_list(lobby: Lobby, db: Session):
 
 async def share_player_list(
     player_id: str,
+    user_id: str,
     lobby_id: str,
     db: Session,
     broadcast: bool,
@@ -46,7 +51,7 @@ async def share_player_list(
         )
         return
 
-    players = player_list(lobby=lobby, db=db)
+    players = player_list(lobby=lobby, db=db, user_id=user_id)
     if broadcast:
         await lobby_manager.broadcast_in_lobby(
             lobby_id=lobby_id,

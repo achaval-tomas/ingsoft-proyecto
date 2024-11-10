@@ -103,3 +103,14 @@ def create_player(db: Session, user_id: str):
 
 def get_player(db: Session, player_id: str):
     return db.get(Player, player_id) if player_id else None
+
+
+def decode_player_id(db: Session, player_id: str, user_id: str):
+    db_user = get_user(user_id=user_id, db=db)
+    if not db_user:
+        return None
+
+    if player_id in deserialize(db_user.active_players):
+        return user_id
+
+    return player_id
