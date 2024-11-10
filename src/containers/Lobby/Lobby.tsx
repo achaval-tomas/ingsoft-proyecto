@@ -1,30 +1,23 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import LobbyLayout from "./components/LobbyLayout";
-import { useEffect, useState } from "react";
 import useLobbyWebsocket from "./hooks/LobbyWebsocket";
 import { toLobbyList, toInitial, toPlay } from "../../navigation/destinations";
 import lobbyService from "../../services/lobbyService";
 import gameService from "../../services/gameService";
+import useUrlPlayerId from "../../hooks/useUrlPlayerId";
 
 function Lobby() {
-    const [urlParams] = useSearchParams();
+    const { lobbyId } = useParams<{ lobbyId: string }>();
+    const playerId = useUrlPlayerId();
     const navigate = useNavigate();
 
-    const [playerId, setPlayerId] = useState<string>("");
-    const { players, lobbyName, lobbyId, ownerId } = useLobbyWebsocket(playerId);
-
-    useEffect(() => {
-        const playerUrlParam = urlParams.get("player");
-
-        if (playerUrlParam === null) {
-            navigate(toInitial());
-        } else {
-            setPlayerId(playerUrlParam);
-        }
-
-    }, [navigate, urlParams]);
+    const { players, lobbyName, ownerId } = useLobbyWebsocket(lobbyId ?? "", playerId ?? "");
 
     async function quitHandler() {
+        if (lobbyId == null || playerId == null) {
+            return;
+        }
+
         try {
             const res = await lobbyService.leaveLobby(playerId, lobbyId);
 
@@ -44,6 +37,10 @@ function Lobby() {
     }
 
     async function startHandler() {
+        if (lobbyId == null || playerId == null) {
+            return;
+        }
+
         try {
             const res = await gameService.createGame(playerId, lobbyId);
 
@@ -66,6 +63,14 @@ function Lobby() {
         } catch {
             navigate(toInitial());
         }
+    }
+
+    if (playerId == null) {
+        return <Navigate to={toInitial()} replace />;
+    }
+
+    if (lobbyId == null) {
+        return <Navigate to={toLobbyList(playerId)} replace />;
     }
 
     return (

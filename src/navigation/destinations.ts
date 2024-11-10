@@ -4,8 +4,8 @@ export function toInitial(): string {
     return "/";
 }
 
-export function toLobby(playerId: PlayerId): string {
-    return `/lobby?player=${playerId}`;
+export function toLobby(lobbyId: string, playerId: PlayerId): string {
+    return `/lobby/${lobbyId}?player=${playerId}`;
 }
 
 export function toLobbyList(playerId: PlayerId): string {

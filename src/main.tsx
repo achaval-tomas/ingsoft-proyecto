@@ -32,7 +32,7 @@ const router = createBrowserRouter([
                 element: <LobbyListPage />,
             },
             {
-                path: "lobby",
+                path: "lobby/:lobbyId",
                 element: <Lobby />,
             },
             {

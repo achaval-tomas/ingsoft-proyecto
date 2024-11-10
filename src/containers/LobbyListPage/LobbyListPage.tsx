@@ -47,7 +47,7 @@ function LobbyListPage() {
             }
 
             if (res.type === "Ok") {
-                navigate(toLobby(playerId));
+                navigate(toLobby(res.lobby_id!, playerId));
                 return;
             }
         } catch {
@@ -68,13 +68,13 @@ function LobbyListPage() {
         const res = await lobbyService.joinLobby(playerId, lobbyId);
 
         if (res.type === "Ok") {
-            navigate(toLobby(playerId));
+            navigate(toLobby(lobbyId, playerId));
             return;
         }
 
         if (res.type === "AlreadyJoined" || res.type === "AlreadyJoinedOtherLobby") {
             alert(res.message);
-            navigate(toLobby(playerId));
+            navigate(toLobby(lobbyId, playerId));
             return;
         }
 
