@@ -134,7 +134,7 @@ describe("Game", () => {
         expectedMessages,
         gameState = testGameState,
     }: {
-        setup: () => Promise<void>;
+        setup: (() => void) | (() => Promise<void>);
         expectedMessages: GameMessageOut[];
         gameState?: GameState;
     }) {
@@ -359,6 +359,48 @@ describe("Game", () => {
                         rotation: "r0",
                     },
                 ],
+            });
+        });
+
+        test("can revert movement", async () => {
+            await genericGameTest({
+                setup: async () => {
+                    const revertMovementButton = screen.getByTestId("btn-revert-movement");
+
+                    expect(revertMovementButton).toBeVisible();
+
+                    await userEvent.click(revertMovementButton);
+                },
+                gameState: {
+                    ...testGameState,
+                    selfPlayerState: {
+                        ...testGameState.selfPlayerState,
+                        movementCardsInHand: testGameState.selfPlayerState.movementCardsInHand.toSpliced(0),
+                    },
+                    temporalMovements: [
+                        {
+                            movement: "straight-adjacent",
+                            position: [0, 0],
+                            rotation: "r0",
+                        },
+                    ],
+                },
+                expectedMessages: [
+                    {
+                        type: "cancel-movement",
+                    },
+                ],
+            });
+        });
+
+        test("revert movement not visible when there are no movements to revert", async () => {
+            await genericGameTest({
+                setup: () => {
+                    const revertMovementButton = screen.queryByTestId("btn-revert-movement");
+
+                    expect(revertMovementButton).toBeNull();
+                },
+                expectedMessages: [],
             });
         });
     });
