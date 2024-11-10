@@ -39,16 +39,23 @@ async def handle_shape_card(user_id: str, player_id: str, db: Session, data: dic
 
     player = get_player(db=db, player_id=player_id)
 
-    for player in get_game_players(db=db, game_id=player.game_id):
-        await game_manager.send_personal_message(
-            player_id=player,
-            message=ShapeCardUsedSchema(
-                position=req.position,
-                targetPlayerId=user_id
-                if req.targetPlayerId == player
-                else req.targetPlayerId,
-            ).model_dump_json(),
-        )
+    for id in get_game_players(db=db, game_id=player.game_id):
+        in_player = get_player(db, id)
+        if in_player:
+            target_id = (
+                in_player.user_id
+                if req.targetPlayerId in [id, in_player.user_id]
+                else player_id
+                if req.targetPlayerId == user_id
+                else req.targetPlayerId
+            )
+            await game_manager.send_personal_message(
+                player_id=id,
+                message=ShapeCardUsedSchema(
+                    position=req.position,
+                    targetPlayerId=target_id,
+                ).model_dump_json(),
+            )
 
     if rc == 8:
         await handle_announce_winner(winner_id=player_id, db=db)
