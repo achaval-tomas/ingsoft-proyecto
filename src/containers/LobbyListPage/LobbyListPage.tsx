@@ -112,6 +112,7 @@ function LobbyListPage() {
     return (
         <LobbyListPageLayout
             onSubmitLobbyForm={s => void handleSubmitLobby(s)}
+            joinedGames={joinedGames}
             lobbies={lobbies}
             onRefresh={handleRefreshLobbies}
             onJoinLobby={lobbyId => void handleJoinLobby(lobbyId)}

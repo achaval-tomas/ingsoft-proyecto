@@ -5,11 +5,14 @@ import LobbyFilters from "./components/LobbyFilters";
 import TextButton from "../../components/TextButton";
 import { LobbyElement } from "../../services/lobbyService";
 import LobbyList from "./components/LobbyList";
+import { JoinedGame } from "../../services/gameService";
+import JoinedGameList from "./components/JoinedGameList";
 
 const defaultPlayerCountRange: [number, number] = [1, 3];
 
 interface LobbyListPageLayoutProps {
     onSubmitLobbyForm: (state: CreateLobbyFormState) => void;
+    joinedGames: JoinedGame[] | null;
     lobbies: LobbyElement[] | null;
     onRefresh: () => void;
     onJoinLobby: (lobbyId: string) => void;
@@ -17,6 +20,7 @@ interface LobbyListPageLayoutProps {
 
 function LobbyListPageLayout({
     onSubmitLobbyForm,
+    joinedGames,
     lobbies,
     onRefresh,
     onJoinLobby,
@@ -46,23 +50,36 @@ function LobbyListPageLayout({
         <>
             <div className="flex w-screen h-screen justify-center items-center">
                 <div className="flex flex-row bg-surface min-w-[60%] h-[75%] rounded-xl border border-border">
-                    <div className="flex flex-col grow-[1] border-r border-border">
-                        <div className="flex flex-row w-full justify-between items-center pt-6 px-6">
-                            <h2 className="text-2xl">Lista de salas</h2>
-                            <TextButton
-                                onClick={onRefresh}
-                                padding="py-2"
-                            >
+                    <div className="flex flex-col grow-[1] h-full border-r border-border">
+                        <div className="flex flex-col flex-1 border-b border-border pb-2">
+                            <div className="flex flex-row w-full justify-between items-center pt-6 px-6">
+                                <h2 className="text-2xl">Partidas unidas</h2>
+                                <TextButton
+                                    onClick={onRefresh}
+                                    padding="py-2"
+                                >
                                 Refrescar
-                            </TextButton>
+                                </TextButton>
+                            </div>
+                            <JoinedGameList
+                                lobbies={joinedGames}
+                                selectedGameId={selectedLobbyId}
+                                onSelectGame={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
+                                onJoinGame={onJoinLobby}
+                            />
                         </div>
-                        <LobbyList
-                            lobbies={filteredLobbies}
-                            selectedLobbyId={selectedLobbyId}
-                            isFiltered={filteredLobbies?.length !== lobbies?.length}
-                            onSelectLobby={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
-                            onJoinLobby={onJoinLobby}
-                        />
+                        <div className="flex flex-col grow-[1]">
+                            <div className="flex flex-row w-full justify-between items-center pt-4 px-6">
+                                <h2 className="text-2xl">Salas</h2>
+                            </div>
+                            <LobbyList
+                                lobbies={filteredLobbies}
+                                selectedLobbyId={selectedLobbyId}
+                                isFiltered={filteredLobbies?.length !== lobbies?.length}
+                                onSelectLobby={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
+                                onJoinLobby={onJoinLobby}
+                            />
+                        </div>
                     </div>
                     <div className="w-[30%] flex flex-col p-6 gap-4">
                         <div className="flex flex-row w-full justify-between items-center">
