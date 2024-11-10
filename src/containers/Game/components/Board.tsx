@@ -14,10 +14,11 @@ export type BoardTileProps = {
     color: Color;
     status: BoardTileStatus;
     style: CSSProperties;
+    testid: string;
     onClick: () => void;
 }
 
-function BoardTile({ color, status, style, onClick }: BoardTileProps) {
+function BoardTile({ color, status, style, testid, onClick }: BoardTileProps) {
     const parentDynamicClassNames = `${shadowByBoardTileStatus(status)} ${colorToBackgroundClassName(color)}`;
     const childDynamicClassNames = `${borderByBoardTileStatus(status)} ${animationByBoardTileStatus(status)}`;
 
@@ -31,6 +32,7 @@ function BoardTile({ color, status, style, onClick }: BoardTileProps) {
                 transitionDuration: "250ms",
                 ...style,
             }}
+            data-testid={testid}
         >
             <div className={`w-full h-full rounded hover:border-white ${childDynamicClassNames}`}>
             </div>
@@ -89,6 +91,7 @@ function Board({ uiState, onClickTile }: BoardProps) {
                         color={t.color}
                         status={t.status}
                         style={{ gridRowStart: 6 - y, gridColumnStart: x + 1 }}
+                        testid={`tile-${x}-${y}`}
                         onClick={() => onClickTile([x, y])}
                     />
                 );
