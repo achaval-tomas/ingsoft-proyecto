@@ -20,7 +20,7 @@ async function getLobbies(playerId: string): Promise<LobbyElement[]> {
 }
 
 type CreateLobbyResult = {
-    type: "PlayerNotFound" | "AlreadyJoinedOtherLobby" | "Ok" | "Other";
+    type: "PlayerNotFound" | "Ok" | "Other";
     message: string;
     lobby_id: string | null;
 };
@@ -46,10 +46,6 @@ async function createLobby(
 
     if (res.status === 404 && json.detail === "No se pudo encontrar al jugador que realizó la solicitud") {
         return { type: "PlayerNotFound", message: json.detail, lobby_id: null };
-    }
-
-    if (res.status === 400 && json.detail === "Solo puedes crear o unirte a una partida a la vez!") {
-        return { type: "AlreadyJoinedOtherLobby", message: json.detail, lobby_id: null };
     }
 
     return { type: "Other", message: "Error al intentar crear partida", lobby_id: null };

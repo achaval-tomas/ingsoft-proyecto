@@ -46,12 +46,6 @@ function LobbyListPage() {
                 return;
             }
 
-            if (res.type === "AlreadyJoinedOtherLobby") {
-                alert(res.message);
-                navigate(toLobby(playerId));
-                return;
-            }
-
             if (res.type === "Ok") {
                 navigate(toLobby(playerId));
                 return;
