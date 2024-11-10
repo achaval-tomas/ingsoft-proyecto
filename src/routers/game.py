@@ -1,6 +1,11 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from src.constants import errors
+from src.database.crud.crud_user import (
+    get_active_player_games,
+    get_active_player_id_from_game,
+    get_active_player_id_from_lobby,
+)
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movement import handle_cancel_movement
 from src.routers.handlers.game.chat_message import handle_chat_message
@@ -18,11 +23,27 @@ from src.tools.jsonify import deserialize
 game_router = APIRouter()
 
 
+@game_router.get('/game', status_code=200)
+def get_active_games(player_id: str, db: SessionDep):
+    return [
+        game_schemas.GameListItemSchema(
+            id=game.game_id,
+            name=game.game_name,
+            playerCount=len(
+                deserialize(game.player_order),
+            ),
+        )
+        for game in get_active_player_games(db=db, user_id=player_id)
+    ]
+
+
 @game_router.post('/game', status_code=200)
 async def start_game(body: game_schemas.GameCreate, db: SessionDep):
+    player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     rc = await handle_game_start(
         db=db,
-        player_id=body.player_id,
+        user_id=body.player_id,
+        player_id=player_id,
         lobby_id=body.lobby_id,
     )
 
@@ -39,9 +60,17 @@ async def start_game(body: game_schemas.GameCreate, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.PLAYER_IS_MISSING)
 
 
-@game_router.post('/game/chat', status_code=200)
-async def send_chat_message(message: game_schemas.SendChatMessage, db: SessionDep):
-    rc = await handle_chat_message(msg=message, db=db)
+@game_router.post('/game/{game_id}/chat', status_code=200)
+async def send_chat_message(
+    message: game_schemas.SendChatMessage,
+    game_id: str,
+    db: SessionDep,
+):
+    rc = await handle_chat_message(
+        game_id=game_id,
+        msg=message,
+        db=db,
+    )
 
     if rc == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
@@ -49,9 +78,16 @@ async def send_chat_message(message: game_schemas.SendChatMessage, db: SessionDe
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
 
 
-@game_router.post('/game/leave', status_code=200)
-async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
-    rc = await handle_leave_game(player_id=body.playerId, db=db)
+@game_router.post('/game/{game_id}/leave', status_code=200)
+async def leave_game(body: player_schemas.PlayerId, game_id: str, db: SessionDep):
+    player_id = get_active_player_id_from_game(db, body.playerId, game_id)
+
+    rc = await handle_leave_game(
+        user_id=body.playerId,
+        player_id=player_id,
+        game_id=game_id,
+        db=db,
+    )
 
     if rc == 1:
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
@@ -59,18 +95,24 @@ async def leave_game(body: player_schemas.PlayerId, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
 
 
-@game_router.websocket('/game/{player_id}')
+@game_router.websocket('/game/{game_id}')
 async def game_websocket(
+    game_id: str,
     player_id: str,
     ws: WebSocket,
     db: SessionDep,
 ):
-    await game_manager.connect(ws, player_id)
+    subplayer_id = get_active_player_id_from_game(db, player_id, game_id)
+
+    await game_manager.connect(ws, subplayer_id)
 
     try:
         await game_manager.send_personal_message(
-            player_id=player_id,
-            message=await handle_gamestate(player_id=player_id, db=db),
+            player_id=subplayer_id,
+            message=await handle_gamestate(
+                player_id=subplayer_id,
+                db=db,
+            ),
         )
 
         while True:
@@ -81,7 +123,8 @@ async def game_websocket(
             response = (
                 await message_handlers[request['type']](
                     db=db,
-                    player_id=player_id,
+                    user_id=player_id,
+                    player_id=subplayer_id,
                     data=received,
                 )
                 if request['type'] in message_handlers
@@ -90,12 +133,12 @@ async def game_websocket(
 
             if response is not None:
                 await game_manager.send_personal_message(
-                    player_id=player_id,
+                    player_id=subplayer_id,
                     message=response,
                 )
 
     except WebSocketDisconnect:
-        game_manager.disconnect(player_id=player_id, websocket=ws)
+        game_manager.disconnect(player_id=subplayer_id, websocket=ws)
         return
 
 

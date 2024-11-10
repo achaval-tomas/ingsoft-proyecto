@@ -3,12 +3,20 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from src.database.db import Base
 
 
+class User(Base):
+    __tablename__ = 'users'
+    user_id = Column(String, primary_key=True)
+    user_name = Column(String)
+    active_players = Column(String)
+
+
 class Player(Base):
     __tablename__ = 'players'
     player_id = Column(String, primary_key=True)
     player_name = Column(String)
     lobby_id = Column(String, ForeignKey('lobbies.lobby_id'), nullable=True)
-    game_id = Column(Integer, ForeignKey('games.game_id'), nullable=True)
+    game_id = Column(String, ForeignKey('games.game_id'), nullable=True)
+    user_id = Column(String, ForeignKey('users.user_id'), nullable=True)
 
 
 class Lobby(Base):
@@ -25,7 +33,8 @@ class Lobby(Base):
 
 class Game(Base):
     __tablename__ = 'games'
-    game_id = Column(Integer, primary_key=True, autoincrement=True)
+    game_id = Column(String, primary_key=True)
+    game_name = Column(String)
     player_order = Column(String)
     current_turn = Column(Integer)
     turn_start = Column(String)

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_active_player_id_from_lobby
 from src.database.db import SessionDep
 from src.routers.handlers.lobby.leave_lobby import handle_leave_lobby
 from src.routers.handlers.lobby.lobbystate import handle_lobbystate
@@ -14,22 +14,19 @@ from src.schemas.lobby_schemas import (
     LobbyIdSchema,
     LobbyJoinSchema,
     LobbyLeaveSchema,
-    LobbySchema,
+    LobbyListItemSchema,
 )
 from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
-from src.tools.tokenify import create_token
 
 
-def lobby_decoder(lobby: models.Lobby):
-    return LobbySchema(
+def lobby_decoder(lobby: models.Lobby, joined: bool):
+    return LobbyListItemSchema(
         lobby_id=lobby.lobby_id,
         lobby_name=lobby.lobby_name,
-        lobby_owner=lobby.lobby_owner,
-        players=deserialize(lobby.players),
         player_amount=lobby.player_amount,
-        min_players=lobby.min_players,
         max_players=lobby.max_players,
+        joined=joined,
     )
 
 
@@ -43,46 +40,57 @@ def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
-        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
+        raise HTTPException(status_code=400, detail=errors.INTERNAL_SERVER_ERROR)
 
     return LobbyIdSchema(lobby_id=res)
 
 
 @lobby_router.post('/lobby/join', status_code=202)
 async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
-    res = crud_lobby.join_lobby(db=db, player_id=body.player_id, 
-                                lobby_id=body.lobby_id, pw=body.password)
+    res = crud_lobby.join_lobby(
+        db=db,
+        player_id=body.player_id,
+        lobby_id=body.lobby_id,
+        pw=body.password,
+    )
 
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
     elif res == 2:
         raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED)
     elif res == 3:
-        raise HTTPException(status_code=400, detail=errors.ALREADY_JOINED_OTHER)
-    elif res == 4:
         raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
-    elif res == 5:
+    elif res == 4:
         raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
-    elif res == 6:
+    elif res == 5:
         raise HTTPException(status_code=401, detail=errors.INCORRECT_PASSWORD)
 
+    player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     await share_player_list(
-        player_id=body.player_id,
+        user_id=body.player_id,
+        player_id=player_id,
         lobby_id=body.lobby_id,
         db=db,
         broadcast=True,
     )
 
-    token_data = {
-        "sub": body.player_id,
-    }
-    access_token = create_token(data=token_data)
-    return access_token
 
+@lobby_router.get('/lobby', response_model=list[LobbyListItemSchema])
+async def get_all_lobbies(db: SessionDep, player_id: str):
+    lobbies: list[LobbyListItemSchema] = []
 
-@lobby_router.get('/lobby', response_model=list[LobbySchema])
-async def get_all_lobbies(db: SessionDep):
-    return [lobby_decoder(lobby) for lobby in crud_lobby.get_available_lobbies(db=db)]
+    for lobby in crud_lobby.get_lobbies(db=db):
+        joined = bool(
+            get_active_player_id_from_lobby(
+                db=db,
+                user_id=player_id,
+                lobby_id=lobby.lobby_id,
+            ),
+        )
+        if lobby.player_amount < lobby.max_players or joined:
+            lobbies.append(lobby_decoder(lobby, joined))
+
+    return lobbies
 
 
 @lobby_router.post('/lobby/leave', status_code=200)
@@ -99,21 +107,22 @@ async def leave_lobby(body: LobbyLeaveSchema, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
 
 
-@lobby_router.websocket('/lobby/{player_id}')
+@lobby_router.websocket('/lobby/{lobby_id}')
 async def lobby_websocket(
+    lobby_id: str,
     player_id: str,
     ws: WebSocket,
     db: SessionDep,
 ):
-    player = get_player(db=db, player_id=player_id)
-    assert player is not None
+    subplayer_id = get_active_player_id_from_lobby(db, player_id, lobby_id)
 
-    await lobby_manager.connect(ws, player_id)
+    await lobby_manager.connect(ws, subplayer_id)
 
     try:
         await share_player_list(
-            player_id=player_id,
-            lobby_id=player.lobby_id,
+            user_id=player_id,
+            player_id=subplayer_id,
+            lobby_id=lobby_id,
             db=db,
             broadcast=False,
         )
@@ -126,7 +135,8 @@ async def lobby_websocket(
             response = (
                 await message_handlers[request['type']](
                     db=db,
-                    player_id=player_id,
+                    user_id=player_id,
+                    player_id=subplayer_id,
                     data=received,
                 )
                 if request['type'] in message_handlers
@@ -134,10 +144,10 @@ async def lobby_websocket(
             )
 
             if response is not None:
-                await lobby_manager.send_personal_message(response, player_id)
+                await lobby_manager.send_personal_message(response, subplayer_id)
 
     except WebSocketDisconnect:
-        lobby_manager.disconnect(player_id=player_id, websocket=ws)
+        lobby_manager.disconnect(player_id=subplayer_id, websocket=ws)
         return
 
 

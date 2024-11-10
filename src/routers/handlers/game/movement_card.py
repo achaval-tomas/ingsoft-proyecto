@@ -2,13 +2,13 @@ from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_cards import use_movement_card
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import MovementCardUsedSchema, UseMovementCardSchema
 from src.schemas.message_schema import error_message
 
 
-async def handle_movement_card(player_id: str, db: Session, data: dict):
+async def handle_movement_card(player_id: str, db: Session, data: dict, **_):
     req = UseMovementCardSchema.model_validate_json(data)
     assert req.type == 'use-movement-card'
 

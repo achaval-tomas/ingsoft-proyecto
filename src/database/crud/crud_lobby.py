@@ -2,36 +2,33 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from src.database.crud.crud_player import get_player
+from src.database.crud import crud_user
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
-from src.tools.hashingfy import hash_password, verify_password
 from src.tools.jsonify import deserialize, serialize
 
 
 def create_lobby(db: Session, lobby: LobbyCreateSchema):
-    player = get_player(db=db, player_id=lobby.lobby_owner)
-    if player is None:
+    user = crud_user.get_user(db=db, user_id=lobby.lobby_owner)
+    if not user:
         return 1
-    if player.lobby_id or player.game_id:
+
+    player = crud_user.create_player(db=db, user_id=lobby.lobby_owner)
+    if not player:
         return 2
 
-    player_list = [lobby.lobby_owner]
-
-    password = lobby.password
-    if password:
-        password = hash_password(pw=password)
+    player_list = [player.player_id]
 
     db_lobby = Lobby(
         lobby_id=create_uuid(),
         lobby_name=lobby.lobby_name,
-        lobby_owner=lobby.lobby_owner,
+        lobby_owner=player.player_id,
         min_players=lobby.min_players,
         max_players=lobby.max_players,
         players=serialize(player_list),
         player_amount=1,
-        password=password,
+        password=lobby.password,
     )
 
     player.lobby_id = db_lobby.lobby_id
@@ -43,27 +40,31 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     return db_lobby.lobby_id
 
 
-def join_lobby(db: Session, lobby_id: str, player_id: str, pw: Optional[str] = ""):
-    player = get_player(db, player_id)
-    if not player:
+def join_lobby(db: Session, lobby_id: str, player_id: str, pw: Optional[str] = ''):
+    user = crud_user.get_user(db, player_id)
+    if not user:
         return 1
-    if player.lobby_id == lobby_id:
+
+    user_players = [
+        crud_user.get_player(db, id) for id in deserialize(user.active_players)
+    ]
+    if any(p.lobby_id == lobby_id for p in user_players if p is not None):
         return 2
-    if player.lobby_id or player.game_id:
-        return 3
+
+    player = crud_user.create_player(db=db, user_id=player_id)
 
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
-        return 4
+        return 3
     elif lobby.player_amount == lobby.max_players:
+        return 4
+    elif lobby.password and pw != lobby.password:
         return 5
-    elif lobby.password and not verify_password(pw, lobby.password):
-            return 6
 
     player.lobby_id = lobby.lobby_id
 
     players = deserialize(lobby.players)
-    players.append(player_id)
+    players.append(player.player_id)
     lobby.players = serialize(players)
     lobby.player_amount += 1
 
@@ -73,7 +74,7 @@ def join_lobby(db: Session, lobby_id: str, player_id: str, pw: Optional[str] = "
 
 
 def leave_lobby(db: Session, player_id: str):
-    player = get_player(db, player_id)
+    player = crud_user.get_player(db, player_id)
     if not player:
         return 1
 
@@ -102,14 +103,14 @@ def get_lobby(db: Session, lobby_id: str):
 
 
 def get_lobby_by_player_id(db: Session, player_id: str):
-    player = get_player(player_id=player_id, db=db)
+    player = crud_user.get_player(player_id=player_id, db=db)
     if not player or not player.lobby_id:
         return None
     return get_lobby(db=db, lobby_id=player.lobby_id)
 
 
-def get_available_lobbies(db: Session, limit: int = 1000):
-    return db.query(Lobby).filter(Lobby.player_amount < Lobby.max_players).all()
+def get_lobbies(db: Session, limit: int = 1000):
+    return db.query(Lobby).all()
 
 
 def delete_lobby(db: Session, lobby_id: str):
@@ -118,7 +119,7 @@ def delete_lobby(db: Session, lobby_id: str):
         return
 
     for player_id in deserialize(lobby.players):
-        db_player = get_player(db=db, player_id=player_id)
+        db_player = crud_user.get_player(db=db, player_id=player_id)
         if not db_player:
             continue
         db_player.lobby_id = None
