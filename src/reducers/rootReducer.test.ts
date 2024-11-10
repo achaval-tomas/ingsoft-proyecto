@@ -233,5 +233,100 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("other - no actions taken", () => {
+            const pidx = 0;
+
+            testAction(
+                {
+                    type: "turn-ended",
+                    playerId: testGameState.otherPlayersState[pidx].id,
+                    newShapeCards: testGameState.otherPlayersState[pidx].shapeCardsInHand,
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.map((otherPlayerState, i) => (i !== pidx) ? otherPlayerState : {
+                            ...otherPlayerState,
+                            movementCardsInHandCount: 3,
+                        }),
+                        currentRoundPlayer: 3,
+                    },
+                },
+                {
+                    shouldTurnStartChange: true,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+        test("other - with temporal movements", () => {
+            const pidx = 0;
+
+            testAction(
+                {
+                    type: "turn-ended",
+                    playerId: testGameState.otherPlayersState[pidx].id,
+                    newShapeCards: testGameState.otherPlayersState[pidx].shapeCardsInHand,
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.map((otherPlayerState, i) => (i !== pidx) ? otherPlayerState : {
+                            ...otherPlayerState,
+                            movementCardsInHandCount: 1,
+                        }),
+                        temporalMovements: [
+                            {
+                                movement: "diagonal-adjacent",
+                                position: [1, 1],
+                                rotation: "r0",
+                            },
+                            {
+                                movement: "diagonal-adjacent",
+                                position: [2, 2],
+                                rotation: "r90",
+                            },
+                        ],
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.map((otherPlayerState, i) => (i !== 0) ? otherPlayerState : {
+                            ...otherPlayerState,
+                            movementCardsInHandCount: 3,
+                        }),
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyry",
+                                "rrrgbb",
+                                "gbybry",
+                                "ygrrrr",
+                                "yyyryr",
+                                "rrrrrr",
+                            ]),
+                        },
+                        currentRoundPlayer: 3,
+                    },
+                },
+                {
+                    shouldTurnStartChange: true,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
     });
 });
