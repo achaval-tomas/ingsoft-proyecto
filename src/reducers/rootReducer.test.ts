@@ -588,5 +588,31 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("other - current turn without temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
     });
 });
