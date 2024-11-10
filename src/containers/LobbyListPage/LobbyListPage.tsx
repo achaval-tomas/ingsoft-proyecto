@@ -2,7 +2,7 @@ import LobbyListPageLayout from "./LobbyListPageLayout";
 import { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { toInitial, toLobby } from "../../navigation/destinations";
+import { toInitial, toLobby, toPlay } from "../../navigation/destinations";
 import lobbyService, { LobbyElement } from "../../services/lobbyService";
 import useUrlPlayerId from "../../hooks/useUrlPlayerId";
 import gameService, { JoinedGame } from "../../services/gameService";
@@ -115,6 +115,7 @@ function LobbyListPage() {
             joinedGames={joinedGames}
             lobbies={lobbies}
             onRefresh={handleRefreshLobbies}
+            onJoinGame={gameId => navigate(toPlay(gameId, playerId))}
             onJoinLobby={lobbyId => void handleJoinLobby(lobbyId)}
         />
     );
