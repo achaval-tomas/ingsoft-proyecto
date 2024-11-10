@@ -53,14 +53,15 @@ async function createLobby(
 }
 
 type JoinLobbyResult = {
-    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "Ok" | "Other";
+    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "Ok" | "Other" | "InvalidPassword";
     message: string;
 };
 
-async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyResult> {
+async function joinLobby(playerId: string, lobbyId: string, password: string): Promise<JoinLobbyResult> {
     const res = await post(`${httpServerUrl}/lobby/join`, {
         player_id: playerId,
         lobby_id: lobbyId,
+        password,
     });
 
     if (res.ok) {
@@ -84,6 +85,11 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyRe
     if (res.status === 404 && json.detail === "No se pudo encontrar la sala deseada") {
         return { type: "LobbyNotFound", message: json.detail };
     }
+
+    if (res.status === 400 && json.detail === "Contraseña inválida") {
+        return { type: "InvalidPassword", message: json.detail };
+    }
+
 
     return { type: "Other", message: "Error al intentar crear partida" };
 }

@@ -7,7 +7,7 @@ import lobbyService, { LobbyElement } from "../../services/lobbyService";
 import useUrlPlayerId from "../../hooks/useUrlPlayerId";
 import gameService, { JoinedGame } from "../../services/gameService";
 import { useDispatch } from "react-redux";
-import { createErrorNotification } from "../../reducers/Action";
+import { createErrorNotification, createWarningNotification } from "../../reducers/Action";
 
 
 function LobbyListPage() {
@@ -86,7 +86,7 @@ function LobbyListPage() {
 
     const handleRefreshLobbies = useCallback(() => void fetchAll(), [fetchAll]);
 
-    const handleJoinLobby = useCallback(async (lobbyId: string) => {
+    const handleJoinLobby = useCallback(async (lobbyId: string, password: string) => {
         if (playerId == null) {
             return;
         }
@@ -96,7 +96,7 @@ function LobbyListPage() {
             return;
         }
 
-        const res = await lobbyService.joinLobby(playerId, lobbyId);
+        const res = await lobbyService.joinLobby(playerId, lobbyId, password);
 
         if (res.type === "Ok" || res.type === "AlreadyJoined") {
             navigate(toLobby(lobbyId, playerId));
@@ -108,8 +108,13 @@ function LobbyListPage() {
             return;
         }
 
+        if (res.type === "InvalidPassword") {
+            dispatch(createWarningNotification("La contraseña es inválida."));
+            return;
+        }
+
         alert(res.message);
-    }, [navigate, joinedGames, playerId]);
+    }, [dispatch, navigate, joinedGames, playerId]);
 
     if (playerId == null) {
         return <Navigate to={toInitial()} replace />;
@@ -121,7 +126,7 @@ function LobbyListPage() {
             joinedGames={joinedGames}
             lobbies={lobbies}
             onRefresh={handleRefreshLobbies}
-            onJoinLobby={lobbyId => void handleJoinLobby(lobbyId)}
+            onJoinLobby={(lobbyId, password) => void handleJoinLobby(lobbyId, password)}
         />
     );
 }
