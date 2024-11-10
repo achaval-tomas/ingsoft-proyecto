@@ -129,6 +129,36 @@ function createTestStore() {
 }
 
 describe("Game", () => {
+    async function genericGameTest({
+        setup,
+        expectedMessages,
+        gameState = testGameState,
+    }: {
+        setup: () => Promise<void>;
+        expectedMessages: GameMessageOut[];
+        gameState?: GameState;
+    }) {
+        let messageIndex = 0;
+        const sendMessage = vi.fn<(msg: GameMessageOut) => void>((message) => {
+            expect(messageIndex).toBeLessThan(expectedMessages.length);
+            expect(message).toStrictEqual(expectedMessages[messageIndex]);
+            messageIndex++;
+        });
+
+        render(
+            <Provider store={createTestStore()}>
+                <Game
+                    gameState={gameState}
+                    sendMessage={sendMessage}
+                />,
+            </Provider>,
+        );
+
+        await setup();
+
+        expect(sendMessage).toHaveBeenCalledTimes(expectedMessages.length);
+    }
+
     beforeAll(() => {
         vi.mock("react-router-dom", async () => {
             const mod = await vi.importActual("react-router-dom");
@@ -150,7 +180,7 @@ describe("Game", () => {
             targetShapeCardPlayerId,
             targetShapeCardIndex,
             expectedMessages,
-            gameState = testGameState,
+            gameState,
         }: {
             targetTilePosition: Position;
             targetShapeCardPlayerId: string;
@@ -158,32 +188,20 @@ describe("Game", () => {
             expectedMessages: GameMessageOut[];
             gameState?: GameState;
         }) {
-            let messageIndex = 0;
-            const sendMessage = vi.fn<(msg: GameMessageOut) => void>((message) => {
-                expect(messageIndex).toBeLessThan(expectedMessages.length);
-                expect(message).toStrictEqual(expectedMessages[messageIndex]);
-                messageIndex++;
+            await genericGameTest({
+                setup: async () => {
+                    const targetTile = screen.getByTestId(`tile-${targetTilePosition[0]}-${targetTilePosition[1]}`);
+                    const targetShapeCard = screen.getByTestId(`shape-card-${targetShapeCardPlayerId}-${targetShapeCardIndex}`);
+
+                    expect(targetTile).toBeVisible();
+                    expect(targetShapeCard).toBeVisible();
+
+                    await userEvent.click(targetShapeCard);
+                    await userEvent.click(targetTile);
+                },
+                expectedMessages,
+                gameState,
             });
-
-            render(
-                <Provider store={createTestStore()}>
-                    <Game
-                        gameState={gameState}
-                        sendMessage={sendMessage}
-                    />,
-                </Provider>,
-            );
-
-            const targetTile = screen.getByTestId(`tile-${targetTilePosition[0]}-${targetTilePosition[1]}`);
-            const targetShapeCard = screen.getByTestId(`shape-card-${targetShapeCardPlayerId}-${targetShapeCardIndex}`);
-
-            expect(targetTile).toBeVisible();
-            expect(targetShapeCard).toBeVisible();
-
-            await userEvent.click(targetShapeCard);
-            await userEvent.click(targetTile);
-
-            expect(sendMessage).toHaveBeenCalledTimes(expectedMessages.length);
         }
 
         test("our shape card", async () => {
