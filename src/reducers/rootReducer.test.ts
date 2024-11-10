@@ -730,5 +730,39 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("self targets self - colour of shape in position is blocked", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [0, 5],
+                    targetPlayerId: "1",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
     });
 });
