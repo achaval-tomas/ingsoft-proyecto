@@ -20,12 +20,12 @@ import AppState from "../../domain/AppState";
 import { createErrorNotification } from "../../reducers/Action";
 
 type GameProps = {
-    playerId: string;
     gameState: GameState;
     sendMessage: (message: GameMessageOut) => void;
 }
 
-function Game({ playerId, gameState, sendMessage }: GameProps) {
+function Game({ gameState, sendMessage }: GameProps) {
+    const playerId = gameState.selfPlayerState.id;
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
