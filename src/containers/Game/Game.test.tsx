@@ -42,7 +42,7 @@ const testGameState: GameState = deepFreeze<GameState>({
             },
         ],
         shapeCardsInDeckCount: 17,
-        movementCardsInHand: ["straight-adjacent", "diagonal-adjacent", "l-cw"],
+        movementCardsInHand: ["straight-adjacent", "diagonal-adjacent", "straight-edge"],
     },
     otherPlayersState: [
         {
@@ -308,6 +308,47 @@ describe("Game", () => {
                     {
                         type: "use-movement-card",
                         movement: "straight-adjacent",
+                        position: [1, 4],
+                        rotation: "r0",
+                    },
+                ],
+            });
+        });
+
+        test("can't incorrectly use movement card", async () => {
+            await genericUseMovementCardTest({
+                sourceTilePosition: [1, 4],
+                targetTilePosition: [2, 5],
+                targetMovementCardIndex: 0,
+                expectedMessages: [],
+            });
+        });
+
+        test("can correctly use straight-edge movement card (A)", async () => {
+            await genericUseMovementCardTest({
+                sourceTilePosition: [1, 4],
+                targetTilePosition: [0, 4],
+                targetMovementCardIndex: 2,
+                expectedMessages: [
+                    {
+                        type: "use-movement-card",
+                        movement: "straight-edge",
+                        position: [1, 4],
+                        rotation: "r180",
+                    },
+                ],
+            });
+        });
+
+        test("can correctly use straight-edge movement card (B)", async () => {
+            await genericUseMovementCardTest({
+                sourceTilePosition: [1, 4],
+                targetTilePosition: [5, 4],
+                targetMovementCardIndex: 2,
+                expectedMessages: [
+                    {
+                        type: "use-movement-card",
+                        movement: "straight-edge",
                         position: [1, 4],
                         rotation: "r0",
                     },
