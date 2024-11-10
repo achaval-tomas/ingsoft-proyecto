@@ -4,7 +4,6 @@ from src.database.crud import crud_user
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
-from src.schemas.player_schemas import PlayerCreateSchema
 from src.tools.jsonify import deserialize, serialize
 
 
@@ -13,13 +12,9 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     if not user:
         return 1
 
-    player = crud_user.create_player(
-        db=db,
-        user_id=lobby.lobby_owner,
-        player=PlayerCreateSchema(
-            player_name=user.user_name,
-        ),
-    )
+    player = crud_user.create_player(db=db, user_id=lobby.lobby_owner)
+    if not player:
+        return 2
 
     player_list = [player.player_id]
 
@@ -53,13 +48,7 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
     if any(p.lobby_id == lobby_id for p in user_players if p is not None):
         return 2
 
-    player = crud_user.create_player(
-        db=db,
-        user_id=player_id,
-        player=PlayerCreateSchema(
-            player_name=user.user_name,
-        ),
-    )
+    player = crud_user.create_player(db=db, user_id=player_id)
 
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:

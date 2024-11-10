@@ -22,7 +22,7 @@ def create_user(db: Session, user: PlayerCreateSchema):
 
 
 def get_user(db: Session, user_id: str):
-    return db.get(User, user_id)
+    return db.get(User, user_id) if user_id else None
 
 
 def get_active_player_games(db: Session, user_id: str):
@@ -41,6 +41,8 @@ def get_active_player_games(db: Session, user_id: str):
 
 def get_active_player_id_from_game(db: Session, user_id: str, game_id: str):
     user = get_user(db, user_id)
+    if not user:
+        return None
     for id in deserialize(user.active_players):
         player = get_player(db, id)
         if not player:
@@ -59,7 +61,7 @@ def get_active_player_id_from_lobby(db: Session, user_id: str, lobby_id: str):
         player = get_player(db, id)
         if not player:
             continue
-        if player.game_id == lobby_id:
+        if player.lobby_id == lobby_id:
             return id
     return None
 
@@ -82,11 +84,14 @@ def delete_active_player(db: Session, user_id: str, player_id: str):
     db.commit()
 
 
-def create_player(db: Session, player: PlayerCreateSchema, user_id: str):
-    db_player = Player(player_name=player.player_name, player_id=create_uuid())
+def create_player(db: Session, user_id: str):
+    db_user = get_user(user_id=user_id, db=db)
+    if not db_user:
+        return None
+
+    db_player = Player(player_name=db_user.user_name, player_id=create_uuid())
     db.add(db_player)
 
-    db_user = get_user(user_id=user_id, db=db)
     user_players = deserialize(db_user.active_players)
     user_players.append(db_player.player_id)
     db_user.active_players = serialize(user_players)
@@ -97,4 +102,4 @@ def create_player(db: Session, player: PlayerCreateSchema, user_id: str):
 
 
 def get_player(db: Session, player_id: str):
-    return db.get(Player, player_id)
+    return db.get(Player, player_id) if player_id else None
