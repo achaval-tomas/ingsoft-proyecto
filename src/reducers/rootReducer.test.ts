@@ -589,6 +589,57 @@ describe("rootReducer", () => {
             );
         });
 
+        test("self - current turn with temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: ["l-cw", "diagonal-adjacent"],
+                        },
+                        temporalMovements: [
+                            {
+                                movement: "straight-adjacent",
+                                position: [5, 5],
+                                rotation: "r270",
+                            },
+                        ],
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: ["l-cw", "diagonal-adjacent", "straight-adjacent"],
+                        },
+                        temporalMovements: [],
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyrb",
+                                "rrrgby",
+                                "gyybry",
+                                "ygbrrr",
+                                "yryryr",
+                                "rrrrrr",
+                            ]),
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
         test("other - current turn without temporal movements", () => {
             testAction(
                 {
