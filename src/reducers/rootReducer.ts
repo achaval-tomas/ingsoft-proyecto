@@ -324,6 +324,11 @@ function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMess
             break;
         }
         case "shape-card-used": {
+            const shapeAtPosition = getShapeAtOrNull(gameState.boardState.tiles, action.position);
+            if (shapeAtPosition == null) {
+                return chatMessages;
+            }
+
             if (currentPlayer.id === action.targetPlayerId) {
                 newChatMessage = `${currentPlayer.name} descartó una carta de figura.`;
             } else {
