@@ -11,6 +11,7 @@ const mockItems: LobbyElement[] = [
         player_amount: 1,
         max_players: 4,
         joined: false,
+        isPasswordProtected: false,
     },
     {
         lobby_id: "2",
@@ -18,6 +19,7 @@ const mockItems: LobbyElement[] = [
         player_amount: 3,
         max_players: 4,
         joined: false,
+        isPasswordProtected: false,
     },
     {
         lobby_id: "3",
@@ -25,6 +27,7 @@ const mockItems: LobbyElement[] = [
         player_amount: 2,
         max_players: 4,
         joined: false,
+        isPasswordProtected: false,
     },
 ];
 

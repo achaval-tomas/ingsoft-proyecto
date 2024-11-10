@@ -148,6 +148,7 @@ describe("Game", () => {
         render(
             <Provider store={createTestStore()}>
                 <Game
+                    gameId="1"
                     gameState={gameState}
                     sendMessage={sendMessage}
                 />,
