@@ -70,27 +70,33 @@ function Game({ playerId, gameState, sendMessage }: GameProps) {
             return;
         }
 
+        // Toggle selection logic.
+        if (
+            selectionState?.type === "shape-card"
+            && selectionState.playerId === playerId
+            && selectionState.shapeCardIndex === shapeCardIndex
+        ) {
+            setSelectionState(null);
+            return;
+        }
+
         const targetPlayer = getPlayerById(gameState, playerId);
         if (targetPlayer == null) {
             return;
         }
 
-        // don't select blocked shape cards, unless it is own shape card and the only one remaining in hand
-        if (targetPlayer.shapeCardsInHand[shapeCardIndex].isBlocked
-           && !(
-               playerId === gameState.selfPlayerState.id
-               && gameState.selfPlayerState.shapeCardsInHand.length === 1
-           )) {
+        const targetShapeCard = targetPlayer.shapeCardsInHand[shapeCardIndex];
+
+        // Don't select the shape card if it's blocked, unless it is ours and it is the last one in hand.
+        if (
+            targetShapeCard.isBlocked
+            && !(playerId === gameState.selfPlayerState.id && gameState.selfPlayerState.shapeCardsInHand.length === 1)
+        ) {
             return;
         }
 
-        // if trying to block another players shape card but that player already has a blocked card
+        // Don't select someone else's shape card if they already have a blocked shape card.
         if (playerId !== gameState.selfPlayerState.id && targetPlayer.shapeCardsInHand.find(s => s.isBlocked) != null) {
-            return;
-        }
-
-        if (selectionState?.type === "shape-card" && selectionState.playerId === playerId && selectionState.shapeCardIndex === shapeCardIndex) {
-            setSelectionState(null);
             return;
         }
 
