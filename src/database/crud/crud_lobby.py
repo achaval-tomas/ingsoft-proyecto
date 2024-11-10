@@ -18,7 +18,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     player_list = [lobby.lobby_owner]
 
     password = lobby.password
-    if password is not None:
+    if password:
         password = hash_password(pw=password)
 
     db_lobby = Lobby(

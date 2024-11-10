@@ -13,7 +13,7 @@ class LobbyBase(BaseModel):
 
 
 class LobbyCreateSchema(LobbyBase):
-    password: Optional[str] = None
+    password: Optional[str] = ""
     
 
 
