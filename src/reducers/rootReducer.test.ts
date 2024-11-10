@@ -8,9 +8,9 @@ import rootReducer from "./rootReducer";
 import AppState from "../domain/AppState";
 
 const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
-    "rgbyry",
+    "rgbyby",
     "rrrgbb",
-    "gyybry",
+    "gyybrb",
     "ygbrrr",
     "yryryr",
     "rrrrrr",
@@ -216,9 +216,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gbybry",
+                                "gbybrb",
                                 "ygrrrr",
                                 "yyyryr",
                                 "rrrrrr",
@@ -311,9 +311,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gbybry",
+                                "gbybrb",
                                 "ygrrrr",
                                 "yyyryr",
                                 "rrrrrr",
@@ -414,9 +414,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gyybry",
+                                "gyybrb",
                                 "ygbrrr",
                                 "rryryr",
                                 "yrrrrr",
@@ -477,5 +477,474 @@ describe("rootReducer", () => {
                 },
             );
         });
+    });
+
+    describe("movement-card-used", () => {
+        test("self", () => {
+            testAction(
+                {
+                    type: "movement-card-used",
+                    movement: "diagonal-adjacent",
+                    position: [2, 2],
+                    rotation: "r270",
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: ["straight-adjacent", "l-cw"],
+                        },
+                        temporalMovements: [
+                            {
+                                movement: "diagonal-adjacent",
+                                position: [2, 2],
+                                rotation: "r270",
+                            },
+                        ],
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyby",
+                                "rrrgbb",
+                                "gyybrb",
+                                "ygrrrr",
+                                "yrybyr",
+                                "rrrrrr",
+                            ]),
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+        test("other", () => {
+            testAction(
+                {
+                    type: "movement-card-used",
+                    movement: "straight-edge",
+                    position: [1, 0],
+                    rotation: "r90",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 3,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        temporalMovements: [
+                            {
+                                movement: "straight-edge",
+                                position: [1, 0],
+                                rotation: "r90",
+                            },
+                        ],
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rrbyby",
+                                "rrrgbb",
+                                "gyybrb",
+                                "ygbrrr",
+                                "yryryr",
+                                "rgrrrr",
+                            ]),
+                        },
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "15" ? { ...p, movementCardsInHandCount: 1 } : p),
+                        currentRoundPlayer: 3,
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+    });
+
+    describe("movement-cancelled", () => {
+        test("self - current turn without temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                testAppState,
+                testAppState,
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+
+        test("self - current turn with temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: ["l-cw", "diagonal-adjacent"],
+                        },
+                        temporalMovements: [
+                            {
+                                movement: "straight-adjacent",
+                                position: [5, 5],
+                                rotation: "r270",
+                            },
+                        ],
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: ["l-cw", "diagonal-adjacent", "straight-adjacent"],
+                        },
+                        temporalMovements: [],
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbybb",
+                                "rrrgby",
+                                "gyybrb",
+                                "ygbrrr",
+                                "yryryr",
+                                "rrrrrr",
+                            ]),
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+        test("other - current turn without temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+
+        test("other - current turn with temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        temporalMovements: [
+                            {
+                                movement: "l-cw",
+                                position: [2, 3],
+                                rotation: "r90",
+                            },
+                        ],
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "5" ? { ...p, movementCardsInHandCount: 3 } : p),
+                        temporalMovements: [],
+                        currentRoundPlayer: 1,
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyby",
+                                "yrrgbb",
+                                "gyrbrb",
+                                "ygbrrr",
+                                "yryryr",
+                                "rrrrrr",
+                            ]),
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+    });
+
+    describe("shape-card-used", () => {
+        test("self targets self - invalid shape in position", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [2, 1],
+                    targetPlayerId: "1",
+                },
+                testAppState,
+                testAppState,
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+
+        test("self targets self - colour of shape in position is blocked", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [0, 5],
+                    targetPlayerId: "1",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+
+        test("self targets self - correctly discards shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [0, 5],
+                    targetPlayerId: "1",
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            shapeCardsInHand: [
+                                {
+                                    shape: "b-2",
+                                    isBlocked: false,
+                                },
+                                {
+                                    shape: "c-4",
+                                    isBlocked: false,
+                                },
+                            ],
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+        test("self targets other - correctly blocks shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [4, 5],
+                    targetPlayerId: "5",
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "blue",
+                        },
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "5"
+                                ? {
+                                    ...p,
+                                    shapeCardsInHand: [
+                                        {
+                                            shape: "b-0",
+                                            isBlocked: true,
+                                        },
+                                        {
+                                            shape: "b-3",
+                                            isBlocked: false,
+                                        },
+                                        {
+                                            shape: "b-1",
+                                            isBlocked: false,
+                                        },
+                                    ],
+                                }
+                                : p),
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+
+        test("other targets themselves - correctly discards shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [4, 4],
+                    targetPlayerId: "5",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "blue",
+                        },
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "5"
+                                ? {
+                                    ...p,
+                                    shapeCardsInHand: [
+                                        {
+                                            shape: "b-3",
+                                            isBlocked: false,
+                                        },
+                                        {
+                                            shape: "b-1",
+                                            isBlocked: false,
+                                        },
+                                    ],
+                                }
+                                : p),
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+        test("other targets self - correctly blocks shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [0, 5],
+                    targetPlayerId: "1",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            shapeCardsInHand: [
+                                {
+                                    shape: "b-2",
+                                    isBlocked: false,
+                                },
+                                {
+                                    shape: "b-4",
+                                    isBlocked: true,
+                                },
+                                {
+                                    shape: "c-4",
+                                    isBlocked: false,
+                                },
+                            ],
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
     });
 });
