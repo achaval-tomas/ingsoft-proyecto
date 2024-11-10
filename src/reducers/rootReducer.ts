@@ -389,7 +389,7 @@ function rootReducer(state: AppState | undefined, action: Action): AppState {
     }
 
     if (action.type === "clear-game-state") {
-        return { ...state, gameState: null };
+        return { ...state, gameState: null, chatMessages: [] };
     }
 
     if (action.type === "new-message") {
