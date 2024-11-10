@@ -60,6 +60,7 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
 
     player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     await share_player_list(
+        user_id=body.player_id,
         player_id=player_id,
         lobby_id=body.lobby_id,
         db=db,

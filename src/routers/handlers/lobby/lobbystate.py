@@ -30,7 +30,7 @@ def lobbystate_message(lobby_id: str, user_id: str, db: Session):
                 ),
             )
 
-    owner = lobby.lobby_owner
+    owner = decode_player_id(db=db, user_id=user_id, player_id=lobby.lobby_owner)
 
     return LobbyStateMessageSchema(
         players=players_info,
