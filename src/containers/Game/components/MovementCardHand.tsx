@@ -64,6 +64,7 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
                     <div
                         className={`${sharedClassNames} ${individualClassNamesFor(mc, i)} ${rotationFor(i)}`}
                         onClick={() => onClickMovementCard(i)}
+                        data-testid={`movement-card-${i}`}
                     >
                         <MovementCard movement={mc.movement} />
                     </div>
@@ -76,6 +77,7 @@ function MovementCardHand({ movementCards, className, onClickMovementCard, onCli
                     src="/src/assets/undo-movement.svg"
                     title="Revertir el último movimiento"
                     onClick={onClickCancelMovement}
+                    data-testid="btn-revert-movement"
                 />
             </div>}
         </div>
