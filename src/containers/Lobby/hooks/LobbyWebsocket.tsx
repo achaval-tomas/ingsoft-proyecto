@@ -56,9 +56,6 @@ function useLobbyWebsocket(lobbyId: string | null, playerId: string | null): Lob
                     navigate(toPlay(playerId));
                     break;
                 case "lobby-state":
-                    if (message.players.find(p => p.id === playerId) === undefined) {
-                        navigate(toLobbyList(playerId));
-                    }
                     setPlayers(message.players);
                     setOwnerId(message.owner);
                     setLobbyName(message.name);
