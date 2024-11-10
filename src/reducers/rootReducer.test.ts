@@ -432,4 +432,50 @@ describe("rootReducer", () => {
             );
         });
     });
+
+    describe("player-won", () => {
+        test("self", () => {
+            testAction(
+                {
+                    type: "player-won",
+                    playerId: testGameState.selfPlayerState.id,
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        winner: testGameState.selfPlayerState.id,
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+
+        test("other", () => {
+            const pidx = 1;
+
+            testAction(
+                {
+                    type: "player-won",
+                    playerId: testGameState.otherPlayersState[pidx].id,
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        winner: testGameState.otherPlayersState[pidx].id,
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+    });
 });
