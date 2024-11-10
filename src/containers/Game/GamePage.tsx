@@ -1,22 +1,32 @@
-import { useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../../domain/AppState";
 import Game from "./Game";
 import useGameWebSocket from "./hooks/useGameWebSocket";
 import Action from "../../reducers/Action";
 import { Dispatch } from "redux";
+import useUrlPlayerId from "../../hooks/useUrlPlayerId";
+import { toInitial, toLobbyList } from "../../navigation/destinations";
 
 function GamePage() {
-    const [searchParams] = useSearchParams();
-    const playerId = useMemo(() => searchParams.get("player")!, [searchParams]);
+    const gameId = useParams<{ gameId: string }>().gameId ?? null;
+    const playerId = useUrlPlayerId();
 
     const gameState = useSelector((state: AppState) => state.gameState);
 
     const dispatch = useDispatch<Dispatch<Action>>();
-    const sendMessage = useGameWebSocket(playerId, dispatch);
+    const sendMessage = useGameWebSocket(gameId, playerId, dispatch);
     // clear game state when exiting
     useEffect(() => (() => { dispatch({ type: "clear-game-state" }); }), [dispatch]);
+
+    if (playerId == null) {
+        return <Navigate to={toInitial()} replace />;
+    }
+
+    if (gameId == null) {
+        return <Navigate to={toLobbyList(playerId)} replace />;
+    }
 
     if (gameState === null) {
         return (

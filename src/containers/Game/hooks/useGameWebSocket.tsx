@@ -4,12 +4,13 @@ import { wsServerUrl } from "../../../services/config";
 import { GameMessageIn, GameMessageInSchema, GameMessageOut } from "../../../domain/GameMessage";
 
 function createWebSocket(
+    gameId: string,
     playerId: PlayerId,
     onOpen: (ws: WebSocket) => void,
     onClose: (ws: WebSocket) => void,
     onReceive: (msg: GameMessageIn) => void,
 ): WebSocket {
-    const ws = new WebSocket(`${wsServerUrl}/game/${playerId}`);
+    const ws = new WebSocket(`${wsServerUrl}/game/${gameId}?player_id=${playerId}`);
 
     ws.addEventListener("message", e => {
         if (typeof e.data !== "string") {
@@ -71,7 +72,8 @@ function tryFlushQueue(ws: WebSocket, messageQueue: GameMessageOut[]) {
 
 
 function useGameWebSocket(
-    playerId: PlayerId,
+    gameId: string | null,
+    playerId: PlayerId | null,
     onReceive: (msg: GameMessageIn) => void,
 ): (msg: GameMessageOut) => void {
     const messageQueueRef = useRef<GameMessageOut[]>([]);
@@ -81,7 +83,12 @@ function useGameWebSocket(
     const [wsGeneration, setWsGeneration] = useState(0);
 
     useEffect(() => {
+        if (gameId == null || playerId == null) {
+            return;
+        }
+
         const ws = createWebSocket(
+            gameId,
             playerId,
             (ws) => tryFlushQueue(ws, messageQueueRef.current),
             (ws) => {
@@ -95,7 +102,7 @@ function useGameWebSocket(
         );
         wsRef.current = ws;
         return () => ws.close();
-    }, [playerId, onReceive, wsGeneration]);
+    }, [gameId, playerId, onReceive, wsGeneration]);
 
     const sendMessage = useCallback((msg: GameMessageOut) => {
         const ws = wsRef.current;
