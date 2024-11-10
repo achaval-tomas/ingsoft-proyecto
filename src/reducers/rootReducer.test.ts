@@ -118,11 +118,16 @@ const testAppState: AppState = {
     notifications: [],
 };
 
+type RootReducerTestOptions = {
+    shouldTurnStartChange: boolean;
+    chatMessageCountChange: number;
+}
+
 function testAction(
+    action: Action,
     initalAppState: AppState,
     expectedAppState: AppState,
-    shouldTurnStartChange: boolean,
-    action: Action,
+    options: RootReducerTestOptions,
 ) {
     const result = rootReducer(deepFreeze(initalAppState) as AppState, action);
 
@@ -136,17 +141,25 @@ function testAction(
         gameState: { ...expectedAppState.gameState, turnStart: undefined },
     });
 
-    if (shouldTurnStartChange) {
+    if (options.shouldTurnStartChange) {
         expect(result?.gameState?.turnStart).not.toEqual(initalAppState?.gameState?.turnStart);
     } else {
         expect(result?.gameState?.turnStart).not.toEqual(initalAppState?.gameState?.turnStart);
     }
+
+    expect(result.chatMessages).toHaveLength(initalAppState.chatMessages.length + options.chatMessageCountChange);
 }
 
 describe("rootReducer", () => {
     describe("turn-ended", () => {
         test("self - no actions taken", () => {
             testAction(
+                {
+                    type: "turn-ended",
+                    playerId: testGameState.selfPlayerState.id,
+                    newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
+                    newMovementCards: testGameState.selfPlayerState.movementCardsInHand,
+                },
                 testAppState,
                 {
                     ...testAppState,
@@ -155,18 +168,21 @@ describe("rootReducer", () => {
                         currentRoundPlayer: 1,
                     },
                 },
-                true,
                 {
-                    type: "turn-ended",
-                    playerId: testGameState.selfPlayerState.id,
-                    newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
-                    newMovementCards: testGameState.selfPlayerState.movementCardsInHand,
+                    shouldTurnStartChange: true,
+                    chatMessageCountChange: 1,
                 },
             );
         });
 
         test("self - with temporal movements", () => {
             testAction(
+                {
+                    type: "turn-ended",
+                    playerId: testGameState.selfPlayerState.id,
+                    newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
+                    newMovementCards: testGameState.selfPlayerState.movementCardsInHand.toSpliced(0, 2).concat("l-ccw", "diagonal-adjacent"),
+                },
                 {
                     ...testAppState,
                     gameState: {
@@ -211,12 +227,9 @@ describe("rootReducer", () => {
                         currentRoundPlayer: 1,
                     },
                 },
-                true,
                 {
-                    type: "turn-ended",
-                    playerId: testGameState.selfPlayerState.id,
-                    newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
-                    newMovementCards: testGameState.selfPlayerState.movementCardsInHand.toSpliced(0, 2).concat("l-ccw", "diagonal-adjacent"),
+                    shouldTurnStartChange: true,
+                    chatMessageCountChange: 1,
                 },
             );
         });
