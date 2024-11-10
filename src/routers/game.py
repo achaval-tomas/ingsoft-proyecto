@@ -96,14 +96,14 @@ async def game_websocket(
     ws: WebSocket,
     db: SessionDep,
 ):
-    player_id = get_active_player_id_from_game(db, player_id, game_id)
+    subplayer_id = get_active_player_id_from_game(db, player_id, game_id)
 
-    await game_manager.connect(ws, player_id)
+    await game_manager.connect(ws, subplayer_id)
 
     try:
         await game_manager.send_personal_message(
-            player_id=player_id,
-            message=await handle_gamestate(player_id=player_id, db=db),
+            player_id=subplayer_id,
+            message=await handle_gamestate(player_id=subplayer_id, db=db),
         )
 
         while True:
@@ -114,7 +114,7 @@ async def game_websocket(
             response = (
                 await message_handlers[request['type']](
                     db=db,
-                    player_id=player_id,
+                    player_id=subplayer_id,
                     data=received,
                 )
                 if request['type'] in message_handlers
@@ -123,12 +123,12 @@ async def game_websocket(
 
             if response is not None:
                 await game_manager.send_personal_message(
-                    player_id=player_id,
+                    player_id=subplayer_id,
                     message=response,
                 )
 
     except WebSocketDisconnect:
-        game_manager.disconnect(player_id=player_id, websocket=ws)
+        game_manager.disconnect(player_id=subplayer_id, websocket=ws)
         return
 
 
