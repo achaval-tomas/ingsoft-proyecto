@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test, vi } from "vitest";
+import { beforeAll, describe, expect, test, vi } from "vitest";
 import Game from "./Game";
 import { Color } from "../../domain/Color";
 import { toBoardTiles } from "../../util";
@@ -128,17 +128,19 @@ function createTestStore() {
 }
 
 describe("Game", () => {
+    beforeAll(() => {
+        vi.mock("react-router-dom", async () => {
+            const mod = await vi.importActual("react-router-dom");
+
+            return {
+                ...mod,
+                useNavigate: () => (() => {}),
+            };
+        });
+    });
+
     describe("use shape card", () => {
         test("our shape card", async () => {
-            vi.mock("react-router-dom", async () => {
-                const mod = await vi.importActual("react-router-dom");
-
-                return {
-                    ...mod,
-                    useNavigate: () => (() => {}),
-                };
-            });
-
             const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
 
             render(
@@ -150,10 +152,10 @@ describe("Game", () => {
                 </Provider>,
             );
 
-            const playerId = testGameState.selfPlayerState.id;
+            const targetPlayerId = testGameState.selfPlayerState.id;
 
             const targetTile = screen.getByTestId("tile-0-4");
-            const targetShapeCard = screen.getByTestId(`shape-card-${playerId}-1`);
+            const targetShapeCard = screen.getByTestId(`shape-card-${targetPlayerId}-1`);
 
             expect(targetTile).toBeVisible();
             expect(targetShapeCard).toBeVisible();
@@ -163,7 +165,7 @@ describe("Game", () => {
 
             const expectedMessage: GameMessageOut = {
                 type: "use-shape-card",
-                targetPlayerId: playerId,
+                targetPlayerId,
                 position: [0, 4],
             };
 
@@ -172,15 +174,6 @@ describe("Game", () => {
         });
 
         test("their shape card", async () => {
-            vi.mock("react-router-dom", async () => {
-                const mod = await vi.importActual("react-router-dom");
-
-                return {
-                    ...mod,
-                    useNavigate: () => (() => {}),
-                };
-            });
-
             const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
 
             render(
