@@ -27,6 +27,7 @@ def lobby_decoder(lobby: models.Lobby, joined: bool):
         player_amount=lobby.player_amount,
         max_players=lobby.max_players,
         joined=joined,
+        isPasswordProtected=(lobby.password != ''),
     )
 
 

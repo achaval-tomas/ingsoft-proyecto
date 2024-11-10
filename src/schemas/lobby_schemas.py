@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel, ConfigDict
 
 from src.schemas.player_schemas import PlayerInfoSchema
@@ -13,8 +11,7 @@ class LobbyBase(BaseModel):
 
 
 class LobbyCreateSchema(LobbyBase):
-    password: Optional[str] = ""
-    
+    password: str = ''
 
 
 class LobbyIdSchema(BaseModel):
@@ -35,12 +32,13 @@ class LobbyListItemSchema(BaseModel):
     player_amount: int
     max_players: int
     joined: bool
+    isPasswordProtected: bool
 
 
 class LobbyJoinSchema(BaseModel):
     player_id: str
     lobby_id: str
-    password: Optional[str] = ""
+    password: str = ''
 
 
 class LobbyLeaveSchema(LobbyJoinSchema):
