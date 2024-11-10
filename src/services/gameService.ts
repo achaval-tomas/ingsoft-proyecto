@@ -1,11 +1,27 @@
 import { PlayerId } from "../domain/GameState";
 import { httpServerUrl } from "./config";
-import { post } from "./util";
+import { get, post } from "./util";
 
 type CreateGameResult = {
     type: "LobbyNotFound" | "NotOwner" | "NotEnoughPlayers" | "PlayerNotFound" | "Ok" | "Other";
     message: string;
 };
+
+export type JoinedGame = {
+    id: string;
+    name: string;
+    playerCount: number;
+}
+
+async function getJoinedGames(playerId: string): Promise<JoinedGame[]> {
+    const res = await get(`${httpServerUrl}/game?player_id=${playerId}`);
+
+    if (!res.ok) {
+        throw new Error("failed to fetch joined games");
+    }
+
+    return await res.json() as JoinedGame[];
+}
 
 async function createGame(
     playerId: string,
@@ -46,6 +62,7 @@ async function leaveGame(playerId: PlayerId) {
 }
 
 const gameService = {
+    getJoinedGames,
     createGame,
     leaveGame,
 };
