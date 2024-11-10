@@ -7,16 +7,16 @@ import Action from "./Action";
 import rootReducer from "./rootReducer";
 import AppState from "../domain/AppState";
 
-const testBoardTiles: Color[] = toBoardTiles([
+const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
     "rgbyry",
     "rrrgbb",
     "gyybry",
     "ygbrrr",
     "yryryr",
     "rrrrrr",
-]);
+])) as Color[];
 
-const testGameState: GameState = {
+const testGameState: GameState = deepFreeze<GameState>({
     selfPlayerState: {
         id: "1",
         name: "p0",
@@ -110,13 +110,13 @@ const testGameState: GameState = {
     currentRoundPlayer: 0,
     turnStart: (new Date()).toISOString(),
     temporalMovements: [],
-};
+}) as GameState;
 
-const testAppState: AppState = {
+const testAppState: AppState = deepFreeze<AppState>({
     gameState: testGameState,
     chatMessages: [],
     notifications: [],
-};
+}) as AppState;
 
 type RootReducerTestOptions = {
     shouldTurnStartChange: boolean;
