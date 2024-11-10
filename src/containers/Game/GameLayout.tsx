@@ -1,4 +1,5 @@
 import FilledButton from "../../components/FilledButton";
+import OutlinedButton from "../../components/OutlinedButton";
 import TextButton from "../../components/TextButton";
 import ChatMessage from "../../domain/ChatMessage";
 import { PlayerId } from "../../domain/GameState";
@@ -17,6 +18,7 @@ type GameLayoutProps = {
     onSendChatMessage: (message: string) => void;
     onClickEndTurn: () => void;
     onClickLeaveGame: () => void;
+    onNavToLobbyList: () => void;
     onClickShapeCard: (playerId: PlayerId, shapeCardIndex: number) => void;
     onClickMovementCard: (i: number) => void;
     onClickTile: (i: Position) => void;
@@ -29,6 +31,7 @@ function GameLayout({
     onSendChatMessage,
     onClickEndTurn,
     onClickLeaveGame,
+    onNavToLobbyList,
     onClickShapeCard,
     onClickMovementCard,
     onClickTile,
@@ -104,7 +107,8 @@ function GameLayout({
                 <TurnTimer turnStart={uiState.turnStart} />
                 <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
             </div>
-            <div className="row-start-1 col-start-1 justify-self-end self-start">
+            <div className="row-start-1 col-start-1 flex flex-col justify-self-end self-start gap-2">
+                <OutlinedButton className="text-xl" padding="px-8 py-4" onClick={onNavToLobbyList}>Ver otras partidas</OutlinedButton>
                 <TextButton className="text-xl" padding="px-8 py-4" onClick={onClickLeaveGame}>Abandonar partida</TextButton>
             </div>
         </div>

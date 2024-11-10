@@ -225,6 +225,7 @@ function Game({ gameId, gameState, sendMessage }: GameProps) {
                 onSendChatMessage={text => void handleSendChatMessage(text)}
                 onClickEndTurn={handleEndTurn}
                 onClickLeaveGame={() => setShowLeaveGameDialog(true)}
+                onNavToLobbyList={() => navigate(toLobbyList(playerId))}
                 onClickShapeCard={handleClickShapeCard}
                 onClickMovementCard={handleClickMovementCard}
                 onClickTile={handleClickTile}
