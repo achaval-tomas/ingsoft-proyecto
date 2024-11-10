@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import CreateLobbyDialog, { CreateLobbyFormState } from "./components/CreateLobbyDialog";
 import FilledButton from "../../components/FilledButton";
 import LobbyFilters from "./components/LobbyFilters";
@@ -7,6 +7,7 @@ import { LobbyElement } from "../../services/lobbyService";
 import LobbyList from "./components/LobbyList";
 import { JoinedGame } from "../../services/gameService";
 import JoinedGameList from "./components/JoinedGameList";
+import EnterPasswordDialog from "./components/EnterPasswordDialog";
 
 const defaultPlayerCountRange: [number, number] = [1, 3];
 
@@ -15,7 +16,7 @@ interface LobbyListPageLayoutProps {
     joinedGames: JoinedGame[] | null;
     lobbies: LobbyElement[] | null;
     onRefresh: () => void;
-    onJoinLobby: (lobbyId: string) => void;
+    onJoinLobby: (lobbyId: string, password: string) => void;
 }
 
 function LobbyListPageLayout({
@@ -31,6 +32,8 @@ function LobbyListPageLayout({
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [playerCountRange, setPlayerCountRange] = useState<[number, number]>(defaultPlayerCountRange);
 
+    const [enterPasswordDialogLobbyId, setEnterPasswordDialogLobbyId] = useState<string | null>(null);
+
     const filteredLobbies = useMemo(
         () => (lobbies != null)
             ? lobbies
@@ -45,6 +48,26 @@ function LobbyListPageLayout({
         setSearchQuery("");
         setPlayerCountRange(defaultPlayerCountRange);
     }
+
+    const onJoinLobbyMiddleware = useCallback((lobbyId: string) => {
+        if (lobbies == null) {
+            onJoinLobby(lobbyId, "");
+            return;
+        }
+
+        const lobby = lobbies.find(l => l.lobby_id === lobbyId);
+        if (lobby == null) {
+            onJoinLobby(lobbyId, "");
+            return;
+        }
+
+        if (lobby.joined || false) {
+            onJoinLobby(lobbyId, "");
+            return;
+        }
+
+        setEnterPasswordDialogLobbyId(lobbyId);
+    }, [lobbies, onJoinLobby]);
 
     return (
         <>
@@ -65,7 +88,7 @@ function LobbyListPageLayout({
                                 lobbies={joinedGames}
                                 selectedGameId={selectedLobbyId}
                                 onSelectGame={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
-                                onJoinGame={onJoinLobby}
+                                onJoinGame={onJoinLobbyMiddleware}
                             />
                         </div>
                         <div className="flex flex-col grow-[1]">
@@ -77,7 +100,7 @@ function LobbyListPageLayout({
                                 selectedLobbyId={selectedLobbyId}
                                 isFiltered={filteredLobbies?.length !== lobbies?.length}
                                 onSelectLobby={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
-                                onJoinLobby={onJoinLobby}
+                                onJoinLobby={onJoinLobbyMiddleware}
                             />
                         </div>
                     </div>
@@ -104,7 +127,7 @@ function LobbyListPageLayout({
                         <FilledButton
                             onClick={() => {
                                 if (selectedLobbyId != null) {
-                                    onJoinLobby(selectedLobbyId);
+                                    onJoinLobbyMiddleware(selectedLobbyId);
                                 }
                             }}
                             enabled={selectedLobbyId != null}
@@ -121,6 +144,12 @@ function LobbyListPageLayout({
                 lobbyNamePlaceholder={"Nombre de tu sala"}
                 onCancel={() => setShowCreateLobbyDialog(false)}
                 onSubmit={onSubmitLobbyForm}
+            />
+            <EnterPasswordDialog
+                isOpen={enterPasswordDialogLobbyId != null}
+                lobbyName={lobbies?.find(l => l.lobby_id === enterPasswordDialogLobbyId)?.lobby_name ?? ""}
+                onCancel={() => setEnterPasswordDialogLobbyId(null)}
+                onSubmit={(password) => onJoinLobby(enterPasswordDialogLobbyId!, password)}
             />
         </>
     );

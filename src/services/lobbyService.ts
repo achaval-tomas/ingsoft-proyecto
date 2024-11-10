@@ -7,6 +7,7 @@ export interface LobbyElement {
     player_amount: number;
     max_players: number;
     joined: boolean;
+    isPasswordProtected: boolean;
 }
 
 async function getLobbies(playerId: string): Promise<LobbyElement[]> {
