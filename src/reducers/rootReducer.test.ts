@@ -713,4 +713,22 @@ describe("rootReducer", () => {
             );
         });
     });
+
+    describe("shape-card-used", () => {
+        test("self targets self - invalid shape in position", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [2, 1],
+                    targetPlayerId: "1",
+                },
+                testAppState,
+                testAppState,
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+    });
 });
