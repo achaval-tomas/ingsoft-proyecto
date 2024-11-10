@@ -329,4 +329,59 @@ describe("rootReducer", () => {
             );
         });
     });
+
+    describe("player-left", () => {
+        test("other - not current turn", () => {
+            const pidx = 1;
+
+            testAction(
+                {
+                    type: "player-left",
+                    playerId: testGameState.otherPlayersState[pidx].id,
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.filter((_, i) => i !== pidx),
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
+        test("other - current turn without temporal movements", () => {
+            const pidx = 1;
+
+            testAction(
+                {
+                    type: "player-left",
+                    playerId: testGameState.otherPlayersState[pidx].id,
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.filter((_, i) => i !== pidx),
+                        currentRoundPlayer: 2,
+                    },
+                },
+                {
+                    shouldTurnStartChange: true,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+    });
 });
