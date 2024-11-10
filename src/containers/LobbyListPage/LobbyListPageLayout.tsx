@@ -15,7 +15,6 @@ interface LobbyListPageLayoutProps {
     joinedGames: JoinedGame[] | null;
     lobbies: LobbyElement[] | null;
     onRefresh: () => void;
-    onJoinGame: (gameId: string) => void;
     onJoinLobby: (lobbyId: string) => void;
 }
 
@@ -24,7 +23,6 @@ function LobbyListPageLayout({
     joinedGames,
     lobbies,
     onRefresh,
-    onJoinGame,
     onJoinLobby,
 }: LobbyListPageLayoutProps) {
     const [showCreateLobbyDialog, setShowCreateLobbyDialog] = useState<boolean>(false);
@@ -67,7 +65,7 @@ function LobbyListPageLayout({
                                 lobbies={joinedGames}
                                 selectedGameId={selectedLobbyId}
                                 onSelectGame={lid => setSelectedLobbyId(slid => (slid === lid) ? null : lid)}
-                                onJoinGame={onJoinGame}
+                                onJoinGame={onJoinLobby}
                             />
                         </div>
                         <div className="flex flex-col grow-[1]">

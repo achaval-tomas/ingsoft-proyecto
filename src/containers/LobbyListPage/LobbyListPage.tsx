@@ -90,6 +90,11 @@ function LobbyListPage() {
             return;
         }
 
+        if (joinedGames?.find(g => g.id === lobbyId)) {
+            navigate(toPlay(lobbyId, playerId));
+            return;
+        }
+
         const res = await lobbyService.joinLobby(playerId, lobbyId);
 
         if (res.type === "Ok" || res.type === "AlreadyJoined") {
@@ -103,7 +108,7 @@ function LobbyListPage() {
         }
 
         alert(res.message);
-    }, [navigate, playerId]);
+    }, [navigate, joinedGames, playerId]);
 
     if (playerId == null) {
         return <Navigate to={toInitial()} replace />;
@@ -115,7 +120,6 @@ function LobbyListPage() {
             joinedGames={joinedGames}
             lobbies={lobbies}
             onRefresh={handleRefreshLobbies}
-            onJoinGame={gameId => navigate(toPlay(gameId, playerId))}
             onJoinLobby={lobbyId => void handleJoinLobby(lobbyId)}
         />
     );
