@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.orm import Session
 
 from src.database.crud import crud_user
@@ -26,6 +28,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
         max_players=lobby.max_players,
         players=serialize(player_list),
         player_amount=1,
+        password=lobby.password,
     )
 
     player.lobby_id = db_lobby.lobby_id
@@ -37,7 +40,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     return db_lobby.lobby_id
 
 
-def join_lobby(db: Session, lobby_id: str, player_id: str):
+def join_lobby(db: Session, lobby_id: str, player_id: str, pw: Optional[str] = ''):
     user = crud_user.get_user(db, player_id)
     if not user:
         return 1
@@ -55,6 +58,8 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
         return 3
     elif lobby.player_amount == lobby.max_players:
         return 4
+    elif lobby.password and pw != lobby.password:
+        return 5
 
     player.lobby_id = lobby.lobby_id
 

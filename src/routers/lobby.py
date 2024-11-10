@@ -47,7 +47,12 @@ def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
 
 @lobby_router.post('/lobby/join', status_code=202)
 async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
-    res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
+    res = crud_lobby.join_lobby(
+        db=db,
+        player_id=body.player_id,
+        lobby_id=body.lobby_id,
+        pw=body.password,
+    )
 
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
@@ -57,6 +62,8 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
     elif res == 4:
         raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
+    elif res == 5:
+        raise HTTPException(status_code=401, detail=errors.INCORRECT_PASSWORD)
 
     player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     await share_player_list(

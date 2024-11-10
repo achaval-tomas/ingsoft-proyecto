@@ -28,6 +28,7 @@ class Lobby(Base):
     max_players = Column(Integer)
     players = Column(String)
     player_amount = Column(Integer)
+    password = Column(String, nullable=True)
 
 
 class Game(Base):
