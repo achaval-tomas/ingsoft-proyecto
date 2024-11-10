@@ -573,4 +573,20 @@ describe("rootReducer", () => {
             );
         });
     });
+
+    describe("movement-cancelled", () => {
+        test("self - current turn without temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                testAppState,
+                testAppState,
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 0,
+                },
+            );
+        });
+    });
 });
