@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
-from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database import models
@@ -21,19 +20,13 @@ from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
 
 
-def lobby_decoder(db: Session, lobby: models.Lobby, player_id: str):
+def lobby_decoder(lobby: models.Lobby, joined: bool):
     return LobbyListItemSchema(
         lobby_id=lobby.lobby_id,
         lobby_name=lobby.lobby_name,
         player_amount=lobby.player_amount,
         max_players=lobby.max_players,
-        joined=bool(
-            get_active_player_id_from_lobby(
-                db=db,
-                user_id=player_id,
-                lobby_id=lobby.lobby_id,
-            ),
-        ),
+        joined=joined,
     )
 
 
@@ -76,9 +69,20 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
 
 @lobby_router.get('/lobby', response_model=list[LobbyListItemSchema])
 async def get_all_lobbies(db: SessionDep, player_id: str):
-    return [
-        lobby_decoder(db, lobby, player_id) for lobby in crud_lobby.get_lobbies(db=db)
-    ]
+    lobbies: list[LobbyListItemSchema] = []
+
+    for lobby in crud_lobby.get_lobbies(db=db):
+        joined = bool(
+            get_active_player_id_from_lobby(
+                db=db,
+                user_id=player_id,
+                lobby_id=lobby.lobby_id,
+            ),
+        )
+        if lobby.player_amount < lobby.max_players or joined:
+            lobbies.append(lobby_decoder(lobby, joined))
+
+    return lobbies
 
 
 @lobby_router.post('/lobby/leave', status_code=200)
