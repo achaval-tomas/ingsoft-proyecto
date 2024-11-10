@@ -105,7 +105,14 @@ function GameLayout({
             />
             <div className="row-start-2 col-start-1 justify-self-end self-end flex flex-col gap-4">
                 <TurnTimer turnStart={uiState.turnStart} />
-                <FilledButton className="text-xl" padding="px-8 py-4" onClick={onClickEndTurn}>Terminar turno</FilledButton>
+                <FilledButton
+                    className="text-xl"
+                    padding="px-8 py-4"
+                    onClick={onClickEndTurn}
+                    enabled={uiState.boardUiState.activeSide === "b"}
+                >
+                    Terminar turno
+                </FilledButton>
             </div>
             <div className="row-start-1 col-start-1 flex flex-col justify-self-end self-start gap-2">
                 <OutlinedButton className="text-xl" padding="px-8 py-4" onClick={onNavToLobbyList}>Ver otras partidas</OutlinedButton>
