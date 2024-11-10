@@ -25,10 +25,7 @@ def lobby_decoder(db: Session, lobby: models.Lobby, player_id: str):
     return LobbyListItemSchema(
         lobby_id=lobby.lobby_id,
         lobby_name=lobby.lobby_name,
-        lobby_owner=lobby.lobby_owner,
-        players=deserialize(lobby.players),
         player_amount=lobby.player_amount,
-        min_players=lobby.min_players,
         max_players=lobby.max_players,
         joined=bool(
             get_active_player_id_from_lobby(

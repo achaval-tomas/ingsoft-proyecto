@@ -26,7 +26,11 @@ class LobbySchema(LobbyBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class LobbyListItemSchema(LobbySchema):
+class LobbyListItemSchema(BaseModel):
+    lobby_id: str
+    lobby_name: str
+    player_amount: int
+    max_players: int
     joined: bool
 
 
