@@ -144,7 +144,7 @@ function testAction(
     if (options.shouldTurnStartChange) {
         expect(result?.gameState?.turnStart).not.toEqual(initalAppState?.gameState?.turnStart);
     } else {
-        expect(result?.gameState?.turnStart).not.toEqual(initalAppState?.gameState?.turnStart);
+        expect(result?.gameState?.turnStart).toEqual(initalAppState?.gameState?.turnStart);
     }
 
     expect(result.chatMessages).toHaveLength(initalAppState.chatMessages.length + options.chatMessageCountChange);
