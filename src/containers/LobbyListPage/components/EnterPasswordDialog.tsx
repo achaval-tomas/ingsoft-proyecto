@@ -21,10 +21,9 @@ function EnterPasswordForm({ lobbyName, onCancel, onSubmit }: EnterPasswordFormP
             <Field
                 label="Contraseña"
                 type="password"
-                placeholder="Pública"
+                placeholder="Ingrese la contraseña"
                 value={password}
                 onChange={setPassword}
-                inputTestId="lobby-password"
             />
             <div className="flex mt-4 gap-4">
                 <OutlinedButton
@@ -36,7 +35,6 @@ function EnterPasswordForm({ lobbyName, onCancel, onSubmit }: EnterPasswordFormP
                 <FilledButton
                     type="submit"
                     className="flex-1"
-                    testId="lobby-btn-create"
                 >
                     Unirse
                 </FilledButton>
