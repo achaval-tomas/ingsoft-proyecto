@@ -802,5 +802,50 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("self targets other - correctly blocks shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [4, 5],
+                    targetPlayerId: "5",
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "blue",
+                        },
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "5"
+                                ? {
+                                    ...p,
+                                    shapeCardsInHand: [
+                                        {
+                                            shape: "b-0",
+                                            isBlocked: true,
+                                        },
+                                        {
+                                            shape: "b-3",
+                                            isBlocked: false,
+                                        },
+                                        {
+                                            shape: "b-1",
+                                            isBlocked: false,
+                                        },
+                                    ],
+                                }
+                                : p),
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
     });
 });
