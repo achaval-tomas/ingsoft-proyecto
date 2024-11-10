@@ -9,6 +9,7 @@ export default defineConfig({
         setupFiles: "./src/setupTests.ts",
         coverage: {
             exclude: [...coverageConfigDefaults.exclude, "*.config.*"],
+            provider: "istanbul",
         },
     },
 });
