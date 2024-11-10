@@ -523,5 +523,54 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("other", () => {
+            testAction(
+                {
+                    type: "movement-card-used",
+                    movement: "straight-edge",
+                    position: [1, 0],
+                    rotation: "r90",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 3,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        temporalMovements: [
+                            {
+                                movement: "straight-edge",
+                                position: [1, 0],
+                                rotation: "r90",
+                            },
+                        ],
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rrbyry",
+                                "rrrgbb",
+                                "gyybry",
+                                "ygbrrr",
+                                "yryryr",
+                                "rgrrrr",
+                            ]),
+                        },
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "15" ? { ...p, movementCardsInHandCount: 1 } : p),
+                        currentRoundPlayer: 3,
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
     });
 });
