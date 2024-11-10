@@ -61,21 +61,7 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
             newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
             newGameState.turnStart = serverNowAsIsoString();
 
-            if (gameState.temporalMovements.length > 0) {
-                const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
-
-                for (let i = gameState.temporalMovements.length - 1; i >= 0; --i) {
-                    const { movement, position, rotation } = gameState.temporalMovements[i];
-
-                    newBoardState.tiles = getTilesWithMovementDone(movement, position, rotation, newBoardState.tiles);
-                }
-
-                newGameState.boardState = newBoardState;
-            }
-
-            newGameState.temporalMovements = [];
-
-            return newGameState;
+            return revertTemporalMovements(newGameState);
         }
         case "player-won": {
             const newGameState = { ...gameState };
@@ -88,13 +74,18 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
             return gameState;
         }
         case "player-left": {
-            const newGameState = { ...gameState };
-            newGameState.otherPlayersState = newGameState.otherPlayersState.filter(p => p.id !== action.playerId);
-
             const player = gameState.otherPlayersState.find(p => p.id === action.playerId);
-            if (player != null && player.roundOrder === gameState.currentRoundPlayer) {
+            if (player == null) {
+                return gameState;
+            }
+
+            let newGameState = { ...gameState };
+
+            newGameState.otherPlayersState = newGameState.otherPlayersState.filter(p => p.id !== action.playerId);
+            if (player.roundOrder === gameState.currentRoundPlayer) {
                 newGameState.currentRoundPlayer = computeNextPlayer(newGameState);
                 newGameState.turnStart = serverNowAsIsoString();
+                newGameState = revertTemporalMovements(newGameState);
             }
 
             return newGameState;
@@ -262,6 +253,20 @@ function changeOtherPlayerState(
             return p;
         }
     });
+}
+
+function revertTemporalMovements(gameState: GameState): GameState {
+    if (gameState.temporalMovements.length === 0) {
+        return gameState;
+    }
+
+    const newBoardState = { ...gameState.boardState, tiles: [...gameState.boardState.tiles] };
+
+    for (const { movement, position, rotation } of gameState.temporalMovements.toReversed()) {
+        newBoardState.tiles = getTilesWithMovementDone(movement, position, rotation, newBoardState.tiles);
+    }
+
+    return { ...gameState, boardState: newBoardState, temporalMovements: [] };
 }
 
 function getTilesWithMovementDone(movement: Movement, position: Position, rotation: Rotation, tiles: readonly Color[]): Color[] {
