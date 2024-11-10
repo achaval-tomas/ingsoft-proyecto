@@ -32,6 +32,7 @@ class LobbySchema(LobbyBase):
 class LobbyJoinSchema(BaseModel):
     player_id: str
     lobby_id: str
+    password: Optional[str] = ""
 
 
 class LobbyLeaveSchema(LobbyJoinSchema):
