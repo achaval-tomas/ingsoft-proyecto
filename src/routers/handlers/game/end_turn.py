@@ -17,7 +17,7 @@ from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
 
 
-async def handle_end_turn(player_id: str, db: Session, **_):
+async def handle_end_turn(user_id: str, player_id: str, db: Session, **_):
     player = get_player(db=db, player_id=player_id)
     if not player:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
@@ -40,7 +40,7 @@ async def handle_end_turn(player_id: str, db: Session, **_):
     ).model_dump_json()
 
     msg_player = TurnEndedMessageSchema(
-        playerId=player_id,
+        playerId=user_id,
         newShapeCards=shape_cards,
         newMovementCards=mov_cards,
     ).model_dump_json()
@@ -53,7 +53,7 @@ async def handle_end_turn(player_id: str, db: Session, **_):
         )
 
     if res == 4:
-        await handle_announce_winner(db=db, winner_id=player_id)
+        await handle_announce_winner(db=db, user_id=user_id, winner_id=player_id)
 
     return None
 

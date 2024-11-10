@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 
 from src.database.crud import crud_game
-from src.database.crud.crud_user import get_player
+from src.database.crud.crud_user import decode_player_id, get_player
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.player_schemas import WinnerMessageSchema
 
 
-async def handle_announce_winner(winner_id: str, db: Session):
+async def handle_announce_winner(user_id: str, winner_id: str, db: Session):
     player = get_player(player_id=winner_id, db=db)
     if not player:
         return
@@ -15,7 +15,11 @@ async def handle_announce_winner(winner_id: str, db: Session):
         db=db,
         game_id=player.game_id,
         message=WinnerMessageSchema(
-            playerId=winner_id,
+            playerId=decode_player_id(
+                db=db,
+                player_id=winner_id,
+                user_id=user_id,
+            ),
             playerName=player.player_name,
         ).model_dump_json(),
     )

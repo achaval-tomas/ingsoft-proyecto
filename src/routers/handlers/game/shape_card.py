@@ -2,14 +2,14 @@ from sqlalchemy.orm import Session
 
 from src.constants import errors
 from src.database.crud.crud_cards import use_shape_card
-from src.database.crud.crud_user import get_player
+from src.database.crud.crud_user import decode_player_id, get_player
 from src.routers.handlers.game.announce_winner import handle_announce_winner
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.card_schemas import ShapeCardUsedSchema, UseShapeCardSchema
 from src.schemas.message_schema import error_message
 
 
-async def handle_shape_card(player_id: str, db: Session, data: dict):
+async def handle_shape_card(user_id: str, player_id: str, db: Session, data: dict):
     req = UseShapeCardSchema.model_validate_json(data)
     assert req.type == 'use-shape-card'
 
@@ -38,7 +38,11 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
 
     msg = ShapeCardUsedSchema(
         position=req.position,
-        targetPlayerId=req.targetPlayerId,
+        targetPlayerId=decode_player_id(
+            db=db,
+            player_id=req.targetPlayerId,
+            user_id=user_id,
+        ),
     ).model_dump_json()
 
     player = get_player(db=db, player_id=player_id)
@@ -49,6 +53,6 @@ async def handle_shape_card(player_id: str, db: Session, data: dict):
     )
 
     if rc == 8:
-        await handle_announce_winner(winner_id=player_id, db=db)
+        await handle_announce_winner(user_id=user_id, winner_id=player_id, db=db)
 
     return None

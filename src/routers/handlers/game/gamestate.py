@@ -70,7 +70,7 @@ def extract_temporal_movements(game_data: Game):
     ]
 
 
-async def handle_gamestate(player_id: str, db: Session, **_):
+async def handle_gamestate(user_id: str, player_id: str, db: Session, **_):
     player_data = get_player(db=db, player_id=player_id)
     if not player_data:
         return error_message(detail=errors.PLAYER_NOT_FOUND)
@@ -80,7 +80,7 @@ async def handle_gamestate(player_id: str, db: Session, **_):
         return error_message(detail=errors.GAME_NOT_FOUND)
 
     selfPlayerState = SelfPlayerStateSchema(
-        id=player_id,
+        id=user_id,
         roundOrder=deserialize(game_data.player_order).index(player_id),
         name=player_data.player_name,
     )

@@ -81,7 +81,12 @@ async def send_chat_message(
 async def leave_game(body: player_schemas.PlayerId, game_id: str, db: SessionDep):
     player_id = get_active_player_id_from_game(db, body.playerId, game_id)
 
-    rc = await handle_leave_game(player_id=player_id, db=db)
+    rc = await handle_leave_game(
+        user_id=body.playerId,
+        player_id=player_id,
+        game_id=game_id,
+        db=db,
+    )
 
     if rc == 1:
         raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
@@ -103,7 +108,11 @@ async def game_websocket(
     try:
         await game_manager.send_personal_message(
             player_id=subplayer_id,
-            message=await handle_gamestate(player_id=subplayer_id, db=db),
+            message=await handle_gamestate(
+                user_id=player_id,
+                player_id=subplayer_id,
+                db=db,
+            ),
         )
 
         while True:
@@ -114,6 +123,7 @@ async def game_websocket(
             response = (
                 await message_handlers[request['type']](
                     db=db,
+                    user_id=player_id,
                     player_id=subplayer_id,
                     data=received,
                 )
