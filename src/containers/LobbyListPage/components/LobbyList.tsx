@@ -38,7 +38,7 @@ export default function LobbyList({ lobbies, selectedLobbyId, isFiltered, onSele
                             >
                                 <td className="px-6 py-2 ">{l.lobby_name}{l.joined ? <span className="text-sm italic font-bold"> (unido/a)</span> : null}</td>
                                 <td className="px-6 py-2 text-center">{l.player_amount} / {l.max_players}</td>
-                                <td className="px-6 py-2 text-center">Pública</td>
+                                <td className="px-6 py-2 text-center">{l.isPasswordProtected ? "Privada" : "Pública"}</td>
                             </tr>
                         ))}
                     </tbody>

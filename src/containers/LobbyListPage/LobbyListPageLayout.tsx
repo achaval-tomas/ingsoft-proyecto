@@ -61,7 +61,7 @@ function LobbyListPageLayout({
             return;
         }
 
-        if (lobby.joined || false) {
+        if (lobby.joined || !lobby.isPasswordProtected) {
             onJoinLobby(lobbyId, "");
             return;
         }
