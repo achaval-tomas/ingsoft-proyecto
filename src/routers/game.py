@@ -5,6 +5,7 @@ from src.database.crud.crud_user import (
     get_active_player_games,
     get_active_player_id_from_game,
     get_active_player_id_from_lobby,
+    get_user,
 )
 from src.database.db import SessionDep
 from src.routers.handlers.game.cancel_movement import handle_cancel_movement
@@ -25,6 +26,9 @@ game_router = APIRouter()
 
 @game_router.get('/game', status_code=200)
 def get_active_games(player_id: str, db: SessionDep):
+    if not get_user(db, player_id):
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
+
     return [
         game_schemas.GameListItemSchema(
             id=game.game_id,

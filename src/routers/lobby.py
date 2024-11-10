@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from src.constants import errors
 from src.database import models
 from src.database.crud import crud_lobby
-from src.database.crud.crud_user import get_active_player_id_from_lobby
+from src.database.crud.crud_user import get_active_player_id_from_lobby, get_user
 from src.database.db import SessionDep
 from src.routers.handlers.lobby.leave_lobby import handle_leave_lobby
 from src.routers.handlers.lobby.lobbystate import handle_lobbystate
@@ -78,6 +78,9 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
 
 @lobby_router.get('/lobby', response_model=list[LobbyListItemSchema])
 async def get_all_lobbies(db: SessionDep, player_id: str):
+    if not get_user(db, player_id):
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
+
     lobbies: list[LobbyListItemSchema] = []
 
     for lobby in crud_lobby.get_lobbies(db=db):
