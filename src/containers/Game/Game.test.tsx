@@ -17,8 +17,8 @@ const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
     "rrrybb",
     "gyygry",
     "ygbggr",
-    "yryrgr",
-    "rrrrrr",
+    "ybybgb",
+    "rrrrrb",
 ])) as Color[];
 
 const testGameState: GameState = deepFreeze<GameState>({
@@ -37,7 +37,7 @@ const testGameState: GameState = deepFreeze<GameState>({
             },
             {
                 shape: "c-4",
-                isBlocked: false,
+                isBlocked: true,
             },
         ],
         shapeCardsInDeckCount: 17,
@@ -204,6 +204,32 @@ describe("Game", () => {
 
             expect(sendMessage).toBeCalledWith(expectedMessage);
             expect(sendMessage).toHaveBeenCalledOnce();
+        });
+
+        test("can't use our blocked shape card", async () => {
+            const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
+
+            render(
+                <Provider store={createTestStore()}>
+                    <Game
+                        gameState={testGameState}
+                        sendMessage={sendMessage}
+                    />,
+                </Provider>,
+            );
+
+            const targetPlayerId = testGameState.selfPlayerState.id;
+
+            const targetTile = screen.getByTestId("tile-0-0");
+            const targetShapeCard = screen.getByTestId(`shape-card-${targetPlayerId}-2`);
+
+            expect(targetTile).toBeVisible();
+            expect(targetShapeCard).toBeVisible();
+
+            await userEvent.click(targetShapeCard);
+            await userEvent.click(targetTile);
+
+            expect(sendMessage).not.toHaveBeenCalled();
         });
     });
 });
