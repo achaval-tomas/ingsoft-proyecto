@@ -11,7 +11,7 @@ from src.tools.jsonify import deserialize
 async def handle_leave_game(user_id: str, player_id: str, game_id: str, db: Session):
     res, winner_id = crud_game.leave_game(db=db, player_id=player_id)
 
-    if res != 0 or res != 3:
+    if res != 0 and res != 3:
         return res
 
     game = crud_game.get_game(db, game_id)
