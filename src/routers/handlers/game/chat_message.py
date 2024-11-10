@@ -1,13 +1,18 @@
 from sqlalchemy.orm import Session
 
 from src.database.crud.crud_game import get_game
-from src.database.crud.crud_user import get_player
+from src.database.crud.crud_user import get_active_player_id_from_game, get_player
 from src.routers.helpers.connection_manager import game_manager
 from src.schemas.game_schemas import ChatMessage, NewChatMessageSchema, SendChatMessage
 
 
 async def handle_chat_message(game_id: str, msg: SendChatMessage, db: Session, **_):
-    player = get_player(db=db, player_id=msg.player_id)
+    player_id = get_active_player_id_from_game(
+        db=db,
+        user_id=msg.player_id,
+        game_id=game_id,
+    )
+    player = get_player(db=db, player_id=player_id)
     if not player:
         return 1
 
@@ -24,7 +29,7 @@ async def handle_chat_message(game_id: str, msg: SendChatMessage, db: Session, *
 
     await game_manager.broadcast_in_game(
         message=message,
-        game_id=player.game_id,
+        game_id=game_id,
         db=db,
     )
 
