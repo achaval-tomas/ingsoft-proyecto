@@ -248,7 +248,7 @@ def use_shape_card(
     target_id: str,
     req: UseShapeCardSchema,
 ):
-    player = get_player(player_id=target_id, db=db)
+    player = crud_user.get_player(player_id=target_id, db=db)
     if player is None:
         return 1
 

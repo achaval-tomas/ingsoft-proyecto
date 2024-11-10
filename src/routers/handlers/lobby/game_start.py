@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.database.crud import crud_game, crud_lobby
-from src.database.crud.crud_player import get_player
+from src.database.crud.crud_user import get_player
 from src.routers.handlers.game.end_turn import handle_timer
 from src.routers.helpers.connection_manager import lobby_manager
 from src.schemas.message_schema import simple_message
