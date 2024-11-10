@@ -21,7 +21,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     db_lobby = Lobby(
         lobby_id=create_uuid(),
         lobby_name=lobby.lobby_name,
-        lobby_owner=lobby.lobby_owner,
+        lobby_owner=player.player_id,
         min_players=lobby.min_players,
         max_players=lobby.max_players,
         players=serialize(player_list),
