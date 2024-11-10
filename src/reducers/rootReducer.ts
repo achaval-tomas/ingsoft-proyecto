@@ -197,10 +197,18 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
                 ? {
                     selfPlayerState: {
                         ...gameState.selfPlayerState,
-                        shapeCardsInHand: filterFirst(
-                            gameState.selfPlayerState.shapeCardsInHand,
-                            sc => sc.shape === shapeAtPosition,
-                        ),
+                        // If it is us who is using the shape card (on ourselves), then discard the card.
+                        // Otherwise, block the target's shape card.
+                        shapeCardsInHand: (gameState.selfPlayerState.roundOrder === gameState.currentRoundPlayer)
+                            ? filterFirst(
+                                gameState.selfPlayerState.shapeCardsInHand,
+                                sc => sc.shape === shapeAtPosition,
+                            )
+                            : mapFirst(
+                                gameState.selfPlayerState.shapeCardsInHand,
+                                sc => sc.shape === shapeAtPosition,
+                                sc => ({ ...sc, isBlocked: true }),
+                            ),
                     },
                 }
                 : {
@@ -211,10 +219,18 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
 
                         return {
                             ...otherPlayerState,
-                            shapeCardsInHand: filterFirst(
-                                otherPlayerState.shapeCardsInHand,
-                                sc => sc.shape === shapeAtPosition,
-                            ),
+                            // If the target player is the source player, then discard the card.
+                            // Otherwise, block the target's shape card.
+                            shapeCardsInHand: (otherPlayerState.roundOrder === gameState.currentRoundPlayer)
+                                ? filterFirst(
+                                    otherPlayerState.shapeCardsInHand,
+                                    sc => sc.shape === shapeAtPosition,
+                                )
+                                : mapFirst(
+                                    otherPlayerState.shapeCardsInHand,
+                                    sc => sc.shape === shapeAtPosition,
+                                    sc => ({ ...sc, isBlocked: true }),
+                                ),
                         };
                     }),
                 };
@@ -272,6 +288,11 @@ function createSystemMessage(text: string): ChatMessage {
         text: text,
     };
 };
+
+function mapFirst<T>(arr: readonly T[], p: (t: T) => boolean, f: (t: T) => T): T[] {
+    const firstIndex = arr.findIndex(a => p(a));
+    return arr.map((e, i) => (i === firstIndex) ? f(e) : e);
+}
 
 function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMessage[], action: Action): ChatMessage[] {
     if (gameState == null) {

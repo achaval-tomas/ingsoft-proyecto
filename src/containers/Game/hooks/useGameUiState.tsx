@@ -37,7 +37,12 @@ function useGameUiState(
 
     const shapeWhitelist = useMemo(
         () => selfPlayerState.shapeCardsInHand
-            .concat(otherPlayersState.map(p => p.shapeCardsInHand).flat())
+            .filter(sc => !sc.isBlocked || selfPlayerState.shapeCardsInHand.length === 1)
+            .concat(
+                otherPlayersState
+                    .map(p => p.shapeCardsInHand.filter(sc => !sc.isBlocked))
+                    .flat(),
+            )
             .map(s => s.shape),
         [selfPlayerState, otherPlayersState],
     );
@@ -84,7 +89,7 @@ function commonPlayerStateToUiState(state: CommonPlayerState, selectionState: Se
             shape: sc.shape,
             status: (i === selectedShapeCardIndex)
                 ? "selected"
-                : sc.isBlocked
+                : sc.isBlocked && state.shapeCardsInHand.length > 1
                     ? "blocked"
                     : "normal",
         })),
