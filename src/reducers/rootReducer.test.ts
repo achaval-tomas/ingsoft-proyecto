@@ -8,9 +8,9 @@ import rootReducer from "./rootReducer";
 import AppState from "../domain/AppState";
 
 const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
-    "rgbyry",
+    "rgbyby",
     "rrrgbb",
-    "gyybry",
+    "gyybrb",
     "ygbrrr",
     "yryryr",
     "rrrrrr",
@@ -216,9 +216,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gbybry",
+                                "gbybrb",
                                 "ygrrrr",
                                 "yyyryr",
                                 "rrrrrr",
@@ -311,9 +311,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gbybry",
+                                "gbybrb",
                                 "ygrrrr",
                                 "yyyryr",
                                 "rrrrrr",
@@ -414,9 +414,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gyybry",
+                                "gyybrb",
                                 "ygbrrr",
                                 "rryryr",
                                 "yrrrrr",
@@ -507,9 +507,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "rrrgbb",
-                                "gyybry",
+                                "gyybrb",
                                 "ygrrrr",
                                 "yrybyr",
                                 "rrrrrr",
@@ -553,9 +553,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rrbyry",
+                                "rrbyby",
                                 "rrrgbb",
-                                "gyybry",
+                                "gyybrb",
                                 "ygbrrr",
                                 "yryryr",
                                 "rgrrrr",
@@ -623,9 +623,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyrb",
+                                "rgbybb",
                                 "rrrgby",
-                                "gyybry",
+                                "gyybrb",
                                 "ygbrrr",
                                 "yryryr",
                                 "rrrrrr",
@@ -696,9 +696,9 @@ describe("rootReducer", () => {
                         boardState: {
                             ...testGameState.boardState,
                             tiles: toBoardTiles([
-                                "rgbyry",
+                                "rgbyby",
                                 "yrrgbb",
-                                "gyrbry",
+                                "gyrbrb",
                                 "ygbrrr",
                                 "yryryr",
                                 "rrrrrr",
