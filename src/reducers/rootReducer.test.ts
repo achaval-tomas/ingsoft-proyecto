@@ -847,5 +847,55 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+
+        test("other targets themselves - correctly discards shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [4, 4],
+                    targetPlayerId: "5",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "blue",
+                        },
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "5"
+                                ? {
+                                    ...p,
+                                    shapeCardsInHand: [
+                                        {
+                                            shape: "b-3",
+                                            isBlocked: false,
+                                        },
+                                        {
+                                            shape: "b-1",
+                                            isBlocked: false,
+                                        },
+                                    ],
+                                }
+                                : p),
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+
     });
 });
