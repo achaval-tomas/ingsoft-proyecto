@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PlayerId } from "../../../domain/GameState";
-import { LobbyMessageInSchema } from "../../../domain/LobbyMessage";
+import { LobbyMessageIn, LobbyMessageInSchema } from "../../../domain/LobbyMessage";
 import { useNavigate } from "react-router-dom";
 import { toLobbyList, toPlay } from "../../../navigation/destinations";
 import { wsServerUrl } from "../../../services/config";
@@ -12,59 +12,61 @@ type PlayerObject = {
 
 type LobbyWebsocketFields = {
     players: PlayerObject[];
-    lobbyId: string;
     lobbyName: string;
     ownerId: PlayerId;
 }
 
-
-function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
+function useLobbyWebsocket(lobbyId: string | null, playerId: string | null): LobbyWebsocketFields {
     const wsRef = useRef<WebSocket | null>(null);
     const [wsGeneration, setWsGeneration] = useState(0);
 
     const [players, setPlayers] = useState<PlayerObject[]>([]);
-    const [lobbyId, setLobbyId] = useState<string>("");
     const [lobbyName, setLobbyName] = useState<string>("");
     const [ownerId, setOwnerId] = useState<PlayerId>("");
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (playerId === "") {
+        if (lobbyId == null || playerId == null) {
             return;
         }
 
-        const ws = new WebSocket(`${wsServerUrl}/lobby/${playerId}`);
+        const ws = new WebSocket(`${wsServerUrl}/lobby/${lobbyId}?player_id=${playerId}`);
 
         wsRef.current = ws;
 
         ws.onmessage = (e: MessageEvent) => {
             const messageString = e.data as string;
+
+            let message: LobbyMessageIn;
             try {
-                const message = LobbyMessageInSchema.parse(JSON.parse(messageString));
-                switch (message.type) {
-                    case "player-list":
-                        setPlayers(message.players);
-                        break;
-                    case "game-started":
-                        navigate(toPlay(playerId));
-                        break;
-                    case "lobby-state":
-                        if (message.players.find(p => p.id === playerId) === undefined) {
-                            navigate(toLobbyList(playerId));
-                        }
-                        setLobbyId(message.id);
-                        setPlayers(message.players);
-                        setOwnerId(message.owner);
-                        setLobbyName(message.name);
-                        break;
-                    case "destroy-lobby":
-                        navigate(toLobbyList(playerId));
-                        break;
-                }
-            } catch {
+                const messageJson: unknown = JSON.parse(messageString);
+                console.log("rx: ", messageJson);
+                message = LobbyMessageInSchema.parse(messageJson);
+            } catch (err) {
+                console.error(err);
                 navigate(toLobbyList(playerId));
+                return;
             }
 
+            switch (message.type) {
+                case "player-list":
+                    setPlayers(message.players);
+                    break;
+                case "game-started":
+                    navigate(toPlay(playerId));
+                    break;
+                case "lobby-state":
+                    if (message.players.find(p => p.id === playerId) === undefined) {
+                        navigate(toLobbyList(playerId));
+                    }
+                    setPlayers(message.players);
+                    setOwnerId(message.owner);
+                    setLobbyName(message.name);
+                    break;
+                case "destroy-lobby":
+                    navigate(toLobbyList(playerId));
+                    break;
+            }
         };
 
         ws.onopen = () => {
@@ -81,9 +83,9 @@ function useLobbyWebsocket(playerId: string): LobbyWebsocketFields {
             ws.close();
         };
 
-    }, [playerId, navigate, wsGeneration]);
+    }, [lobbyId, playerId, navigate, wsGeneration]);
 
-    return { players, lobbyId, lobbyName, ownerId };
+    return { players, lobbyName, ownerId };
 }
 
 export default useLobbyWebsocket;

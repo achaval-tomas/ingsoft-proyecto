@@ -7,11 +7,11 @@ import gameService from "../../services/gameService";
 import useUrlPlayerId from "../../hooks/useUrlPlayerId";
 
 function Lobby() {
-    const { lobbyId } = useParams<{ lobbyId: string }>();
+    const lobbyId = useParams<{ lobbyId: string }>().lobbyId ?? null;
     const playerId = useUrlPlayerId();
     const navigate = useNavigate();
 
-    const { players, lobbyName, ownerId } = useLobbyWebsocket(lobbyId ?? "", playerId ?? "");
+    const { players, lobbyName, ownerId } = useLobbyWebsocket(lobbyId, playerId);
 
     async function quitHandler() {
         if (lobbyId == null || playerId == null) {
