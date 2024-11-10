@@ -12,7 +12,7 @@ from src.schemas.message_schema import simple_message
 
 
 async def handle_leave_lobby(player_id: str, lobby_id: str, db: Session):
-    player = get_user(player_id=player_id, db=db)
+    player = get_user(user_id=player_id, db=db)
     if not player:
         return 1
 
