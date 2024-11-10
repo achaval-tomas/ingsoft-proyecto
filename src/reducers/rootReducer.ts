@@ -316,6 +316,10 @@ function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMess
             break;
         }
         case "movement-cancelled": {
+            if (gameState.temporalMovements.length === 0) {
+                return chatMessages;
+            }
+
             newChatMessage = `${currentPlayer.name} canceló un movimiento.`;
             break;
         }
