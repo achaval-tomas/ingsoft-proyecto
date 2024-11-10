@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { beforeAll, describe, expect, test, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import Game from "./Game";
 import { Color } from "../../domain/Color";
 import { toBoardTiles } from "../../util";
@@ -140,13 +140,24 @@ describe("Game", () => {
         });
     });
 
+    afterEach(() => {
+        cleanup();
+    });
+
     describe("use shape card", () => {
-        async function genericUseShapeCardTest(
-            targetTilePosition: Position,
-            targetShapeCardPlayerId: string,
-            targetShapeCardIndex: number,
-            expectedMessages: GameMessageOut[],
-        ) {
+        async function genericUseShapeCardTest({
+            targetTilePosition,
+            targetShapeCardPlayerId,
+            targetShapeCardIndex,
+            expectedMessages,
+            gameState = testGameState,
+        }: {
+            targetTilePosition: Position;
+            targetShapeCardPlayerId: string;
+            targetShapeCardIndex: number;
+            expectedMessages: GameMessageOut[];
+            gameState?: GameState;
+        }) {
             let messageIndex = 0;
             const sendMessage = vi.fn<(msg: GameMessageOut) => void>((message) => {
                 expect(messageIndex).toBeLessThan(expectedMessages.length);
@@ -157,7 +168,7 @@ describe("Game", () => {
             render(
                 <Provider store={createTestStore()}>
                     <Game
-                        gameState={testGameState}
+                        gameState={gameState}
                         sendMessage={sendMessage}
                     />,
                 </Provider>,
@@ -178,46 +189,46 @@ describe("Game", () => {
         test("our shape card", async () => {
             const targetPlayerId = testGameState.selfPlayerState.id;
 
-            await genericUseShapeCardTest(
-                [0, 4],
-                targetPlayerId,
-                1,
-                [
+            await genericUseShapeCardTest({
+                targetTilePosition: [0, 4],
+                targetShapeCardPlayerId: targetPlayerId,
+                targetShapeCardIndex: 1,
+                expectedMessages: [
                     {
                         type: "use-shape-card",
                         targetPlayerId,
                         position: [0, 4],
                     },
                 ],
-            );
+            });
         });
 
         test("their shape card", async () => {
             const targetPlayerId = testGameState.otherPlayersState[1].id;
 
-            await genericUseShapeCardTest(
-                [4, 1],
-                targetPlayerId,
-                0,
-                [
+            await genericUseShapeCardTest({
+                targetTilePosition: [4, 1],
+                targetShapeCardPlayerId: targetPlayerId,
+                targetShapeCardIndex: 0,
+                expectedMessages: [
                     {
                         type: "use-shape-card",
                         targetPlayerId,
                         position: [4, 1],
                     },
                 ],
-            );
+            });
         });
 
         test("can't use our blocked shape card", async () => {
             const targetPlayerId = testGameState.selfPlayerState.id;
 
-            await genericUseShapeCardTest(
-                [0, 0],
-                targetPlayerId,
-                2,
-                [],
-            );
+            await genericUseShapeCardTest({
+                targetTilePosition: [0, 0] as Position,
+                targetShapeCardPlayerId: targetPlayerId,
+                targetShapeCardIndex: 2,
+                expectedMessages: [],
+            });
         });
     });
 });
