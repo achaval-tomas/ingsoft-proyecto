@@ -6,7 +6,7 @@ import CreateLobbyDialog, { CreateLobbyFormState } from "./CreateLobbyDialog";
 type FormInput = {
     name?: string;
     maxPlayers?: string;
-    // password?: string;
+    password?: string;
 }
 
 async function genericTest(
@@ -34,9 +34,9 @@ async function genericTest(
         await userEvent.type(screen.getByTestId("lobby-max-players"), input.maxPlayers);
     }
 
-    // if (input.password != null) {
-        // await userEvent.type(screen.getByTestId("lobby-password"), input.password);
-    // }
+    if (input.password != null) {
+        await userEvent.type(screen.getByTestId("lobby-password"), input.password);
+    }
 
     await userEvent.click(screen.getByTestId("lobby-btn-create"));
 
@@ -66,14 +66,13 @@ test("correct state is returned", async () => {
     const input = {
         name: "Hello World",
         maxPlayers: "3",
-        // password: "1234",
+        password: "1234",
     };
 
     const expectedOutput = {
         name: "Hello World",
         maxPlayers: 3,
-        // password: "1234",
-        password: "",
+        password: "1234",
     };
 
     await genericSuccessTest(input, expectedOutput);

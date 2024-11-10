@@ -66,6 +66,7 @@ function LobbyListPage() {
                 playerId,
                 state.name,
                 state.maxPlayers,
+                state.password,
             );
 
             if (res.type === "PlayerNotFound" || res.type === "Other") {

@@ -27,12 +27,14 @@ async function createLobby(
     playerId: string,
     lobbyName: string,
     maxPlayers: number,
+    password: string,
 ): Promise<CreateLobbyResult> {
     const res = await post(`${httpServerUrl}/lobby`, {
         lobby_name: lobbyName,
         lobby_owner: playerId,
         min_players: 2,
         max_players: maxPlayers,
+        password,
     });
 
     if (res.ok) {
