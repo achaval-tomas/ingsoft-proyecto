@@ -50,7 +50,8 @@ def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
 
 @lobby_router.post('/lobby/join', status_code=202)
 async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
-    res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id, pw=body.password)
+    res = crud_lobby.join_lobby(db=db, player_id=body.player_id, 
+                                lobby_id=body.lobby_id, pw=body.password)
 
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
@@ -73,7 +74,7 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
     )
 
     token_data = {
-        "sub": body.player_id
+        "sub": body.player_id,
     }
     access_token = create_token(data=token_data)
     return access_token
