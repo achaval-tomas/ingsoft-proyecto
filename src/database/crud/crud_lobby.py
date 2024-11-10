@@ -59,7 +59,7 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
     player.lobby_id = lobby.lobby_id
 
     players = deserialize(lobby.players)
-    players.append(player_id)
+    players.append(player.player_id)
     lobby.players = serialize(players)
     lobby.player_amount += 1
 
