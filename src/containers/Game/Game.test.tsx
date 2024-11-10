@@ -14,11 +14,11 @@ import { createStore } from "redux";
 import { Position } from "../../domain/Position";
 
 const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
-    "rgbyry",
+    "rgbyrb",
     "rrrybb",
-    "gyygry",
-    "ygbggr",
-    "ybybgb",
+    "gybgby",
+    "bbbggr",
+    "byybgb",
     "rrrrrb",
 ])) as Color[];
 
@@ -227,6 +227,28 @@ describe("Game", () => {
                 targetTilePosition: [0, 0] as Position,
                 targetShapeCardPlayerId: targetPlayerId,
                 targetShapeCardIndex: 2,
+                expectedMessages: [],
+            });
+        });
+
+        test("can't use their blocked shape card", async () => {
+            const targetPlayerId = testGameState.otherPlayersState[0].id;
+
+            await genericUseShapeCardTest({
+                targetTilePosition: [0, 1] as Position,
+                targetShapeCardPlayerId: targetPlayerId,
+                targetShapeCardIndex: 2,
+                expectedMessages: [],
+            });
+        });
+
+        test("can't use their shape card if they have a blocked shape card", async () => {
+            const targetPlayerId = testGameState.otherPlayersState[0].id;
+
+            await genericUseShapeCardTest({
+                targetTilePosition: [5, 5] as Position,
+                targetShapeCardPlayerId: targetPlayerId,
+                targetShapeCardIndex: 0,
                 expectedMessages: [],
             });
         });
