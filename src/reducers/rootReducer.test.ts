@@ -665,5 +665,52 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("other - current turn with temporal movements", () => {
+            testAction(
+                {
+                    type: "movement-cancelled",
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        temporalMovements: [
+                            {
+                                movement: "l-cw",
+                                position: [2, 3],
+                                rotation: "r90",
+                            },
+                        ],
+                        currentRoundPlayer: 1,
+                    },
+                },
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        otherPlayersState: testGameState.otherPlayersState.map(p =>
+                            p.id === "5" ? { ...p, movementCardsInHandCount: 3 } : p),
+                        temporalMovements: [],
+                        currentRoundPlayer: 1,
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyry",
+                                "yrrgbb",
+                                "gyrbry",
+                                "ygbrrr",
+                                "yryryr",
+                                "rrrrrr",
+                            ]),
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
     });
 });
