@@ -18,6 +18,7 @@ from src.schemas.lobby_schemas import (
 )
 from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
+from src.tools.tokenify import create_token
 
 
 def lobby_decoder(lobby: models.Lobby):
@@ -49,7 +50,7 @@ def create_lobby(lobby: LobbyCreateSchema, db: SessionDep):
 
 @lobby_router.post('/lobby/join', status_code=202)
 async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
-    res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id)
+    res = crud_lobby.join_lobby(db=db, player_id=body.player_id, lobby_id=body.lobby_id, pw=body.password)
 
     if res == 1:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
@@ -61,6 +62,8 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
         raise HTTPException(status_code=404, detail=errors.LOBBY_NOT_FOUND)
     elif res == 5:
         raise HTTPException(status_code=400, detail=errors.LOBBY_IS_FULL)
+    elif res == 6:
+        raise HTTPException(status_code=401, detail=errors.INCORRECT_PASSWORD)
 
     await share_player_list(
         player_id=body.player_id,
@@ -68,6 +71,12 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
         db=db,
         broadcast=True,
     )
+
+    token_data = {
+        "sub": body.player_id
+    }
+    access_token = create_token(data=token_data)
+    return access_token
 
 
 @lobby_router.get('/lobby', response_model=list[LobbySchema])

@@ -1,10 +1,11 @@
+from typing import Optional
 from sqlalchemy.orm import Session
 
 from src.database.crud.crud_player import get_player
 from src.database.crud.id_gen import create_uuid
 from src.database.models import Lobby
 from src.schemas.lobby_schemas import LobbyCreateSchema
-from src.tools.hashingfy import hash_password
+from src.tools.hashingfy import hash_password, verify_password
 from src.tools.jsonify import deserialize, serialize
 
 
@@ -41,7 +42,7 @@ def create_lobby(db: Session, lobby: LobbyCreateSchema):
     return db_lobby.lobby_id
 
 
-def join_lobby(db: Session, lobby_id: str, player_id: str):
+def join_lobby(db: Session, lobby_id: str, player_id: str, pw: Optional[str] = ""):
     player = get_player(db, player_id)
     if not player:
         return 1
@@ -55,6 +56,9 @@ def join_lobby(db: Session, lobby_id: str, player_id: str):
         return 4
     elif lobby.player_amount == lobby.max_players:
         return 5
+    elif lobby.password:
+        if not verify_password(pw, lobby.password):
+            return 6
 
     player.lobby_id = lobby.lobby_id
 
