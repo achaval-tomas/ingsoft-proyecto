@@ -242,16 +242,21 @@ def currently_used_movement_cards(db: Session, player_id: str):
     return cards
 
 
-def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
-    player = get_player(player_id=player_id, db=db)
+def use_shape_card(
+    db: Session,
+    player_id: str,
+    target_id: str,
+    req: UseShapeCardSchema,
+):
+    player = get_player(player_id=target_id, db=db)
     if player is None:
         return 1
 
-    game = crud_game.get_game_from_player(db=db, player_id=player_id)
+    game = crud_game.get_game_from_player(db=db, player_id=target_id)
     if game is None:
         return 2
 
-    player_cards = get_player_cards(db=db, player_id=player_id)
+    player_cards = get_player_cards(db=db, player_id=target_id)
     if player_cards is None:
         return 3
 
@@ -269,25 +274,36 @@ def use_shape_card(db: Session, player_id: str, req: UseShapeCardSchema):
 
     player_shape_cards = validate_shape_cards(player_cards.shape_cards_in_hand)
 
-    player_usable_shapes = [s for s in player_shape_cards if not s.isBlocked]
+    if target_id != player_id and (
+        any(s.isBlocked for s in player_shape_cards) or len(player_shape_cards) == 1
+    ):
+        return 6
+
+    if target_id == player_id and len(player_shape_cards) == 1:
+        player_usable_shapes = player_shape_cards
+    else:
+        player_usable_shapes = [s for s in player_shape_cards if not s.isBlocked]
 
     matched_shape = match_shape_to_player_card(
         shape_cards=player_usable_shapes,
         target_shape=shape,
     )
     if not matched_shape:
-        return 6
+        return 7
 
-    player_shape_cards.remove(matched_shape)
+    if target_id == player_id:
+        player_shape_cards.remove(matched_shape)
+    else:
+        matched_shape.isBlocked = True
+
     player_cards.shape_cards_in_hand = dump_shape_cards(player_shape_cards)
-
     game.blocked_color = shape_color
     db.commit()
 
+    if not player_shape_cards and not deserialize(player_cards.shape_cards_deck):
+        return 8
+
     if crud_game.confirm_movements(db=db, player_id=player_id) == 1:
         return 3
-
-    if not player_shape_cards and not deserialize(player_cards.shape_cards_deck):
-        return 7
 
     return 0
