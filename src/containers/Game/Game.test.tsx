@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import rootReducer from "../../reducers/rootReducer";
 import AppState from "../../domain/AppState";
 import { createStore } from "redux";
+import { Position } from "../../domain/Position";
 
 const testBoardTiles: Color[] = deepFreeze<Color[]>(toBoardTiles([
     "rgbyry",
@@ -140,8 +141,18 @@ describe("Game", () => {
     });
 
     describe("use shape card", () => {
-        test("our shape card", async () => {
-            const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
+        async function genericUseShapeCardTest(
+            targetTilePosition: Position,
+            targetShapeCardPlayerId: string,
+            targetShapeCardIndex: number,
+            expectedMessages: GameMessageOut[],
+        ) {
+            let messageIndex = 0;
+            const sendMessage = vi.fn<(msg: GameMessageOut) => void>((message) => {
+                expect(messageIndex).toBeLessThan(expectedMessages.length);
+                expect(message).toStrictEqual(expectedMessages[messageIndex]);
+                messageIndex++;
+            });
 
             render(
                 <Provider store={createTestStore()}>
@@ -152,10 +163,8 @@ describe("Game", () => {
                 </Provider>,
             );
 
-            const targetPlayerId = testGameState.selfPlayerState.id;
-
-            const targetTile = screen.getByTestId("tile-0-4");
-            const targetShapeCard = screen.getByTestId(`shape-card-${targetPlayerId}-1`);
+            const targetTile = screen.getByTestId(`tile-${targetTilePosition[0]}-${targetTilePosition[1]}`);
+            const targetShapeCard = screen.getByTestId(`shape-card-${targetShapeCardPlayerId}-${targetShapeCardIndex}`);
 
             expect(targetTile).toBeVisible();
             expect(targetShapeCard).toBeVisible();
@@ -163,14 +172,24 @@ describe("Game", () => {
             await userEvent.click(targetShapeCard);
             await userEvent.click(targetTile);
 
-            const expectedMessage: GameMessageOut = {
-                type: "use-shape-card",
-                targetPlayerId,
-                position: [0, 4],
-            };
+            expect(sendMessage).toHaveBeenCalledTimes(expectedMessages.length);
+        }
 
-            expect(sendMessage).toHaveBeenCalledOnce();
-            expect(sendMessage).toBeCalledWith(expectedMessage);
+        test("our shape card", async () => {
+            const targetPlayerId = testGameState.selfPlayerState.id;
+
+            await genericUseShapeCardTest(
+                [0, 4],
+                targetPlayerId,
+                1,
+                [
+                    {
+                        type: "use-shape-card",
+                        targetPlayerId,
+                        position: [0, 4],
+                    },
+                ],
+            );
         });
 
         test("their shape card", async () => {
