@@ -52,7 +52,7 @@ async function createLobby(
 }
 
 type JoinLobbyResult = {
-    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "AlreadyJoinedOtherLobby" | "Ok" | "Other";
+    type: "PlayerNotFound" | "LobbyNotFound" | "LobbyFull" | "AlreadyJoined" | "Ok" | "Other";
     message: string;
 };
 
@@ -74,10 +74,6 @@ async function joinLobby(playerId: string, lobbyId: string): Promise<JoinLobbyRe
 
     if (res.status === 400 && json.detail === "El jugador ya está en la partida") {
         return { type: "AlreadyJoined", message: json.detail };
-    }
-
-    if (res.status === 400 && json.detail === "Solo puedes crear o unirte a una partida a la vez!") {
-        return { type: "AlreadyJoinedOtherLobby", message: json.detail };
     }
 
     if (res.status === 404 && json.detail === "No se pudo encontrar al jugador que realizó la solicitud") {

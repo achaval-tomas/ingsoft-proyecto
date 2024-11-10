@@ -67,13 +67,7 @@ function LobbyListPage() {
 
         const res = await lobbyService.joinLobby(playerId, lobbyId);
 
-        if (res.type === "Ok") {
-            navigate(toLobby(lobbyId, playerId));
-            return;
-        }
-
-        if (res.type === "AlreadyJoined" || res.type === "AlreadyJoinedOtherLobby") {
-            alert(res.message);
+        if (res.type === "Ok" || res.type === "AlreadyJoined") {
             navigate(toLobby(lobbyId, playerId));
             return;
         }
