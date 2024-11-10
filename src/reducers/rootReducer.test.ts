@@ -764,5 +764,43 @@ describe("rootReducer", () => {
                 },
             );
         });
+
+        test("self targets self - correctly discards shape card", () => {
+            testAction(
+                {
+                    type: "shape-card-used",
+                    position: [0, 5],
+                    targetPlayerId: "1",
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        boardState: {
+                            tiles: testBoardTiles,
+                            blockedColor: "red",
+                        },
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            shapeCardsInHand: [
+                                {
+                                    shape: "b-2",
+                                    isBlocked: false,
+                                },
+                                {
+                                    shape: "c-4",
+                                    isBlocked: false,
+                                },
+                            ],
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
     });
 });
