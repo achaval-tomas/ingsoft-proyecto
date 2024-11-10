@@ -16,7 +16,6 @@ from src.schemas.lobby_schemas import (
     LobbyJoinSchema,
     LobbyLeaveSchema,
     LobbyListItemSchema,
-    LobbySchema,
 )
 from src.schemas.message_schema import error_message
 from src.tools.jsonify import deserialize
@@ -78,7 +77,7 @@ async def join_lobby(body: LobbyJoinSchema, db: SessionDep):
     )
 
 
-@lobby_router.get('/lobby', response_model=list[LobbySchema])
+@lobby_router.get('/lobby', response_model=list[LobbyListItemSchema])
 async def get_all_lobbies(db: SessionDep, player_id: str):
     return [
         lobby_decoder(db, lobby, player_id) for lobby in crud_lobby.get_lobbies(db=db)
