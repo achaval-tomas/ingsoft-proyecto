@@ -325,7 +325,8 @@ function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMess
         }
         case "shape-card-used": {
             const shapeAtPosition = getShapeAtOrNull(gameState.boardState.tiles, action.position);
-            if (shapeAtPosition == null) {
+            const shapeColor = gameState.boardState.tiles[positionToBoardIndex(action.position)];
+            if (shapeAtPosition == null || shapeColor === gameState.boardState.blockedColor) {
                 return chatMessages;
             }
 
