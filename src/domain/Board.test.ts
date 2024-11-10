@@ -2,22 +2,7 @@ import { describe, expect, test } from "vitest";
 import { Color } from "./Color";
 import { Position, positionToBoardIndex, sortPositions } from "./Position";
 import { BoardTileShapeData, findConnectedTiles, findFormedShapes } from "./Board";
-
-function reverseFlattenRowArray<T>(rows: T[][]): T[] {
-    return rows.toReversed().flat();
-}
-
-function toBoardTiles(rows: string[]): Color[] {
-    return reverseFlattenRowArray(rows.map(w => w.split(""))).map<Color>(c => {
-        switch (c) {
-            case "r": return "red";
-            case "g": return "green";
-            case "b": return "blue";
-            case "y": return "yellow";
-            default: throw new Error(`invalid color char ${c}`);
-        }
-    });
-}
+import { reverseFlattenRowArray, toBoardTiles } from "../util";
 
 const testBoardTiles: readonly Color[] = Object.freeze(toBoardTiles([
     "rgbyry",
