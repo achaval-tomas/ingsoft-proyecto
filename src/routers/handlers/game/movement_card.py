@@ -8,7 +8,7 @@ from src.schemas.card_schemas import MovementCardUsedSchema, UseMovementCardSche
 from src.schemas.message_schema import error_message
 
 
-async def handle_movement_card(player_id: str, db: Session, data: dict):
+async def handle_movement_card(player_id: str, db: Session, data: dict, **_):
     req = UseMovementCardSchema.model_validate_json(data)
     assert req.type == 'use-movement-card'
 

@@ -7,7 +7,7 @@ from src.routers.helpers.connection_manager import lobby_manager
 from src.schemas.message_schema import simple_message
 
 
-async def handle_game_start(player_id: str, lobby_id: str, db: Session):
+async def handle_game_start(user_id: str, player_id: str, lobby_id: str, db: Session):
     res = crud_game.create_game(db=db, lobby_id=lobby_id, player_id=player_id)
     player = get_player(db=db, player_id=player_id)
 

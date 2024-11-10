@@ -42,6 +42,7 @@ async def start_game(body: game_schemas.GameCreate, db: SessionDep):
     player_id = get_active_player_id_from_lobby(db, body.player_id, body.lobby_id)
     rc = await handle_game_start(
         db=db,
+        user_id=body.player_id,
         player_id=player_id,
         lobby_id=body.lobby_id,
     )

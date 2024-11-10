@@ -28,7 +28,7 @@ async def handle_leave_game(user_id: str, player_id: str, game_id: str, db: Sess
             ).model_dump_json(),
         )
         if res == 3:
-            await handle_announce_winner(db=db, user_id=user_id, winner_id=winner_id)
+            await handle_announce_winner(db=db, winner_id=winner_id)
         return 0
 
     return res

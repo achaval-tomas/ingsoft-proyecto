@@ -16,6 +16,7 @@ class Player(Base):
     player_name = Column(String)
     lobby_id = Column(String, ForeignKey('lobbies.lobby_id'), nullable=True)
     game_id = Column(String, ForeignKey('games.game_id'), nullable=True)
+    user_id = Column(String, ForeignKey('users.user_id'), nullable=True)
 
 
 class Lobby(Base):

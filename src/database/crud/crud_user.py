@@ -89,7 +89,11 @@ def create_player(db: Session, user_id: str):
     if not db_user:
         return None
 
-    db_player = Player(player_name=db_user.user_name, player_id=create_uuid())
+    db_player = Player(
+        user_id=user_id,
+        player_name=db_user.user_name,
+        player_id=create_uuid(),
+    )
     db.add(db_player)
 
     user_players = deserialize(db_user.active_players)
