@@ -197,9 +197,9 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
                 ? {
                     selfPlayerState: {
                         ...gameState.selfPlayerState,
-                        // if self player targeted himself, discard shape card
-                        // otherwise, block shape card
-                        shapeCardsInHand: (gameState.currentRoundPlayer === gameState.selfPlayerState.roundOrder)
+                        // If it is us who is using the shape card (on ourselves), then discard the card.
+                        // Otherwise, block the target's shape card.
+                        shapeCardsInHand: (gameState.selfPlayerState.roundOrder === gameState.currentRoundPlayer)
                             ? filterFirst(
                                 gameState.selfPlayerState.shapeCardsInHand,
                                 sc => sc.shape === shapeAtPosition,
@@ -219,9 +219,9 @@ function gameStateReducer(gameState: GameState | null, action: GameMessageIn): G
 
                         return {
                             ...otherPlayerState,
-                            // if other player targeted himself, discard shape card
-                            // otherwise, block shape card
-                            shapeCardsInHand: (gameState.currentRoundPlayer === otherPlayerState.roundOrder)
+                            // If the target player is the source player, then discard the card.
+                            // Otherwise, block the target's shape card.
+                            shapeCardsInHand: (otherPlayerState.roundOrder === gameState.currentRoundPlayer)
                                 ? filterFirst(
                                     otherPlayerState.shapeCardsInHand,
                                     sc => sc.shape === shapeAtPosition,
@@ -291,13 +291,7 @@ function createSystemMessage(text: string): ChatMessage {
 
 function mapFirst<T>(arr: readonly T[], p: (t: T) => boolean, f: (t: T) => T): T[] {
     const firstIndex = arr.findIndex(a => p(a));
-    return arr.map((e, i) => {
-        if (i !== firstIndex) {
-            return e;
-        } else {
-            return f(e);
-        }
-    });
+    return arr.map((e, i) => (i === firstIndex) ? f(e) : e);
 }
 
 function chatMessagesReducer(gameState: GameState | null, chatMessages: ChatMessage[], action: Action): ChatMessage[] {
