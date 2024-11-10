@@ -86,12 +86,11 @@ async function joinLobby(playerId: string, lobbyId: string, password: string): P
         return { type: "LobbyNotFound", message: json.detail };
     }
 
-    if (res.status === 400 && json.detail === "Contraseña incorrecta") {
+    if (res.status === 401 && json.detail === "Contraseña incorrecta") {
         return { type: "InvalidPassword", message: json.detail };
     }
 
-
-    return { type: "Other", message: "Error al intentar crear partida" };
+    return { type: "Other", message: "Error al intentar unirse a la partida" };
 }
 
 type LeaveLobbyResult = {
