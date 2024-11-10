@@ -127,6 +127,7 @@ async def lobby_websocket(
             response = (
                 await message_handlers[request['type']](
                     db=db,
+                    user_id=player_id,
                     player_id=subplayer_id,
                     data=received,
                 )
