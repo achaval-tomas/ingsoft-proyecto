@@ -22,7 +22,8 @@ async def handle_leave_lobby(player_id: str, lobby_id: str, db: Session):
 
     if res == 0:
         await share_player_list(
-            player_id=player_id,
+            user_id=player_id,
+            player_id=subplayer_id,
             lobby_id=lobby_id,
             db=db,
             broadcast=True,
