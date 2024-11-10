@@ -62,17 +62,20 @@ async def turn_timer(db: Session, player_id: str, timestamp: str):
     await asyncio.sleep(120)
 
     game = get_game_from_player(db=db, player_id=player_id)
-    if game.turn_start == timestamp:
+    if game and game.turn_start == timestamp:
         await handle_end_turn(player_id=player_id, db=db)
 
 
 def handle_timer(db: Session, game_id: str):
     game = get_game(db=db, game_id=game_id)
-    next_turn_id = deserialize(game.player_order)[game.current_turn]
+    if game is None:
+        return
+
+    current_turn_id = deserialize(game.player_order)[game.current_turn]
     asyncio.ensure_future(
         turn_timer(
             db=db,
-            player_id=next_turn_id,
+            player_id=current_turn_id,
             timestamp=game.turn_start,
         ),
     )
