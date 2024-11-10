@@ -36,7 +36,7 @@ export default function LobbyList({ lobbies, selectedLobbyId, isFiltered, onSele
                                 onDoubleClick={() => onJoinLobby(l.lobby_id)}
                                 data-testid="lobby-item"
                             >
-                                <td className="px-6 py-2 ">{l.lobby_name}</td>
+                                <td className="px-6 py-2 ">{l.lobby_name}{l.joined ? <span className="text-sm italic font-bold"> (unido/a)</span> : null}</td>
                                 <td className="px-6 py-2 text-center">{l.player_amount} / {l.max_players}</td>
                                 <td className="px-6 py-2 text-center">Pública</td>
                             </tr>

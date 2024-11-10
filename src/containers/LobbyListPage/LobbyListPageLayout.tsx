@@ -32,6 +32,7 @@ function LobbyListPageLayout({
             ? lobbies
                 .filter(l => l.lobby_name.toLowerCase().includes(searchQuery.toLowerCase()))
                 .filter(l => playerCountRange[0] <= l.player_amount && l.player_amount <= playerCountRange[1])
+                .sort((lhs, rhs) => Number(rhs.joined) - Number(lhs.joined))
             : null,
         [lobbies, searchQuery, playerCountRange],
     );
