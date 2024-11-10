@@ -193,62 +193,31 @@ describe("Game", () => {
         });
 
         test("their shape card", async () => {
-            const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
-
-            render(
-                <Provider store={createTestStore()}>
-                    <Game
-                        gameState={testGameState}
-                        sendMessage={sendMessage}
-                    />,
-                </Provider>,
-            );
-
             const targetPlayerId = testGameState.otherPlayersState[1].id;
 
-            const targetTile = screen.getByTestId("tile-4-1");
-            const targetShapeCard = screen.getByTestId(`shape-card-${targetPlayerId}-0`);
-
-            expect(targetTile).toBeVisible();
-            expect(targetShapeCard).toBeVisible();
-
-            await userEvent.click(targetShapeCard);
-            await userEvent.click(targetTile);
-
-            const expectedMessage: GameMessageOut = {
-                type: "use-shape-card",
+            await genericUseShapeCardTest(
+                [4, 1],
                 targetPlayerId,
-                position: [4, 1],
-            };
-
-            expect(sendMessage).toBeCalledWith(expectedMessage);
-            expect(sendMessage).toHaveBeenCalledOnce();
+                0,
+                [
+                    {
+                        type: "use-shape-card",
+                        targetPlayerId,
+                        position: [4, 1],
+                    },
+                ],
+            );
         });
 
         test("can't use our blocked shape card", async () => {
-            const sendMessage = vi.fn<(msg: GameMessageOut) => void>();
-
-            render(
-                <Provider store={createTestStore()}>
-                    <Game
-                        gameState={testGameState}
-                        sendMessage={sendMessage}
-                    />,
-                </Provider>,
-            );
-
             const targetPlayerId = testGameState.selfPlayerState.id;
 
-            const targetTile = screen.getByTestId("tile-0-0");
-            const targetShapeCard = screen.getByTestId(`shape-card-${targetPlayerId}-2`);
-
-            expect(targetTile).toBeVisible();
-            expect(targetShapeCard).toBeVisible();
-
-            await userEvent.click(targetShapeCard);
-            await userEvent.click(targetTile);
-
-            expect(sendMessage).not.toHaveBeenCalled();
+            await genericUseShapeCardTest(
+                [0, 0],
+                targetPlayerId,
+                2,
+                [],
+            );
         });
     });
 });
