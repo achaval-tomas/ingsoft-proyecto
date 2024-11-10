@@ -36,7 +36,7 @@ const ClientMessageSchema = z.discriminatedUnion("type", [
 ]);
 
 beforeEach(() => {
-    const wsServer = new Server(`${wsServerUrl}/lobby/${PLAYER_ID}`);
+    const wsServer = new Server(`${wsServerUrl}/lobby/${LOBBY_ID}?player_id=${PLAYER_ID}`);
 
     wsServer.on("connection", socket => {
         socket.on("message", message => {
@@ -91,7 +91,11 @@ describe("Lobby tests being owner", () => {
 
     test("It gets lobby state and renders lobby players", async () => {
         render(
-            <Lobby />,
+            <reactRouter.MemoryRouter initialEntries={[`/lobby/${LOBBY_ID}?player=${PLAYER_ID}`]}>
+                <reactRouter.Routes>
+                    <reactRouter.Route path="/lobby/:lobbyId" element={<Lobby />} />
+                </reactRouter.Routes>
+            </reactRouter.MemoryRouter>,
         );
 
         for (let i = 0; i < PLAYER_LIST.length; i++) {
@@ -107,7 +111,11 @@ describe("Lobby tests being owner", () => {
         vi.spyOn(lobbyService, "leaveLobby");
 
         render(
-            <Lobby />,
+            <reactRouter.MemoryRouter initialEntries={[`/lobby/${LOBBY_ID}?player=${PLAYER_ID}`]}>
+                <reactRouter.Routes>
+                    <reactRouter.Route path="/lobby/:lobbyId" element={<Lobby />} />
+                </reactRouter.Routes>
+            </reactRouter.MemoryRouter>,
         );
 
         expect(lobbyService.leaveLobby).toHaveBeenCalledTimes(0);
@@ -121,7 +129,11 @@ describe("Lobby tests being owner", () => {
 
     test("It renders button to start game if player is owner", async () => {
         render(
-            <Lobby />,
+            <reactRouter.MemoryRouter initialEntries={[`/lobby/${LOBBY_ID}?player=${PLAYER_ID}`]}>
+                <reactRouter.Routes>
+                    <reactRouter.Route path="/lobby/:lobbyId" element={<Lobby />} />
+                </reactRouter.Routes>
+            </reactRouter.MemoryRouter>,
         );
 
         expect(await screen.findByText("Iniciar juego")).toBeVisible();
@@ -149,7 +161,11 @@ describe("Lobby tests not being owner", () => {
 
     test("It doesn't render button to start game if player is not owner", () => {
         render(
-            <Lobby />,
+            <reactRouter.MemoryRouter initialEntries={[`/lobby/${LOBBY_ID}?player=${PLAYER_ID}`]}>
+                <reactRouter.Routes>
+                    <reactRouter.Route path="/lobby/:lobbyId" element={<Lobby />} />
+                </reactRouter.Routes>
+            </reactRouter.MemoryRouter>,
         );
 
         expect(screen.queryByText("Iniciar juego")).toBeNull();
