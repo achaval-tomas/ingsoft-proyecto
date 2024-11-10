@@ -478,4 +478,50 @@ describe("rootReducer", () => {
             );
         });
     });
+
+    describe("movement-card-used", () => {
+        test("self", () => {
+            testAction(
+                {
+                    type: "movement-card-used",
+                    movement: "diagonal-adjacent",
+                    position: [2, 2],
+                    rotation: "r270",
+                },
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        selfPlayerState: {
+                            ...testGameState.selfPlayerState,
+                            movementCardsInHand: ["straight-adjacent", "l-cw"],
+                        },
+                        temporalMovements: [
+                            {
+                                movement: "diagonal-adjacent",
+                                position: [2, 2],
+                                rotation: "r270",
+                            },
+                        ],
+                        boardState: {
+                            ...testGameState.boardState,
+                            tiles: toBoardTiles([
+                                "rgbyry",
+                                "rrrgbb",
+                                "gyybry",
+                                "ygrrrr",
+                                "yrybyr",
+                                "rrrrrr",
+                            ]),
+                        },
+                    },
+                },
+                {
+                    shouldTurnStartChange: false,
+                    chatMessageCountChange: 1,
+                },
+            );
+        });
+    });
 });
