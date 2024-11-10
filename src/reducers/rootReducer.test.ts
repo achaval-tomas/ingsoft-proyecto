@@ -1,0 +1,168 @@
+import { describe, expect, test } from "vitest";
+import { GameState } from "../domain/GameState";
+import deepFreeze from "deep-freeze";
+import { toBoardTiles } from "../util";
+import { Color } from "../domain/Color";
+import Action from "./Action";
+import rootReducer from "./rootReducer";
+import AppState from "../domain/AppState";
+
+const testBoardTiles: Color[] = toBoardTiles([
+    "rgbyry",
+    "rrrgbb",
+    "gyybry",
+    "ygbrrr",
+    "yryryr",
+    "rrrrrr",
+]);
+
+const testGameState: GameState = {
+    selfPlayerState: {
+        id: "1",
+        name: "p0",
+        roundOrder: 0,
+        shapeCardsInHand: [
+            {
+                shape: "b-2",
+                isBlocked: false,
+            },
+            {
+                shape: "b-4",
+                isBlocked: false,
+            },
+            {
+                shape: "c-4",
+                isBlocked: false,
+            },
+        ],
+        shapeCardsInDeckCount: 17,
+        movementCardsInHand: ["straight-adjacent", "diagonal-adjacent", "l-cw"],
+    },
+    otherPlayersState: [
+        {
+            id: "3",
+            name: "p1",
+            roundOrder: 2,
+            shapeCardsInHand: [
+                {
+                    shape: "b-2",
+                    isBlocked: false,
+                },
+                {
+                    shape: "c-4",
+                    isBlocked: false,
+                },
+                {
+                    shape: "c-9",
+                    isBlocked: true,
+                },
+            ],
+            shapeCardsInDeckCount: 14,
+            movementCardsInHandCount: 2,
+        },
+        {
+            id: "5",
+            name: "p2",
+            roundOrder: 1,
+            shapeCardsInHand: [
+                {
+                    shape: "b-0",
+                    isBlocked: false,
+                },
+                {
+                    shape: "b-3",
+                    isBlocked: false,
+                },
+                {
+                    shape: "b-1",
+                    isBlocked: false,
+                },
+            ],
+            shapeCardsInDeckCount: 11,
+            movementCardsInHandCount: 2,
+        },
+        {
+            id: "15",
+            name: "p3",
+            roundOrder: 3,
+            shapeCardsInHand: [
+                {
+                    shape: "c-0",
+                    isBlocked: false,
+                },
+                {
+                    shape: "c-3",
+                    isBlocked: false,
+                },
+                {
+                    shape: "c-1",
+                    isBlocked: false,
+                },
+            ],
+            shapeCardsInDeckCount: 9,
+            movementCardsInHandCount: 2,
+        },
+    ],
+    boardState: {
+        tiles: testBoardTiles,
+        blockedColor: null,
+    },
+    currentRoundPlayer: 0,
+    turnStart: (new Date()).toISOString(),
+    temporalMovements: [],
+};
+
+const testAppState: AppState = {
+    gameState: testGameState,
+    chatMessages: [],
+    notifications: [],
+};
+
+function testAction(
+    initalAppState: AppState,
+    expectedAppState: AppState,
+    shouldTurnStartChange: boolean,
+    action: Action,
+) {
+    const result = rootReducer(deepFreeze(initalAppState) as AppState, action);
+
+    expect({
+        ...result,
+        chatMessages: undefined,
+        gameState: { ...result.gameState, turnStart: undefined },
+    }).toStrictEqual({
+        ...expectedAppState,
+        chatMessages: undefined,
+        gameState: { ...expectedAppState.gameState, turnStart: undefined },
+    });
+
+    if (shouldTurnStartChange) {
+        expect(result?.gameState?.turnStart).not.toEqual(initalAppState?.gameState?.turnStart);
+    } else {
+        expect(result?.gameState?.turnStart).not.toEqual(initalAppState?.gameState?.turnStart);
+    }
+}
+
+describe("rootReducer", () => {
+    describe("turn-ended", () => {
+        test("no actions taken", () => {
+            testAction(
+                testAppState,
+                {
+                    ...testAppState,
+                    gameState: {
+                        ...testGameState,
+                        currentRoundPlayer: 1,
+                    },
+                },
+                true,
+                {
+                    type: "turn-ended",
+                    playerId: testGameState.selfPlayerState.id,
+                    newShapeCards: testGameState.selfPlayerState.shapeCardsInHand,
+                    newMovementCards: testGameState.selfPlayerState.movementCardsInHand,
+                },
+            );
+        });
+    });
+});
