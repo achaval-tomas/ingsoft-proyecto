@@ -112,7 +112,7 @@ function LobbyListPageLayout({
                             enabled={selectedLobbyId != null}
                             title={selectedLobbyId == null ? "Antes debes seleccionar una sala" : undefined}
                         >
-                            Unirse a la sala
+                            Unirse a la partida
                         </FilledButton>
                     </div>
 
