@@ -57,8 +57,8 @@ async function createGame(
     return { type: "Other", message: "Hubo un error en el tu pedido" };
 }
 
-async function leaveGame(playerId: PlayerId) {
-    return post(`${httpServerUrl}/game/leave`, { playerId });
+async function leaveGame(gameId: string, playerId: PlayerId) {
+    return post(`${httpServerUrl}/game/${gameId}/leave`, { playerId });
 }
 
 const gameService = {

@@ -38,6 +38,7 @@ function GamePage() {
 
     return (
         <Game
+            gameId={gameId}
             gameState={gameState}
             sendMessage={sendMessage}
         />

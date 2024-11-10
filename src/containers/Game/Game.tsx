@@ -20,11 +20,12 @@ import AppState from "../../domain/AppState";
 import { createErrorNotification } from "../../reducers/Action";
 
 type GameProps = {
+    gameId: string;
     gameState: GameState;
     sendMessage: (message: GameMessageOut) => void;
 }
 
-function Game({ gameState, sendMessage }: GameProps) {
+function Game({ gameId, gameState, sendMessage }: GameProps) {
     const playerId = gameState.selfPlayerState.id;
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -61,7 +62,7 @@ function Game({ gameState, sendMessage }: GameProps) {
     };
 
     const handleLeaveGame = () => {
-        void gameService.leaveGame(playerId);
+        void gameService.leaveGame(gameId, playerId);
         navigate(toLobbyList(playerId));
     };
 
