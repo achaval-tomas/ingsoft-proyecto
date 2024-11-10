@@ -51,6 +51,7 @@ function GameLayout({
                             <Board uiState={boardUiState} onClickTile={onClickTile} />
                         </div>
                         <ShapeCardHand
+                            playerId={selfPlayerUiState.id}
                             playerName={selfPlayerUiState.name}
                             shapeCards={selfPlayerUiState.shapeCardsInHand}
                             shapeCardsInDeckCount={selfPlayerUiState.shapeCardsInDeckCount}
@@ -59,6 +60,7 @@ function GameLayout({
                             onClickShapeCard={(i) => onClickShapeCard(selfPlayerUiState.id, i)}
                         />
                         {otherPlayersUiState[0] && <ShapeCardHand
+                            playerId={otherPlayersUiState[0].id}
                             playerName={otherPlayersUiState[0].name}
                             shapeCards={otherPlayersUiState[0].shapeCardsInHand}
                             shapeCardsInDeckCount={otherPlayersUiState[0].shapeCardsInDeckCount}
@@ -67,6 +69,7 @@ function GameLayout({
                             onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[0].id, i)}
                         />}
                         {otherPlayersUiState[1] && <ShapeCardHand
+                            playerId={otherPlayersUiState[1].id}
                             playerName={otherPlayersUiState[1].name}
                             shapeCards={otherPlayersUiState[1].shapeCardsInHand}
                             shapeCardsInDeckCount={otherPlayersUiState[1].shapeCardsInDeckCount}
@@ -75,6 +78,7 @@ function GameLayout({
                             onClickShapeCard={(i) => onClickShapeCard(otherPlayersUiState[1].id, i)}
                         />}
                         {otherPlayersUiState[2] && <ShapeCardHand
+                            playerId={otherPlayersUiState[2].id}
                             playerName={otherPlayersUiState[2].name}
                             shapeCards={otherPlayersUiState[2].shapeCardsInHand}
                             shapeCardsInDeckCount={otherPlayersUiState[2].shapeCardsInDeckCount}

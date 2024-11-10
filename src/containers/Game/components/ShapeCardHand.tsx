@@ -4,6 +4,7 @@ import ShapeCard from "./ShapeCard";
 import ShapeCardDeck from "./ShapeCardDeck";
 
 type ShapeCardHandProps = {
+    playerId: string;
     playerName: string;
     shapeCards: ShapeCardUiState[];
     shapeCardsInDeckCount: number;
@@ -39,7 +40,7 @@ function writingModeFromRotation(rotation: Rotation): string {
     }
 }
 
-function ShapeCardHand({ playerName, shapeCards, shapeCardsInDeckCount, rotation, className, onClickShapeCard }: ShapeCardHandProps) {
+function ShapeCardHand({ playerId, playerName, shapeCards, shapeCardsInDeckCount, rotation, className, onClickShapeCard }: ShapeCardHandProps) {
     const sharedClassNames = "relative overflow-hidden rounded-[7.5%] transition-movement-card";
 
     const individualClassNamesFor = (status: ShapeCardStatus) => {
@@ -63,6 +64,7 @@ function ShapeCardHand({ playerName, shapeCards, shapeCardsInDeckCount, rotation
                         <div
                             className={`${sharedClassNames} ${individualClassNamesFor(status)}`}
                             onClick={() => onClickShapeCard(i)}
+                            data-testid={`shape-card-${playerId}-${i}`}
                         >
                             <ShapeCard shape={shape} isBlocked={status === "blocked"} />
                         </div>
