@@ -10,7 +10,7 @@ from src.schemas.card_schemas import (
     UseMovementCardSchema,
     UseShapeCardSchema,
 )
-from src.schemas.game_schemas import GameCreate
+from src.schemas.game_schemas import ChatMessage, GameCreate, NewChatMessageSchema
 from src.schemas.message_schema import ErrorMessageSchema
 from src.schemas.player_schemas import WinnerMessageSchema
 from src.tests.test_utils import client, create_lobby, create_player
@@ -445,3 +445,34 @@ def to_board_tiles(rows: list[str]):
                 case 'y':
                     board.append('yellow')
     return board
+
+
+def test_game_chat():
+    player_id = create_player('testPlayer')
+    lobby_test = create_lobby('testLobby', player_id, 1, 4)
+    game_test = GameCreate(lobby_id=lobby_test, player_id=player_id)
+    client.post('/game', json=game_test.model_dump())
+
+    with client.websocket_connect(
+        '/game/' + lobby_test + '?player_id=' + player_id,
+    ) as websocket_owner:
+        data_received = websocket_owner.receive_json()
+        assert data_received['type'] == 'game-state'
+
+        data = {
+            'message': 'Test Message',
+            'player_id': player_id,
+        }
+
+        client.post(f'/game/{lobby_test}/chat', json=data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == NewChatMessageSchema(
+                message=ChatMessage(
+                    text='Test Message',
+                    sender='testPlayer',
+                ),
+            ).model_dump_json()
+        )
