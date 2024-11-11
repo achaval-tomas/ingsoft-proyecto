@@ -215,6 +215,47 @@ def test_card_movement():
         assert pos0 == board[8]
         assert pos1 == board[0]
 
+        data = {'type': 'cancel-movement'}
+        websocket_owner.send_json(data)
+        data_received = websocket_owner.receive_json()
+        assert data_received == {'type': 'movement-cancelled'}
+
+        data = UseMovementCardSchema(
+            type='use-movement-card',
+            position=(0, 0),
+            rotation='r0',
+            movement='l-ccw',
+        ).model_dump_json()
+
+        db.refresh(game)
+        board = deserialize(game.board)
+
+        pos0 = board[0]
+        pos1 = board[8]
+
+        websocket_owner.send_text(data)
+        data_received = websocket_owner.receive_text()
+
+        assert (
+            data_received
+            == MovementCardUsedSchema(
+                position=(0, 0),
+                rotation='r0',
+                movement='l-ccw',
+            ).model_dump_json()
+        )
+
+        game = get_game_from_player(
+            db,
+            get_active_player_id_from_game(db, player_id, lobby_test),
+        )
+
+        db.refresh(game)
+        board = deserialize(game.board)
+
+        assert pos0 == board[8]
+        assert pos1 == board[0]
+
         data = UseMovementCardSchema(
             type='use-movement-card',
             position=(1, 1),
