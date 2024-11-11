@@ -193,7 +193,7 @@ def delete_game(db: Session, game_id: str):
             continue
 
         crud_cards.delete_player_cards(db=db, player_id=player_id)
-        db_player.game_id = None
+        crud_user.delete_active_player(db, db_player.user_id, player_id)
         db.commit()
 
     db.delete(game)

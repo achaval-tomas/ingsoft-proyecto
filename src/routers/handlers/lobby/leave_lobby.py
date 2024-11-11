@@ -37,6 +37,6 @@ async def handle_leave_lobby(player_id: str, lobby_id: str, db: Session):
             lobby_id=lobby_id,
             message=simple_message('destroy-lobby'),
         )
-        crud_lobby.delete_lobby(db=db, lobby_id=lobby_id)
+        crud_lobby.delete_lobby(db=db, lobby_id=lobby_id, clear=True)
 
     return res
