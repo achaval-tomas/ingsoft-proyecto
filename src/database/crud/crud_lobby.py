@@ -111,7 +111,7 @@ def get_lobbies(db: Session, limit: int = 1000):
     return db.query(Lobby).all()
 
 
-def delete_lobby(db: Session, lobby_id: str):
+def delete_lobby(db: Session, lobby_id: str, clear: bool = False):
     lobby = get_lobby(db=db, lobby_id=lobby_id)
     if not lobby:
         return
@@ -121,6 +121,8 @@ def delete_lobby(db: Session, lobby_id: str):
         if not db_player:
             continue
         db_player.lobby_id = None
+        if clear:
+            crud_user.delete_active_player(db, db_player.user_id, player_id)
         db.commit()
 
     db.delete(lobby)

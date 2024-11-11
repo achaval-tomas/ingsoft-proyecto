@@ -16,7 +16,7 @@ async def handle_leave_game(user_id: str, player_id: str, game_id: str, db: Sess
 
     game = crud_game.get_game(db, game_id)
     if not game:
-        return 1
+        return 2
 
     for id in deserialize(game.player_order):
         player = get_player(db, id)
