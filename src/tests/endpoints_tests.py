@@ -423,3 +423,24 @@ def test_leave_lobby_error_lobby_not_found():
     assert (
         response.json()['detail'] == errors.LOBBY_NOT_FOUND
     ), f"Mensaje de error incorrecto: {response.json()['detail']}"
+
+
+def test_game_list():
+    player_owner = create_player('testPlayer')
+    player_2 = create_player('Pablito')
+    lobby_test = create_lobby('testLobby1', player_owner, 0, 4)
+    client.post('/lobby/join', json={'player_id': player_2, 'lobby_id': lobby_test})
+
+    game_test = GameCreate(lobby_id=lobby_test, player_id=player_owner)
+    client.post('/game', json=game_test.model_dump())
+
+    lobby_test2 = create_lobby('testLobby2', player_owner, 0, 4)
+    game_test2 = GameCreate(lobby_id=lobby_test2, player_id=player_owner)
+    client.post('/game', json=game_test2.model_dump())
+
+    response = client.get('/game', params={'player_id': player_owner})
+    assert response.status_code == 200
+    assert response.json() == [
+        {'id': lobby_test, 'name': 'testLobby1', 'playerCount': 2},
+        {'id': lobby_test2, 'name': 'testLobby2', 'playerCount': 1},
+    ]
