@@ -252,7 +252,7 @@ def test_get_all_lobbies():
         assert lobby in lobbys_id, f'{lobby} is not in the database.'
 
 
-def test_join_lobby():
+def test_join_public_lobby():
     player_test = create_player('Cage')
     player_test_2 = create_player('testPlayer')
 
@@ -267,6 +267,38 @@ def test_join_lobby():
 
     assert response.status_code == 202
 
+def test_join_private_lobby():
+    player_test = create_player('testPlayer')
+    player_test2 = create_player('testPlayer2')
+    lobby_test = create_lobby('testLobby', player_test, 2, 4, 'testPw')
+    joiner_test = LobbyJoinSchema(
+        player_id=player_test2,
+        lobby_id=lobby_test,
+        password='testPw'
+    )
+
+    res = client.post('/lobby/join', json=joiner_test.model_dump())
+
+    assert res.status_code == 202
+
+def test_join_private_lobby_incorrect_pw():
+    player_test = create_player('testPlayer')
+    player_test2 = create_player('testPlayer2')
+    lobby_test = create_lobby('testLobby', player_test, 2, 4, 'testPw')
+    joiner_test = LobbyJoinSchema(
+        player_id=player_test2,
+        lobby_id=lobby_test,
+        password='incorrectPw'
+    )
+
+    res = client.post('/lobby/join', json=joiner_test.model_dump())
+
+    assert(
+        res.status_code == 401
+        ), f'Se esperaba un status code 404, pero se recibió {res.status_code}'
+    assert(
+        res.json()['detail'] == errors.INCORRECT_PASSWORD
+        ), f"Mensaje de error incorrecto: {res.json()['detail']}"
 
 def test_join_lobby_error_player_not_found():
     player_test_1 = create_player('Cage')
