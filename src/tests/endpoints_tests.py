@@ -365,9 +365,16 @@ def test_join_lobby_error_already_joined():
 def test_leave_lobby():
     player_test = create_player('Cage')
     lobby_id = create_lobby('testLobby', player_test, 2, 4)
+    player_test_2 = create_player('Cande')
+
+    test_joiner = LobbyJoinSchema(
+        player_id=player_test_2,
+        lobby_id=lobby_id,
+    )
+    client.post('/lobby/join', json=test_joiner.model_dump())
 
     data = {
-        'player_id': player_test,
+        'player_id': player_test_2,
         'lobby_id': lobby_id,
     }
     client.post('/lobby/join', json=data)
