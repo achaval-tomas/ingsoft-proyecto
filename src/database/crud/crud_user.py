@@ -118,3 +118,15 @@ def decode_player_id(db: Session, player_id: str, user_id: str):
         return user_id
 
     return player_id
+
+
+def delete_user(db: Session, user_id: str):
+    db_user = get_user(user_id=user_id, db=db)
+    if not db_user:
+        return
+
+    for player in deserialize(db_user.active_players):
+        delete_active_player(db, user_id, player)
+
+    db.delete(db_user)
+    db.commit()

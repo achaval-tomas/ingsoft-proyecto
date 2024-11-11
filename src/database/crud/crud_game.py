@@ -142,9 +142,13 @@ def leave_game(db: Session, player_id: str):
         2 -> Player does not exist in the database
         3 -> There is a winner (winner_id) because everyone else left
     """
+    player = crud_user.get_player(db=db, player_id=player_id)
+    if not player:
+        return 1, None
+
     game = get_game_from_player(db=db, player_id=player_id)
     if not game:
-        return 1, None
+        return 2, None
 
     # Get player order array
     players = deserialize(game.player_order)
@@ -165,10 +169,6 @@ def leave_game(db: Session, player_id: str):
     # Update current turn to match new_current_player
     game.current_turn = players.index(new_current_player)
     db.commit()
-
-    player = crud_user.get_player(db=db, player_id=player_id)
-    if not player:
-        return 2, None
 
     player.game_id = None
     db.commit()

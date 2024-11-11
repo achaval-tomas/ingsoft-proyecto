@@ -17,6 +17,9 @@ async def handle_leave_lobby(player_id: str, lobby_id: str, db: Session):
         return 1
 
     subplayer_id = get_active_player_id_from_lobby(db, player_id, lobby_id)
+    if not subplayer_id:
+        return 2
+
     res = crud_lobby.leave_lobby(db=db, player_id=subplayer_id)
     delete_active_player(db, player_id, subplayer_id)
 

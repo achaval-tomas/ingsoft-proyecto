@@ -86,6 +86,11 @@ async def send_chat_message(
 async def leave_game(body: player_schemas.PlayerId, game_id: str, db: SessionDep):
     player_id = get_active_player_id_from_game(db, body.playerId, game_id)
 
+    if not get_user(db=db, user_id=body.playerId):
+        raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
+    elif not player_id:
+        raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
+
     rc = await handle_leave_game(
         user_id=body.playerId,
         player_id=player_id,
@@ -94,9 +99,9 @@ async def leave_game(body: player_schemas.PlayerId, game_id: str, db: SessionDep
     )
 
     if rc == 1:
-        raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
-    elif rc == 2:
         raise HTTPException(status_code=404, detail=errors.PLAYER_NOT_FOUND)
+    elif rc == 2:
+        raise HTTPException(status_code=404, detail=errors.GAME_NOT_FOUND)
 
 
 @game_router.websocket('/game/{game_id}')
