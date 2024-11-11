@@ -81,7 +81,7 @@ function LobbyListPageLayout({
                                     onClick={onRefresh}
                                     padding="py-2"
                                 >
-                                Refrescar
+                                    Refrescar
                                 </TextButton>
                             </div>
                             <JoinedGameList
@@ -91,7 +91,7 @@ function LobbyListPageLayout({
                                 onJoinGame={onJoinLobbyMiddleware}
                             />
                         </div>
-                        <div className="flex flex-col grow-[1]">
+                        <div className="flex flex-col h-full overflow-hidden">
                             <div className="flex flex-row w-full justify-between items-center pt-4 px-6">
                                 <h2 className="text-2xl">Salas</h2>
                             </div>
