@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64"
+   height="64"
+   viewBox="0 0 16.933333 16.933333"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="switchericon.svg"
+   inkscape:export-filename="..\..\..\dev\famaf\is1\switcher-frontend\public\switchericon.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="11.822492"
+     inkscape:cx="28.885619"
+     inkscape:cy="26.771006"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="display:none;fill:#00adee;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+       id="path2-9"
+       cx="8.4666615"
+       cy="8.4666681"
+       rx="8.4666719"
+       ry="8.4666643" />
+    <ellipse
+       style="display:inline;fill:#f6931e;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+       id="path2"
+       cx="8.4666662"
+       cy="8.4666662"
+       rx="8.4666672"
+       ry="8.4666662" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.01926px;font-family:'Seaside Resort NF';-inkscape-font-specification:'Seaside Resort NF';fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.21166667;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+       x="1.8861014"
+       y="11.569183"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="font-size:7.01926px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.21166667;stroke-dasharray:none;stroke-opacity:1"
+         x="1.8861014"
+         y="11.569183">SW</tspan></text>
+  </g>
+</svg>
